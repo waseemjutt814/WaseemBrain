@@ -1,0 +1,21 @@
+{"text":"explain this python function in the repo","labels":["code-general"],"internet_needed":false}
+{"text":"how does python_gateway work in this project","labels":["code-general"],"internet_needed":false}
+{"text":"find the rust router logic","labels":["code-general"],"internet_needed":false}
+{"text":"show me the typescript websocket implementation","labels":["code-general"],"internet_needed":false}
+{"text":"what file handles memory recall in this codebase","labels":["code-general"],"internet_needed":false}
+{"text":"why is my coordinator bridge blocking requests","labels":["code-general"],"internet_needed":false}
+{"text":"capital of france","labels":["geography"],"internet_needed":false}
+{"text":"what is the capital city of pakistan","labels":["geography"],"internet_needed":false}
+{"text":"where is berlin and which country uses it as capital","labels":["geography"],"internet_needed":false}
+{"text":"which region is japan in","labels":["geography"],"internet_needed":false}
+{"text":"tell me about canada capital","labels":["geography"],"internet_needed":false}
+{"text":"what country has madrid as its capital","labels":["geography"],"internet_needed":false}
+{"text":"summarize the evidence you found","labels":["language-en"],"internet_needed":false}
+{"text":"answer from the recalled sources only","labels":["language-en"],"internet_needed":false}
+{"text":"compose a grounded response for this question","labels":["language-en"],"internet_needed":false}
+{"text":"use the available memory and answer carefully","labels":["language-en"],"internet_needed":false}
+{"text":"latest python release news","labels":["language-en"],"internet_needed":true}
+{"text":"today's ai safety headlines","labels":["language-en"],"internet_needed":true}
+{"text":"most recent rust release announcement","labels":["language-en"],"internet_needed":true}
+{"text":"latest world news summary with sources","labels":["language-en"],"internet_needed":true}
+{"text":"what changed today in open source ai","labels":["language-en"],"internet_needed":true}

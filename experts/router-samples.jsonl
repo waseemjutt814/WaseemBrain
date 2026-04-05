@@ -1,0 +1,15 @@
+{"text":"what is the capital of france","labels":["geography"],"internet_needed":false}
+{"text":"capital city of pakistan","labels":["geography"],"internet_needed":false}
+{"text":"which region is japan in","labels":["geography"],"internet_needed":false}
+{"text":"tell me the capital of germany","labels":["geography"],"internet_needed":false}
+{"text":"fix the failing python test in this repo","labels":["code-general"],"internet_needed":false}
+{"text":"where is the websocket bridge implemented in this project","labels":["code-general"],"internet_needed":false}
+{"text":"explain rust ownership and borrowing","labels":["code-general"],"internet_needed":false}
+{"text":"how do sql joins work","labels":["code-general"],"internet_needed":false}
+{"text":"what does this stack trace mean","labels":["code-general"],"internet_needed":false}
+{"text":"hello what can you do","labels":["language-en"],"internet_needed":false}
+{"text":"explain the water cycle","labels":["language-en"],"internet_needed":false}
+{"text":"difference between weather and climate","labels":["language-en"],"internet_needed":false}
+{"text":"how does self learning work here","labels":["language-en"],"internet_needed":false}
+{"text":"latest bitcoin price","labels":["language-en"],"internet_needed":true}
+{"text":"who is the current president of the united states","labels":["language-en"],"internet_needed":true}

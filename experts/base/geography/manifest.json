@@ -1,0 +1,5 @@
+{
+  "kind": "geography-dataset",
+  "strategy": "offline-lookup",
+  "dataset": "countries.json"
+}

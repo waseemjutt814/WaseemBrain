@@ -1,0 +1,91 @@
+{
+  "dataset_id": "science-and-earth-docs",
+  "name": "Science And Earth Docs",
+  "version": "2026.03",
+  "cards": [
+    {
+      "id": "nasa-solar-system-exploration-1",
+      "title": "Solar System Exploration Part 1",
+      "content": "var gform;gform||(document.addEventListener(\"gform_main_scripts_loaded\",function(){gform.scriptsLoaded=!0}),document.addEventListener(\"gform/theme/scripts_loaded\",function(){gform.themeScriptsLoaded=!0}),window.addEventListener(\"DOMContentLoaded\",function(){gform.domLoaded=!0}),gform={domLoaded:!1,scriptsLoaded:!1,themeScriptsLoaded:!1,isFormEditor:()=>\"function\"==typeof InitializeEditor,callIfLoaded:function(o){return!(!gform.domLoaded||!gform.scriptsLoaded||!gform.themeScriptsLoaded&&!gform.isFormEditor()||(gform.isFormEditor()&&console.warn(\"The use of gform.initializeOnLoaded() is deprecated in the form editor context and will be removed in Gravity Forms 3.1.\"),o(),0))},initializeOnLoaded:function(o){gform.callIfLoaded(o)||(document.addEventListener(\"gform_main_scripts_loaded\",()=>{gform.scriptsLoaded=!0,gform.callIfLoaded(o)}),document.addEventListener(\"gform/theme/scripts_loaded\",(",
+      "tags": [
+        "space",
+        "science",
+        "nasa"
+      ],
+      "source_id": "https://science.nasa.gov/solar-system/",
+      "source_label": "Solar System Exploration",
+      "source_uri": "https://science.nasa.gov/solar-system/",
+      "source_type": "internet"
+    },
+    {
+      "id": "nasa-solar-system-exploration-2",
+      "title": "Solar System Exploration Part 2",
+      "content": "\",\"keywords\":\"Solar System, planets, dwarf planets, comets, asteroids\",\"@type\":\"Article\",\"author\":{\"@id\":\"https://science.nasa.gov/author/kovelev/\",\"name\":\"Kalina Velev\"},\"datePublished\":\"2023-06-08T13:04:16-04:00\",\"dateModified\":\"2026-03-11T16:22:50-04:00\",\"image\":{\"@id\":\"https://assets.science.nasa.gov/dynamicimage/assets/science/cds/general/images/2023/06/s/solar-system-illustration-16x9-1.jpg?w=6600&amp;h=3712&amp;fit=clip&amp;crop=faces%2Cfocalpoint\"},\"name\":\"Solar System Exploration\",\"@id\":\"https://science.nasa.gov/solar-system/#schema-5631697\",\"isPartOf\":{\"@id\":\"https://science.nasa.gov/solar-system/#webpage\"},\"publisher\":{\"@id\":\"https://science.nasa.gov/#organization\"},\"inLanguage\":\"en-US\",\"mainEntityOfPage\":{\"@id\":\"https://science.nasa.gov/solar-system/#webpage\"}}]} .hds-media .nasa-block-align-inline{max-width:840px}.hds-media .nasa-block-align-full,.hds-media .nasa-block-align",
+      "tags": [
+        "space",
+        "science",
+        "nasa"
+      ],
+      "source_id": "https://science.nasa.gov/solar-system/",
+      "source_label": "Solar System Exploration",
+      "source_uri": "https://science.nasa.gov/solar-system/",
+      "source_type": "internet"
+    },
+    {
+      "id": "nasa-about-the-planets-1",
+      "title": "About the Planets Part 1",
+      "content": "var gform;gform||(document.addEventListener(\"gform_main_scripts_loaded\",function(){gform.scriptsLoaded=!0}),document.addEventListener(\"gform/theme/scripts_loaded\",function(){gform.themeScriptsLoaded=!0}),window.addEventListener(\"DOMContentLoaded\",function(){gform.domLoaded=!0}),gform={domLoaded:!1,scriptsLoaded:!1,themeScriptsLoaded:!1,isFormEditor:()=>\"function\"==typeof InitializeEditor,callIfLoaded:function(o){return!(!gform.domLoaded||!gform.scriptsLoaded||!gform.themeScriptsLoaded&&!gform.isFormEditor()||(gform.isFormEditor()&&console.warn(\"The use of gform.initializeOnLoaded() is deprecated in the form editor context and will be removed in Gravity Forms 3.1.\"),o(),0))},initializeOnLoaded:function(o){gform.callIfLoaded(o)||(document.addEventListener(\"gform_main_scripts_loaded\",()=>{gform.scriptsLoaded=!0,gform.callIfLoaded(o)}),document.addEventListener(\"gform/theme/scripts_loaded\",(",
+      "tags": [
+        "planets",
+        "space",
+        "nasa"
+      ],
+      "source_id": "https://science.nasa.gov/solar-system/planets/",
+      "source_label": "About the Planets",
+      "source_uri": "https://science.nasa.gov/solar-system/planets/",
+      "source_type": "internet"
+    },
+    {
+      "id": "nasa-about-the-planets-2",
+      "title": "About the Planets Part 2",
+      "content": "There are five officially recognized dwarf planets in our solar system: Ceres, Pluto, Haumea, Makemake, and Eris.\",\"keywords\":\"Planets, solar system, Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto, Ceres, Eris, Haumea, Makemake\",\"@type\":\"Article\",\"author\":{\"@id\":\"https://science.nasa.gov/author/minhtran/\",\"name\":\"Lindsey Tran\"},\"datePublished\":\"2023-07-10T16:29:50-04:00\",\"dateModified\":\"2026-02-03T21:17:14-05:00\",\"image\":{\"@id\":\"https://science.nasa.gov/wp-content/uploads/2023/06/planets3x3-pluto-colormercury-axis-tilt-nolabels-1080p.00001-print.jpg\"},\"name\":\"About the Planets\",\"@id\":\"https://science.nasa.gov/solar-system/planets/#schema-5958115\",\"isPartOf\":{\"@id\":\"https://science.nasa.gov/solar-system/planets/#webpage\"},\"publisher\":{\"@id\":\"https://science.nasa.gov/#organization\"},\"inLanguage\":\"en-US\",\"mainEntityOfPage\":{\"@id\":\"https://science.nasa.gov/solar-system/",
+      "tags": [
+        "planets",
+        "space",
+        "nasa"
+      ],
+      "source_id": "https://science.nasa.gov/solar-system/planets/",
+      "source_label": "About the Planets",
+      "source_uri": "https://science.nasa.gov/solar-system/planets/",
+      "source_type": "internet"
+    },
+    {
+      "id": "noaa-climate-data-primer-1",
+      "title": "Climate Data Primer | NOAA Climate.gov Part 1",
+      "content": "Climate Data Primer | NOAA Climate.gov window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments)};gtag(\"js\", new Date());gtag(\"set\", \"developer_id.dMDhkMT\", true);gtag(\"config\", \"G-69P3KT57C3\", {\"groups\":\"default\",\"linker\":{\"domains\":[\"*.climate.gov\",\"*.noaa.gov\"]},\"link_attribution\":true,\"allow_ad_personalization_signals\":false,\"page_location\":location.pathname + location.search + location.hash}); window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-69P3KT57C3'); (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-MB",
+      "tags": [
+        "climate",
+        "noaa",
+        "earth"
+      ],
+      "source_id": "https://www.climate.gov/maps-data/climate-data-primer",
+      "source_label": "Climate Data Primer | NOAA Climate.gov",
+      "source_uri": "https://www.climate.gov/maps-data/climate-data-primer",
+      "source_type": "internet"
+    },
+    {
+      "id": "noaa-climate-data-primer-2",
+      "title": "Climate Data Primer | NOAA Climate.gov Part 2",
+      "content": "Climate Case Studies Climate Dashboard Climate Q&A Event Tracker Climate Tech Featured Images Decision Makers Take 5 Videos Decision Makers Toolbox El Ni\u00f1o & La Ni\u00f1a Page NOAA Greenhouse Gas Features News & Research Highlights Understanding Climate View News & Features section Maps & Data Home All Maps & Data Climate Dashboard Climate Data Primer Dataset Gallery Tools & Interactives Data Snapshots View Maps & Data section Teaching Climate Home Climate Dashboard Teaching Climate Teaching Energy Toolbox for Climate & Energy Partnership with CLEAN collection View Teaching Climate section Resilience Toolkit About About Us What's New FAQs Sitemap Facebook BlueSky Twitter Instagram YouTube Facebook BlueSky Twitter Instagram YouTube Search Search powered by webLyzard technology Breadcrumb Home Maps & Data Data Snapshots Dataset Gallery Climate Data Primer What's the difference between climate a",
+      "tags": [
+        "climate",
+        "noaa",
+        "earth"
+      ],
+      "source_id": "https://www.climate.gov/maps-data/climate-data-primer",
+      "source_label": "Climate Data Primer | NOAA Climate.gov",
+      "source_uri": "https://www.climate.gov/maps-data/climate-data-primer",
+      "source_type": "internet"
+    }
+  ]
+}

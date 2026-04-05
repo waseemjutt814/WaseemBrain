@@ -1,0 +1,115 @@
+{
+  "version": 4,
+  "clarification_confidence_floor": 0.25,
+  "intent_mode_bias": {
+    "code": {
+      "answer": 1.235,
+      "memory-recall": 0.925
+    },
+    "factual": {
+      "answer": 1.0835,
+      "memory-recall": 0.925
+    },
+    "follow_up": {
+      "memory-recall": 0.925
+    },
+    "general": {
+      "clarify": -0.165
+    },
+    "greeting": {
+      "memory-recall": 0.925,
+      "unsupported": -0.4
+    },
+    "planning": {
+      "plan": 0.925
+    }
+  },
+  "intent_strategy_bias": {
+    "code": {
+      "answer": {
+        "grounded": 1.235
+      },
+      "memory-recall": {
+        "memory": 0.925
+      }
+    },
+    "factual": {
+      "answer": {
+        "grounded": 1.0835
+      },
+      "memory-recall": {
+        "memory": 0.925
+      }
+    },
+    "follow_up": {
+      "memory-recall": {
+        "memory": 0.925
+      }
+    },
+    "general": {
+      "clarify": {
+        "clarify": -0.165
+      }
+    },
+    "greeting": {
+      "memory-recall": {
+        "memory": 0.925
+      },
+      "unsupported": {
+        "unsupported": -0.4
+      }
+    },
+    "planning": {
+      "plan": {
+        "memory": 0.925
+      }
+    }
+  },
+  "candidate_ranker_profiles": {
+    "answer": {
+      "citation_weight": 0.3476,
+      "next_step_weight": 0.0,
+      "confidence_weight": 0.3488,
+      "entity_match_weight": 0.2094,
+      "length_weight": 0.1382,
+      "query_coverage_weight": 0.0,
+      "symbol_anchor_weight": 0.1382,
+      "target_length_tokens": 87,
+      "length_tolerance_tokens": 48
+    },
+    "memory-recall": {
+      "citation_weight": 0.0,
+      "next_step_weight": 0.0,
+      "confidence_weight": 0.0,
+      "entity_match_weight": 0.0,
+      "length_weight": 0.0,
+      "query_coverage_weight": 0.0,
+      "symbol_anchor_weight": 0.0,
+      "target_length_tokens": 67,
+      "length_tolerance_tokens": 23
+    },
+    "unsupported": {
+      "citation_weight": 0.0,
+      "next_step_weight": 0.0,
+      "confidence_weight": 0.0,
+      "entity_match_weight": 0.0,
+      "length_weight": 0.0,
+      "query_coverage_weight": 0.0,
+      "symbol_anchor_weight": 0.0,
+      "target_length_tokens": 9,
+      "length_tolerance_tokens": 8
+    }
+  },
+  "next_step_intents": [
+    "code",
+    "factual",
+    "follow_up",
+    "greeting",
+    "planning"
+  ],
+  "supportive_intents": [
+    "general",
+    "greeting"
+  ],
+  "trained_trace_count": 18
+}

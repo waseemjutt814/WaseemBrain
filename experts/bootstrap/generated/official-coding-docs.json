@@ -1,0 +1,259 @@
+{
+  "dataset_id": "official-coding-docs",
+  "name": "Official Coding Docs",
+  "version": "2026.03",
+  "cards": [
+    {
+      "id": "python-documentation-1",
+      "title": "3.14.3 Documentation Part 1",
+      "content": "3.14.3 Documentation @media only screen { table.full-width-table { width: 100%; } } Theme Auto Light Dark Download Download these documents Docs by version Python 3.15 (in development) Python 3.14 (stable) Python 3.13 (stable) Python 3.12 (security-fixes) Python 3.11 (security-fixes) Python 3.10 (security-fixes) Python 3.9 (EOL) Python 3.8 (EOL) Python 3.7 (EOL) Python 3.6 (EOL) Python 3.5 (EOL) Python 3.4 (EOL) Python 3.3 (EOL) Python 3.2 (EOL) Python 3.1 (EOL) Python 3.0 (EOL) Python 2.7 (EOL) Python 2.6 (EOL) All versions Other resources PEP Index Beginner's Guide Book List Audio/Visual Talks Python Developer\u2019s Guide Navigation index modules | Python \u00bb 3.14.3 Documentation \u00bb | Theme Auto Light Dark | Python 3.14.3 documentation Welcome! This is the official documentation for Python 3.14.3. Documentation sections: What's new in Python 3.14?",
+      "tags": [
+        "python",
+        "official",
+        "documentation"
+      ],
+      "source_id": "https://docs.python.org/3/",
+      "source_label": "3.14.3 Documentation",
+      "source_uri": "https://docs.python.org/3/",
+      "source_type": "internet"
+    },
+    {
+      "id": "python-documentation-2",
+      "title": "3.14.3 Documentation Part 2",
+      "content": "Or all \"What's new\" documents since Python 2.0 Tutorial Start here: a tour of Python's syntax and features Library reference Standard library and builtins Language reference Syntax and language elements Python setup and usage How to install, configure, and use Python Python HOWTOs In-depth topic manuals Installing Python modules Third-party modules and PyPI.org Distributing Python modules Publishing modules for use by other people Extending and embedding For C/C++ programmers Python's C API C API reference FAQs Frequently asked questions (with answers!) Deprecations Deprecated functionality Indices, glossary, and search: Global module index All modules and libraries General index All functions, classes, and terms Glossary Terms explained Search page Search this documentation Complete table of contents Lists all sections and subsections Project information: Reporting issues Contributing t",
+      "tags": [
+        "python",
+        "official",
+        "documentation"
+      ],
+      "source_id": "https://docs.python.org/3/",
+      "source_label": "3.14.3 Documentation",
+      "source_uri": "https://docs.python.org/3/",
+      "source_type": "internet"
+    },
+    {
+      "id": "typescript-handbook-1",
+      "title": "TypeScript: Handbook - The TypeScript Handbook Part 1",
+      "content": "#top-menu{background-color:#3178c6;clear:both;display:flex;height:3rem;justify-content:space-between;-webkit-user-select:none;user-select:none;z-index:101}#top-menu>.left{display:flex;flex-direction:row;padding-bottom:env(safe-area-inset-bottom)}#top-menu>.right{display:flex;flex-direction:row-reverse;justify-self:flex-end}#top-menu .nav{display:inline-block;text-decoration:none}#top-menu ul{margin:0;padding:0}#top-menu #home-page-logo{font-size:1.5rem;font-weight:600;padding-top:.7rem;width:200px}@media screen and (-ms-high-contrast:active){#top-menu #home-page-logo svg path{fill:blue}}#top-menu #home-page-logo svg{margin-left:1rem;margin-right:.6rem}#top-menu #home-page-logo span{margin-right:.2rem;position:relative;text-decoration:none;top:-.3rem}#top-menu .nav-item{display:inline-block;font-size:1rem;font-weight:600;text-decoration:none}#top-menu .nav-item a{display:block;padding:.95",
+      "tags": [
+        "typescript",
+        "official",
+        "documentation"
+      ],
+      "source_id": "https://www.typescriptlang.org/docs/handbook/intro.html",
+      "source_label": "TypeScript: Handbook - The TypeScript Handbook",
+      "source_uri": "https://www.typescriptlang.org/docs/handbook/intro.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "typescript-handbook-2",
+      "title": "TypeScript: Handbook - The TypeScript Handbook Part 2",
+      "content": "mscc v0.4.2 - Copyright 2020 Microsoft Corporation */.cc-banner{font-size:12px;position:relative}.cc-banner .hide{display:none}.cc-banner a,.cc-banner div,.cc-banner span,.cc-banner svg{margin:0;padding:0;text-decoration:none}.cc-banner .cc-v-center{display:inline;line-height:2em;vertical-align:middle}.cc-banner[dir=rtl] .cc-float-left,.cc-float-right{float:right}.cc-banner[dir=rtl] .cc-float-right,.cc-float-left{float:left}.cc-banner{background:#f2f2f2;color:#231f20;display:none;font-family:Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;margin:0;padding:0 1em;text-align:center}@media(min-width:768px){.cc-banner{font-size:13px;padding:0 1.65em}}.cc-banner>.cc-container{display:inline-block;padding:.75em 0;text-align:left;width:100%}[dir=rtl].cc-banner>.cc-container{text-align:right}@media(min-width:1084px){.cc-banner{padding:0}.cc-banner>.cc-container{max-width:1600px;width:90%}}.cc-",
+      "tags": [
+        "typescript",
+        "official",
+        "documentation"
+      ],
+      "source_id": "https://www.typescriptlang.org/docs/handbook/intro.html",
+      "source_label": "TypeScript: Handbook - The TypeScript Handbook",
+      "source_uri": "https://www.typescriptlang.org/docs/handbook/intro.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "rust-ownership-chapter-1",
+      "title": "Understanding Ownership - The Rust Programming Language Part 1",
+      "content": "Understanding Ownership - The Rust Programming Language const path_to_root = \"\"; const default_light_theme = \"light\"; const default_dark_theme = \"navy\"; window.path_to_searchindex_js = \"searchindex-6a1da8cc.js\"; Keyboard shortcuts Press \u2190 or \u2192 to navigate between chapters Press S or / to search in the book Press ? to show this help Press Esc to hide this help try { let theme = localStorage.getItem('mdbook-theme'); let sidebar = localStorage.getItem('mdbook-sidebar'); if (theme.startsWith('\"') && theme.endsWith('\"')) { localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1)); } if (sidebar.startsWith('\"') && sidebar.endsWith('\"')) { localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1)); } } catch (e) { } const default_theme = window.matchMedia(\"(prefers-color-scheme: dark)\").matches ?",
+      "tags": [
+        "rust",
+        "ownership",
+        "official"
+      ],
+      "source_id": "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+      "source_label": "Understanding Ownership - The Rust Programming Language",
+      "source_uri": "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "rust-ownership-chapter-2",
+      "title": "Understanding Ownership - The Rust Programming Language Part 2",
+      "content": "default_dark_theme : default_light_theme; let theme; try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } if (theme === null || theme === undefined) { theme = default_theme; } const html = document.documentElement; html.classList.remove('light') html.classList.add(theme); html.classList.add(\"js\"); let sidebar = null; const sidebar_toggle = document.getElementById(\"mdbook-sidebar-toggle-anchor\"); if (document.body.clientWidth >= 1080) { try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { } sidebar = sidebar || 'visible'; } else { sidebar = 'hidden'; sidebar_toggle.checked = false; } if (sidebar === 'visible') { sidebar_toggle.checked = true; } else { html.classList.remove('sidebar-visible'); } Auto Light Rust Coal Navy Ayu The Rust Programming Language document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible'); docu",
+      "tags": [
+        "rust",
+        "ownership",
+        "official"
+      ],
+      "source_id": "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+      "source_label": "Understanding Ownership - The Rust Programming Language",
+      "source_uri": "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "mdn-http-overview-1",
+      "title": "Overview of HTTP - HTTP | MDN Part 1",
+      "content": "Overview of HTTP - HTTP | MDN try { document.documentElement.dataset.theme = localStorage.getItem(\"theme\") || \"light dark\"; } catch (error) { console.warn(\"Unable to set theme\", error); } try { if (localStorage.getItem(\"nop\") === \"yes\") { document.documentElement.dataset[\"nop\"] = \"yes\"; } } catch (error) { console.warn(\"Unable to set nop\", error); } Skip to main content Skip to search MDN .mdn-search-button{align-items:center;background-color:var(--color-background-page);border:1px solid var(--color-border-primary);border-radius:var(--radius-full);color:var(--color-text-primary);cursor:pointer;display:flex;justify-content:space-between;margin:0;padding:.25rem .25rem .25rem .75rem;width:5rem}.mdn-search-button:hover{background-color:var(--color-background-secondary)}.mdn-search-button:before{content:\"\";height:18px;width:15px;--csstools-light-dark-toggle-95231fd5-0:var(--csstools-color-sch",
+      "tags": [
+        "http",
+        "mdn",
+        "web"
+      ],
+      "source_id": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview",
+      "source_label": "Overview of HTTP - HTTP | MDN",
+      "source_uri": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview",
+      "source_type": "internet"
+    },
+    {
+      "id": "mdn-http-overview-2",
+      "title": "Overview of HTTP - HTTP | MDN Part 2",
+      "content": "It is the foundation of any data exchange on the Web and it is a client-server protocol, which means requests are initiated by the recipient, usually the Web browser. A complete document is typically constructed from resources such as text content, layout instructions, images, videos, scripts, and more. Clients and servers communicate by exchanging individual messages (as opposed to a stream of data). The messages sent by the client are called requests and the messages sent by the server as an answer are called responses . Designed in the early 1990s, HTTP is an extensible protocol which has evolved over time. It is an application layer protocol that is sent over TCP , or over a TLS -encrypted TCP connection, though any reliable transport protocol could theoretically be used.",
+      "tags": [
+        "http",
+        "mdn",
+        "web"
+      ],
+      "source_id": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview",
+      "source_label": "Overview of HTTP - HTTP | MDN",
+      "source_uri": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview",
+      "source_type": "internet"
+    },
+    {
+      "id": "sqlite-about-1",
+      "title": "About SQLite Part 1",
+      "content": "About SQLite Small. Fast. Reliable. Choose any three. Home Menu About Documentation Download License Support Purchase Search About Documentation Download Support Purchase Search Documentation Search Changelog function toggle_div(nm) { var w = document.getElementById(nm); if( w.style.display==\"block\" ){ w.style.display = \"none\"; }else{ w.style.display = \"block\"; } } function toggle_search() { var w = document.getElementById(\"searchmenu\"); if( w.style.display==\"block\" ){ w.style.display = \"none\"; } else { w.style.display = \"block\"; setTimeout(function(){ document.getElementById(\"searchbox\").focus() }, 30); } } function div_off(nm){document.getElementById(nm).style.display=\"none\";} window.onbeforeunload = function(e){div_off(\"submenu\");} /* Disable the Search feature if we are not operating from CGI, since */ /* Search is accomplished using CGI and will not work without it.",
+      "tags": [
+        "sqlite",
+        "database",
+        "official"
+      ],
+      "source_id": "https://www.sqlite.org/about.html",
+      "source_label": "About SQLite",
+      "source_uri": "https://www.sqlite.org/about.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "sqlite-about-2",
+      "title": "About SQLite Part 2",
+      "content": "*/ if( !location.origin || !location.origin.match || !location.origin.match(/http/) ){ document.getElementById(\"search_menubutton\").style.display = \"none\"; } /* Used by the Hide/Show button beside syntax diagrams, to toggle the */ function hideorshow(btn,obj){ var x = document.getElementById(obj); var b = document.getElementById(btn); if( x.style.display!='none' ){ x.style.display = 'none'; b.innerHTML='show'; }else{ x.style.display = ''; b.innerHTML='hide'; } return false; } var antiRobot = 0; function antiRobotGo(){ if( antiRobot!=3 ) return; antiRobot = 7; var j = document.getElementById(\"mtimelink\"); if(j && j.hasAttribute(\"data-href\")) j.href=j.getAttribute(\"data-href\"); } function antiRobotDefense(){ document.body.onmousedown=function(){ antiRobot |= 2; antiRobotGo(); document.body.onmousedown=null; } document.body.onmousemove=function(){ antiRobot |= 2; antiRobotGo(); document.bod",
+      "tags": [
+        "sqlite",
+        "database",
+        "official"
+      ],
+      "source_id": "https://www.sqlite.org/about.html",
+      "source_label": "About SQLite",
+      "source_uri": "https://www.sqlite.org/about.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "git-tutorial-1",
+      "title": "Git - gittutorial Documentation Part 1",
+      "content": "const currentTheme = localStorage.getItem(\"theme\") if (currentTheme) { const prefersDarkScheme = window.matchMedia(\"(prefers-color-scheme: dark)\").matches if (prefersDarkScheme === (currentTheme === \"dark\")) localStorage.removeItem(\"theme\") else if ((prefersDarkScheme && currentTheme === \"light\") || (!prefersDarkScheme && currentTheme === \"dark\")) { document.documentElement.dataset.theme = currentTheme } } Git - gittutorial Documentation const taglines = [ \"fast-version-control\", \"everything-is-local\", \"distributed-even-if-your-workflow-isnt\", \"local-branching-on-the-cheap\", \"distributed-is-the-new-centralized\" ]; var tagline = taglines[Math.floor(Math.random() * taglines.length)]; document.getElementById('tagline').innerHTML = '--' + tagline; About Trademark Learn Book Cheat Sheet Videos External Links Tools Command Line GUIs Hosting Reference Install Community Table of Contents NAME SY",
+      "tags": [
+        "git",
+        "version-control",
+        "official"
+      ],
+      "source_id": "https://git-scm.com/docs/gittutorial",
+      "source_label": "Git - gittutorial Documentation",
+      "source_uri": "https://git-scm.com/docs/gittutorial",
+      "source_type": "internet"
+    },
+    {
+      "id": "git-tutorial-2",
+      "title": "Git - gittutorial Documentation Part 2",
+      "content": "You can help translate this page . Topics \u25be Setup and Config git config help bugreport Credential helpers Getting and Creating Projects init clone Basic Snapshotting add status diff commit notes restore reset rm mv Branching and Merging branch checkout switch merge mergetool log stash tag worktree Sharing and Updating Projects fetch pull push remote submodule Inspection and Comparison show log diff difftool range-diff shortlog describe Patching apply cherry-pick diff rebase revert Debugging bisect blame grep Email am apply imap-send format-patch send-email request-pull External Systems svn fast-import Server Admin daemon update-server-info Guides gitattributes Command-line interface conventions Everyday Git Frequently Asked Questions (FAQ) Glossary Hooks gitignore gitmodules Revisions Submodules Tutorial Workflows All guides...",
+      "tags": [
+        "git",
+        "version-control",
+        "official"
+      ],
+      "source_id": "https://git-scm.com/docs/gittutorial",
+      "source_label": "Git - gittutorial Documentation",
+      "source_uri": "https://git-scm.com/docs/gittutorial",
+      "source_type": "internet"
+    },
+    {
+      "id": "gnu-bash-manual-1",
+      "title": "Bash Reference Manual Part 1",
+      "content": "Bash Reference Manual <!-- a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em} a.summary-letter-printindex {text-decoration: none} div.center {text-align:center} div.display {margin-left: 3.2em} div.example {margin-left: 3.2em} kbd.kbd {font-style: oblique} kbd.key {font-style: normal} pre.display-preformatted {font-family: inherit} span.r {font-family: initial; font-weight: normal; font-style: normal} span:hover a.copiable-link {visibility: visible} td.printindex-index-entry {vertical-align: top} td.printindex-index-section {vertical-align: top; padding-left: 1em} th.entries-header-printindex {text-align:left} th.sections-header-printindex {text-align:left; padding-left: 1em} ul.mark-bullet {list-style-type: disc} ul.toc-numbered-mark {list-style: none} --> Next: Introduction , Previous: (dir) , Up: (dir) [ Contents ][ Index ] Bash Features \u00b6 This text is a bri",
+      "tags": [
+        "bash",
+        "shell",
+        "official"
+      ],
+      "source_id": "https://www.gnu.org/software/bash/manual/bash.html",
+      "source_label": "Bash Reference Manual",
+      "source_uri": "https://www.gnu.org/software/bash/manual/bash.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "gnu-bash-manual-2",
+      "title": "Bash Reference Manual Part 2",
+      "content": "The Bash home page is http://www.gnu.org/software/bash/ . This is Edition 5.3, last updated 18 May 2025, of The GNU Bash Reference Manual , for Bash , Version 5.3. Bash contains features that appear in other popular shells, and some features that only appear in Bash. Some of the shells that Bash has borrowed concepts from are the Bourne Shell ( sh ), the Korn Shell ( ksh ), and the C-shell ( csh and its successor, tcsh ). The following menu breaks the features up into categories, noting which features were inspired by other shells and which are specific to Bash. This manual is meant as a brief introduction to features found in Bash. The Bash manual page should be used as the definitive reference on shell behavior. Table of Contents 1 Introduction 1.1 What is Bash? 1.2 What is a shell?",
+      "tags": [
+        "bash",
+        "shell",
+        "official"
+      ],
+      "source_id": "https://www.gnu.org/software/bash/manual/bash.html",
+      "source_label": "Bash Reference Manual",
+      "source_uri": "https://www.gnu.org/software/bash/manual/bash.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "scikit-learn-supervised-learning-1",
+      "title": "1. Supervised learning \u2014 scikit-learn 1.8.0 documentation Part 1",
+      "content": "Supervised learning \u2014 scikit-learn 1.8.0 documentation document.documentElement.dataset.mode = localStorage.getItem(\"mode\") || \"\"; document.documentElement.dataset.theme = localStorage.getItem(\"theme\") || \"\"; .pst-js-only { display: none !important; } DOCUMENTATION_OPTIONS.pagename = 'supervised_learning'; DOCUMENTATION_OPTIONS.theme_version = '0.16.1'; DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://scikit-learn.org/dev/_static/versions.json'; DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.8.0'; DOCUMENTATION_OPTIONS.show_version_warning_banner = true; Skip to main content Back to top Ctrl + K Install User Guide API Examples Community More Getting Started Release History Glossary Development FAQ Support Related Projects Roadmap Governance About us GitHub Choose version Install User Guide API Examples Community Getting Started Release History Glossary Development FAQ Su",
+      "tags": [
+        "machine-learning",
+        "scikit-learn",
+        "official"
+      ],
+      "source_id": "https://scikit-learn.org/stable/supervised_learning.html",
+      "source_label": "1. Supervised learning \u2014 scikit-learn 1.8.0 documentation",
+      "source_uri": "https://scikit-learn.org/stable/supervised_learning.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "scikit-learn-supervised-learning-2",
+      "title": "1. Supervised learning \u2014 scikit-learn 1.8.0 documentation Part 2",
+      "content": "Supervised learning 1.1. Linear Models 1.2. Linear and Quadratic Discriminant Analysis 1.3. Kernel ridge regression 1.4. Support Vector Machines 1.5. Stochastic Gradient Descent 1.6. Nearest Neighbors 1.7. Gaussian Processes 1.8. Cross decomposition 1.9. Naive Bayes 1.10. Decision Trees 1.11. Ensembles: Gradient boosting, random forests, bagging, voting, stacking 1.12. Multiclass and multioutput algorithms 1.13. Feature selection 1.14. Semi-supervised learning 1.15. Isotonic regression 1.16. Probability calibration 1.17. Neural network models (supervised) 2. Unsupervised learning 2.1. Gaussian mixture models 2.2. Manifold learning 2.3. Clustering 2.4. Biclustering 2.5. Decomposing signals in components (matrix factorization problems) 2.6. Covariance estimation 2.7. Novelty and Outlier Detection 2.8. Density Estimation 2.9. Neural network models (unsupervised) 3.",
+      "tags": [
+        "machine-learning",
+        "scikit-learn",
+        "official"
+      ],
+      "source_id": "https://scikit-learn.org/stable/supervised_learning.html",
+      "source_label": "1. Supervised learning \u2014 scikit-learn 1.8.0 documentation",
+      "source_uri": "https://scikit-learn.org/stable/supervised_learning.html",
+      "source_type": "internet"
+    },
+    {
+      "id": "mdn-domain-name-basics-1",
+      "title": "What is a Domain Name? - Learn web development | MDN Part 1",
+      "content": "- Learn web development | MDN try { document.documentElement.dataset.theme = localStorage.getItem(\"theme\") || \"light dark\"; } catch (error) { console.warn(\"Unable to set theme\", error); } try { if (localStorage.getItem(\"nop\") === \"yes\") { document.documentElement.dataset[\"nop\"] = \"yes\"; } } catch (error) { console.warn(\"Unable to set nop\", error); } Skip to main content Skip to search MDN .mdn-search-button{align-items:center;background-color:var(--color-background-page);border:1px solid var(--color-border-primary);border-radius:var(--radius-full);color:var(--color-text-primary);cursor:pointer;display:flex;justify-content:space-between;margin:0;padding:.25rem .25rem .25rem .75rem;width:5rem}.mdn-search-button:hover{background-color:var(--color-background-secondary)}.mdn-search-button:before{content:\"\";height:18px;width:15px;--csstools-light-dark-toggle-95231fd5-0:var(--csstools-color-sch",
+      "tags": [
+        "dns",
+        "domain-name",
+        "web"
+      ],
+      "source_id": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_domain_name",
+      "source_label": "What is a Domain Name? - Learn web development | MDN",
+      "source_uri": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_domain_name",
+      "source_type": "internet"
+    },
+    {
+      "id": "mdn-domain-name-basics-2",
+      "title": "What is a Domain Name? - Learn web development | MDN Part 2",
+      "content": ".color-theme{--color-theme-light-dark:url(/static/ssr/contrast.d86e85c43de8dee8.svg);--color-theme-light:url(/static/ssr/sun.1d7c3ad7bf6fc390.svg);--color-theme-dark:url(/static/ssr/moon.74026b9da82b0694.svg);position:relative}.color-theme__button{align-items:center;background-color:initial;border:none;color:inherit;column-gap:.25rem;cursor:pointer;display:flex;font:inherit;margin:0;padding:0 .5rem}.color-theme__button:is(:hover,:focus,[aria-expanded=true]){background-color:var(--color-background-secondary)}@media (width <= 769px){.color-theme__button>span{display:none}}.color-theme__button:before{background-color:currentcolor;content:\"\";height:1.25rem;-webkit-mask-size:cover;mask-size:cover;width:1.25rem}.color-theme__button[data-mode=\"light dark\"]:before{-webkit-mask-image:var(--color-theme-light-dark);mask-image:var(--color-theme-light-dark)}.color-theme__button[data-mode=light]:befor",
+      "tags": [
+        "dns",
+        "domain-name",
+        "web"
+      ],
+      "source_id": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_domain_name",
+      "source_label": "What is a Domain Name? - Learn web development | MDN",
+      "source_uri": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_domain_name",
+      "source_type": "internet"
+    }
+  ]
+}

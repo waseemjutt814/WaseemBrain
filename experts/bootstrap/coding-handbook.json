@@ -1,0 +1,67 @@
+{
+  "dataset_id": "coding-handbook",
+  "name": "Coding Handbook",
+  "version": "2026.03",
+  "cards": [
+    {
+      "id": "python-functions",
+      "title": "Python Functions",
+      "tags": ["python", "functions"],
+      "content": "A Python function packages reusable logic behind a name created with def. Parameters receive input values, return sends a result back to the caller, and small focused functions are easier to test, reuse, and debug than one large block that mixes multiple responsibilities."
+    },
+    {
+      "id": "python-classes",
+      "title": "Python Classes",
+      "tags": ["python", "classes", "oop"],
+      "content": "A Python class is a blueprint for objects that combine data and behavior. Use __init__ to set up instance state, use methods for behavior tied to that state, and prefer classes when related data and operations naturally belong together instead of being passed around separately."
+    },
+    {
+      "id": "javascript-async-await",
+      "title": "JavaScript Async Await",
+      "tags": ["javascript", "async", "promises"],
+      "content": "Async and await are syntax around promises that make asynchronous JavaScript read more like sequential code. Await pauses inside an async function until the promise settles, try catch handles failures cleanly, and Promise.all is useful when independent tasks should run concurrently."
+    },
+    {
+      "id": "typescript-types-vs-interfaces",
+      "title": "TypeScript Types Versus Interfaces",
+      "tags": ["typescript", "types", "interfaces"],
+      "content": "In TypeScript, both type aliases and interfaces describe shapes of data. Interfaces are often convenient for object contracts and extension with implements or declaration merging, while type aliases are flexible for unions, intersections, tuples, primitives, and mapped compositions."
+    },
+    {
+      "id": "rust-ownership",
+      "title": "Rust Ownership",
+      "tags": ["rust", "ownership", "borrowing"],
+      "content": "Rust ownership means each value has one owner at a time, and the value is dropped when the owner goes out of scope. Borrowing with references lets code use data without taking ownership, and the borrow checker prevents unsafe aliasing and dangling references at compile time."
+    },
+    {
+      "id": "git-branch-merge-rebase",
+      "title": "Git Branch Merge And Rebase",
+      "tags": ["git", "branch", "merge", "rebase"],
+      "content": "A Git branch is an independent line of work. Merge combines histories and preserves branch structure, while rebase rewrites commits onto a new base to produce a cleaner linear history, so rebase is great for local cleanup and merge is safer when shared history must stay intact."
+    },
+    {
+      "id": "sql-joins",
+      "title": "SQL Joins",
+      "tags": ["sql", "joins", "database"],
+      "content": "SQL joins combine rows from multiple tables using a related key. INNER JOIN keeps only matching rows, LEFT JOIN keeps all rows from the left table even when the right side is missing, and choosing the correct join controls both result correctness and performance."
+    },
+    {
+      "id": "debugging-stack-traces",
+      "title": "Debugging With Stack Traces",
+      "tags": ["debugging", "errors", "stack-trace"],
+      "content": "A stack trace shows the chain of function calls active when an error happened. Start at the first frame inside your codebase, identify the failing input or assumption, reproduce the issue with the smallest case you can, and then verify the fix with a focused regression test."
+    },
+    {
+      "id": "testing-pyramid",
+      "title": "Testing Strategy",
+      "tags": ["testing", "unit-test", "integration-test"],
+      "content": "A strong testing strategy uses many fast unit tests, a smaller set of integration tests, and a few end-to-end checks for the full path. Unit tests isolate logic, integration tests validate boundaries such as databases or APIs, and end-to-end tests confirm real user flows."
+    },
+    {
+      "id": "big-o",
+      "title": "Big O Complexity",
+      "tags": ["algorithms", "big-o", "performance"],
+      "content": "Big O describes how runtime or memory grows as input size grows. O(1) stays flat, O(log n) grows slowly, O(n) scales linearly, and O(n squared) becomes expensive quickly, so understanding complexity helps you choose data structures and spot bottlenecks early."
+    }
+  ]
+}

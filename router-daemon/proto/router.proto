@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package router;
+
+service RouterService {
+  rpc Decide (RouterRequest) returns (RouterDecision);
+}
+
+service ExpertService {
+  rpc MapExpert (MapRequest) returns (MapResponse);
+  rpc EvictExpert (EvictRequest) returns (EvictResponse);
+}
+
+message RouterRequest {
+  string text = 1;
+  string modality = 2;
+  string session_id = 3;
+  float emotion_valence = 4;
+  float emotion_arousal = 5;
+  string emotion_primary = 6;
+}
+
+message RouterDecision {
+  repeated string expert_ids = 1;
+  bool check_memory_first = 2;
+  bool internet_needed = 3;
+  float confidence = 4;
+  string reasoning_trace = 5;
+  float latency_ms = 6;
+}
+
+message MapRequest {
+  string expert_id = 1;
+  string file_path = 2;
+}
+
+message MapResponse {
+  bool mapped = 1;
+  uint32 mapped_count = 2;
+}
+
+message EvictRequest {
+  string expert_id = 1;
+}
+
+message EvictResponse {
+  bool evicted = 1;
+  uint32 mapped_count = 2;
+}

@@ -1,0 +1,5 @@
+{
+  "kind": "repo-code",
+  "strategy": "workspace-search",
+  "exclude_dirs": [".git", "node_modules", "dist", "target", "tmp", "data"]
+}

@@ -1,0 +1,298 @@
+
+Industrial Hardening Plan for Lattice Brain
+Summary
+Rebuild the repo into a real local AI stack for CPU-only, 8-16 GB RAM, Windows + Linux, with ultra-fast text serving and no runtime placeholders. The implementation order will be: remove fake/demo paths, replace persistence and routing with real low-RAM components, convert experts into real grounded executors, fix interface/bridge concurrency and multimodal APIs, then update repo skills and validation so the project cannot regress back into stub/demo behavior.
+
+Implementation Changes
+Lock runtime into strict real mode
+Remove production-path stubs and placeholder behaviors from runtime code: stub gateway bootstrap, static keyword router fallback, echo-style expert fallback, tiny-onnx expert generation, and fake learning artifacts.
+Keep test doubles only inside tests/; runtime startup must fail fast if required expert/router/index assets are missing or invalid.
+Split dependencies into runtime, training, and dev groups. Runtime keeps only low-RAM serving deps; heavy trainer/export deps move out of default boot/install.
+Add a repo guard that fails CI if runtime source references demo/stub modes, or if checked-in production expert/router artifacts are obviously placeholder-sized or placeholder-typed.
+Replace fake memory backends with a real low-RAM memory engine
+Replace JSON-vector fallback and XML/GraphML rewrite backends with a single real memory stack: SQLite metadata + session graph edges + HNSW vector index.
+Use all-MiniLM-L6-v2 as the default embedding model, exported/served through ONNX Runtime with CPU-friendly quantized weights.
+Store node metadata, provenance, session links, access stats, and graph edges in SQLite; store vectors in the HNSW index and enough metadata for rescoring.
+Remove hardcoded recall values; honor settings-driven limits and thresholds everywhere.
+Stop storing uncited generated answers as high-confidence recallable truth. Memory nodes must carry provenance and source category; recalled answers must be evidence-backed.
+Replace keyword routing and fake experts with real grounded executors
+Replace the Rust router heuristic with a trained hashed TF-IDF + logistic regression router. Training data lives in versioned curated JSONL files; training/export happens in Python; Rust loads a compact weights artifact and performs real scoring at runtime.
+Keep the current expert IDs but change their implementation from fake ONNX echo files to real executors:
+language-en: evidence-backed answer composer over memory and optional web evidence.
+code-general: workspace-aware code retrieval over repo files plus snippet-cited answer synthesis.
+geography: offline dataset-backed exact lookup using a permissively licensed static country/capital dataset.
+Change expert loading from “every expert is an ONNX file” to “expert is a typed executor with optional artifacts/indexes”. Remove full-file byte copying and use bounded async execution with LRU eviction.
+If an expert cannot answer, return an explicit unsupported/error result; never echo user input as an answer.
+Fix the serving surface and bridge
+Keep existing POST /query working as a text alias for backward compatibility.
+Add real staged-compatible HTTP endpoints:
+POST /query/text with JSON body.
+POST /query/url with JSON body.
+POST /query/file with multipart upload.
+POST /query/voice with multipart upload for WAV/PCM.
+Keep WebSocket streaming for text and url first-class in this pass; do not add WS binary uploads until HTTP multimodal paths are stable.
+Replace the Python bridge single-flight loop with concurrent request task handling, cancellation, backpressure, and independent health/metadata requests.
+Extend health/reporting so the server exposes component readiness, loaded models/indexes, resolved backends, and per-subsystem latency/error counters.
+Make internet and learning real
+Keep internet retrieval as local-memory-first and optional enrichment only.
+Replace blocking search/rate-limit behavior with async-safe throttling and bounded fetch concurrency.
+Keep feedback collection and scoring, but remove fake auto-correction output generation from runtime. “Learning” in this pass means real logging, scoring, and offline job preparation only.
+Disable any correction/export path that cannot produce a real trained artifact yet.
+Update repo skills to match the real architecture
+Keep existing project skills but rewrite them around the hardened architecture and no-placeholder rules.
+Add missing project skills for router-daemon, interface-bridge, and quality-gates.
+Update scripts/sync_codex_skills.py so generated skills reflect the real subsystem order and current acceptance rules, not the earlier greenfield/demo framing.
+Keep SKILL bodies short, move detailed architecture and checklists into references/, and extend skill validation so generated skills must include anti-placeholder policy, real runtime expectations, and current subsystem references.
+Update create_expert.py so it creates real expert manifests/artifact bundles only; it must never generate demo ONNX placeholders again.
+Important API / Type / Contract Changes
+QueryRequest becomes a discriminated union by modality; the current text request shape remains supported as a compatibility alias.
+ExpertMeta gains typed execution fields such as kind, artifacts, capabilities, and load_strategy; expert definitions are no longer “file-only ONNX entries”.
+ExpertOutput gains evidence/citation fields so assembled answers are grounded.
+MemoryNode gains provenance/source-reference metadata and cannot be treated as trusted recall without backing evidence.
+Router artifact format changes from placeholder ONNX pathing to a real trained weights artifact consumed by Rust.
+Health responses expand to include readiness and backend/model/index status, not just counts.
+Test Plan
+Startup fails if required router/expert/index assets are missing; no runtime stub path remains.
+Router training/export produces a real artifact and Rust inference passes curated holdout tests without keyword shortcuts.
+Warm text-query target is <= 1s for simple queries and cold text-serving startup target is <= 2s on the selected CPU profile; p95 regression tests run in CI-friendly benchmarks.
+Concurrent query, health, memory, and experts calls do not block each other through the bridge.
+text, url, file, and voice HTTP routes work end-to-end with real adapters; voice uses Whisper base.en int8 via faster-whisper.
+Memory persistence/retrieval remains correct under load, does not rewrite full state per mutation, and respects session/provenance rules.
+Expert responses include evidence; unsupported queries fail explicitly instead of returning echoed input.
+Internet module rate limiting does not block the event loop and respects allowlist/freshness rules.
+Skills sync and validation fail if source/generated skill content drifts or if placeholder/demo guidance reappears.
+Full validation runs on Windows and Linux across Python, TypeScript, and Rust.
+Assumptions and Defaults
+Runtime target is CPU-only, 8-16 GB RAM, Windows + Linux, permissive-license components only.
+Architecture is retrieval + small real experts, not a large central local LLM.
+Internet remains optional and off the critical path for most queries.
+Learning remains feedback/logging only until a real trainer/export pipeline is ready.
+Deterministic heuristics are allowed only when they are the intended real algorithm; fake/demo/stub behavior is not allowed anywhere in runtime code or production assets.
+Expand plan
+Implement plan
+
+
+Worked for 49m 15s
+Runtime ab real-mode pe locked hai. Memory stack ab graph.py, sqlite_store.py, aur vector_store.py me SQLite + session edges + HNSW par chal raha hai; JSON/GraphML fallback aur dead config knobs hata diye gaye. Experts ab manifest-driven hain in expert.py aur registry.json; router artifact pipeline model.py, trainer.py, train_router.py, aur Rust daemon router.rs me real scoring ke saath wired hai.
+
+Serving surface bhi harden ho gayi: staged routes aur multimodal contracts query.ts, types.ts, aur concurrent bridge coordinator_bridge.py me implement hain. Quality side par dependency split requirements-runtime.txt, requirements-training.txt, placeholder guard guard_no_placeholders.py, aur rewritten skill sync/validation sync_codex_skills.py, validate_codex_skills.py, component-09-quality-gates.md me aa gaye. CI bhi guard run karta hai in ci.yml.
+
+Verified clean: 45 Python tests pass, ruff pass, mypy pass, skill sync/validate pass, placeholder guard pass, npm run build pass, npm test pass, aur Rust tests pass. Ek honest gap reh gaya hai: repo abhi checked-in all-MiniLM-L6-v2 ONNX embedding artifact ship nahi karta, is liye memory stack real hai lekin embedding backend configured artifact/deps ke mutabiq resolve hota hai, not a bundled MiniLM ONNX file yet.
+
+
+77 files changed
++3089
+-2491
+Undo
+
+Review
+.github/workflows/ci.yml
+brain/config.py
+brain/coordinator.py
+brain/experts/assembler.py
+brain/experts/expert.py
+brain/experts/pool.py
+brain/experts/registry.py
+brain/experts/types.py
+brain/internet/module.py
+brain/internet/search.py
+brain/internet/types.py
+brain/learning/corrector.py
+brain/memory/__init__.py
+brain/memory/graph.py
+brain/memory/graph_store.py
+brain/memory/sqlite_store.py
+brain/memory/vector_store.py
+brain/router/__init__.py
+brain/router/client.py
+brain/router/exporter.py
+brain/router/labeler.py
+brain/router/model.py
+brain/router/trainer.py
+brain/runtime.py
+brain/types.py
+data/router/training.jsonl
+experts/base/code-general.json
+experts/base/code-general.onnx
+experts/base/code-general/manifest.json
+experts/base/geography.json
+experts/base/geography.onnx
+experts/base/geography/countries.json
+experts/base/geography/manifest.json
+experts/base/language-en.json
+experts/base/language-en.onnx
+experts/base/language-en/manifest.json
+experts/registry.json
+experts/router.onnx
+interface/src/python_gateway.ts
+interface/src/routes/query.ts
+interface/src/server.ts
+interface/src/types.ts
+interface/src/ws/handler.ts
+requirements-runtime.txt
+requirements-training.txt
+requirements.txt
+router-daemon/Cargo.toml
+router-daemon/src/main.rs
+router-daemon/src/router.rs
+scripts/coordinator_bridge.py
+scripts/create_expert.py
+scripts/diagnose_backends.py
+scripts/guard_no_placeholders.py
+scripts/label_data.py
+scripts/sync_codex_skills.py
+scripts/train_router.py
+scripts/validate_codex_skills.py
+skills/README.md
+skills/component-01-shared-types.md
+skills/component-02-input-normalizer.md
+skills/component-03-emotion-encoder.md
+skills/component-04-memory-graph.md
+skills/component-05-micro-expert-pool.md
+skills/component-06-internet-module.md
+skills/component-07-router-daemon.md
+skills/component-08-interface-bridge.md
+skills/component-09-quality-gates.md
+tests/python/support.py
+tests/python/test_components.py
+tests/python/test_quality_gates.py
+tests/python/test_router_grpc.py
+tests/python/test_runtime_integrations.py
+tests/python/test_runtime_service.py
+tests/python/test_skill_sync.py
+tests/typescript/python_gateway.test.ts
+tests/typescript/server.test.ts
+tests/typescript/ws.test.ts
+recheck all and fix all issues
+
+
+
+Worked for 4m 17s
+Recheck ke baad do real repo issues mile aur fix kar diye: diagnose_backends.py purane local SQLite data par toot raha tha, ab isolated temp probe storage use karta hai; aur README.md me purani stub/demo/tiny-onnx instructions thi, ab current hardened architecture ke hisab se rewrite ho chuki hain. Rust test helper me stub expert wording bhi clean kar di in expert_loader.rs.
+
+Ab repo clean verify hua hai: pytest 45/45 pass, ruff pass, mypy pass, compileall pass, skill sync/validate pass, placeholder guard pass, npm run build pass, npm test pass, aur Rust tests pass. diagnose_backends.py bhi ab run ho raha hai; usne sirf environment-level cheezen dikhayi hain, code bugs nahi: local Rust router daemon 127.0.0.1:50051 par run nahi ho raha, aur current environment me faster_whisper / duckduckgo_search available nahi the.
+
+Codebase side se abhi mujhe koi open repo issue nahi mil raha. Agar chaho to next pass me main environment ko bhi production-ready kar deta hoon: router daemon launch wiring, voice deps install, aur internet retrieval deps verify.
+
+
+3 files changed
++170
+-147
+Undo
+
+Review
+README.md
+router-daemon/src/expert_loader.rs
+scripts/diagnose_backends.py
+ok all fix karo
+
+
+
+Worked for 12m 21s
+Remaining gaps bhi fix kar diye. faster-whisper aur duckduckgo-search install kar diye, manage_router_daemon.py add kiya for real start|stop|status, diagnose_backends.py ko router-daemon hint aur isolated probing ke saath tighten kiya, aur README.md ko current hardened workflow ke hisab se update kar diya.
+
+Router daemon ab live chal raha hai on 127.0.0.1:50051 with PID 13564. Status aur diagnostics clean hain, aur full verification bhi green hai: pytest 45/45, ruff, placeholder guard, npm test, aur Rust tests all pass. Stop karna ho to python scripts/manage_router_daemon.py stop chala do.
+
+
+3 files changed
++199
+-0
+Undo
+
+Review
+README.md
+scripts/diagnose_backends.py
+scripts/manage_router_daemon.py
+aik run .bat aur aik md mein complete stucture aur detailes
+
+
+
+Worked for 2m 58s
+run.bat aur detailed markdown dono bana diye hain.
+
+Files:
+
+run.bat
+COMPLETE_STRUCTURE_AND_DETAILS.md
+run.bat commands:
+
+run.bat dev
+run.bat build
+run.bat test
+run.bat doctor
+run.bat router-start
+run.bat router-stop
+run.bat router-status
+run.bat skills
+Markdown file me complete project map diya hai:
+
+top-level structure
+brain/, interface/, router-daemon/, experts/, scripts/, tests/, skills/
+runtime flow
+important files
+ports, logs, assets, commands, dependency groups
+Quick verify bhi kar li:
+
+run.bat help works
+run.bat router-status works
+router daemon abhi running hai on 50051
+Use:
+
+start app: run.bat dev
+open full details: COMPLETE_STRUCTURE_AND_DETAILS.md
+
+2 files changed
++483
+-0
+Undo
+
+Review
+COMPLETE_STRUCTURE_AND_DETAILS.md
+run.bat
+yar mujhy rhora dout he ye btao k ye banaya kya he tum ne
+
+
+Ye maine ek simple chatbot nahi banaya, balki poora local AI stack banaya aur harden kiya hai.
+
+Seedhi zuban me:
+yeh system user ki query leta hai, usko samajhta hai, decide karta hai kis expert ko deni hai, memory me relevant cheez dhoondta hai, zarurat ho to internet evidence laata hai, aur phir grounded answer banata hai.
+
+Iske main parts ye hain:
+
+API/server layer: server.ts
+Python main runtime: runtime.py
+Request coordinator: coordinator.py
+Memory engine: graph.py, sqlite_store.py, vector_store.py
+Experts system: expert.py, registry.json
+Router system: model.py, router.json, main.rs
+TS <-> Python bridge: python_gateway.ts, coordinator_bridge.py
+Quality/anti-fake guards: guard_no_placeholders.py
+Run helper: run.bat
+Full structure doc: COMPLETE_STRUCTURE_AND_DETAILS.md
+Abhi system karta kya hai:
+
+text, url, file, voice request accept karta hai
+query ko route karta hai
+memory me relevant cheez recall karta hai
+grounded experts run karta hai
+cited/grounded response banata hai
+health, experts, memory recall APIs expose karta hai
+Rust router daemon optional gRPC mode me use kar sakta hai
+Experts abhi kis type ke hain:
+
+language-en: evidence-backed response composer
+code-general: repo/code search expert
+geography: offline country/capital dataset expert
+Important baat:
+yeh “fake demo AI” nahi hai.
+Maine placeholder gateway, fake expert echo behavior, demo ONNX path, aur dead stub logic hata di hai.
+
+Lekin yeh kya nahi hai:
+yeh abhi koi huge all-in-one local LLM package nahi hai jo har cheez apne dimagh se kare.
+Iska design zyada router + memory + small grounded experts wala hai, taa ke low-RAM pe fast chale.
+
+Agar chaho, next message me main tumhe ek real query ka end-to-end flow simple diagram jese samjha deta hoon:
+user query -> API -> bridge -> router -> memory -> expert -> final answer
+
+
+

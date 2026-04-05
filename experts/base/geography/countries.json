@@ -1,0 +1,14 @@
+[
+  { "country": "France", "capital": "Paris", "region": "Europe" },
+  { "country": "Germany", "capital": "Berlin", "region": "Europe" },
+  { "country": "Italy", "capital": "Rome", "region": "Europe" },
+  { "country": "Spain", "capital": "Madrid", "region": "Europe" },
+  { "country": "Pakistan", "capital": "Islamabad", "region": "Asia" },
+  { "country": "India", "capital": "New Delhi", "region": "Asia" },
+  { "country": "China", "capital": "Beijing", "region": "Asia" },
+  { "country": "Japan", "capital": "Tokyo", "region": "Asia" },
+  { "country": "United States", "capital": "Washington, D.C.", "region": "North America" },
+  { "country": "Canada", "capital": "Ottawa", "region": "North America" },
+  { "country": "Brazil", "capital": "Brasilia", "region": "South America" },
+  { "country": "Australia", "capital": "Canberra", "region": "Oceania" }
+]

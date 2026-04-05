@@ -1,0 +1,168 @@
+{
+  "datasets": [
+    {
+      "id": "official-coding-docs",
+      "name": "Official Coding Docs",
+      "version": "2026.03",
+      "sources": [
+        {
+          "kind": "url",
+          "title": "Python Documentation",
+          "url": "https://docs.python.org/3/",
+          "tags": ["python", "official", "documentation"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "TypeScript Handbook",
+          "url": "https://www.typescriptlang.org/docs/handbook/intro.html",
+          "tags": ["typescript", "official", "documentation"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "Rust Ownership Chapter",
+          "url": "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "tags": ["rust", "ownership", "official"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "MDN HTTP Overview",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview",
+          "tags": ["http", "mdn", "web"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "SQLite About",
+          "url": "https://www.sqlite.org/about.html",
+          "tags": ["sqlite", "database", "official"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "Git Tutorial",
+          "url": "https://git-scm.com/docs/gittutorial",
+          "tags": ["git", "version-control", "official"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "GNU Bash Manual",
+          "url": "https://www.gnu.org/software/bash/manual/bash.html",
+          "tags": ["bash", "shell", "official"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "Scikit Learn Supervised Learning",
+          "url": "https://scikit-learn.org/stable/supervised_learning.html",
+          "tags": ["machine-learning", "scikit-learn", "official"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "MDN Domain Name Basics",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_domain_name",
+          "tags": ["dns", "domain-name", "web"],
+          "max_chunks": 2,
+          "max_chars": 900
+        }
+      ]
+    },
+    {
+      "id": "science-and-earth-docs",
+      "name": "Science And Earth Docs",
+      "version": "2026.03",
+      "sources": [
+        {
+          "kind": "url",
+          "title": "NASA Solar System Exploration",
+          "url": "https://science.nasa.gov/solar-system/",
+          "tags": ["space", "science", "nasa"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "NASA About The Planets",
+          "url": "https://science.nasa.gov/solar-system/planets/",
+          "tags": ["planets", "space", "nasa"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "url",
+          "title": "NOAA Climate Data Primer",
+          "url": "https://www.climate.gov/maps-data/climate-data-primer",
+          "tags": ["climate", "noaa", "earth"],
+          "max_chunks": 2,
+          "max_chars": 900
+        }
+      ]
+    },
+    {
+      "id": "repo-guides",
+      "name": "Repo Guides",
+      "version": "2026.03",
+      "sources": [
+        {
+          "kind": "file",
+          "title": "Project README",
+          "path": "README.md",
+          "tags": ["repo", "readme", "project"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "file",
+          "title": "Complete Structure And Details",
+          "path": "COMPLETE_STRUCTURE_AND_DETAILS.md",
+          "tags": ["repo", "architecture", "guide"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "file",
+          "title": "Architecture Overview",
+          "path": "02_ARCHITECTURE_OVERVIEW.md",
+          "tags": ["repo", "architecture", "runtime"],
+          "max_chunks": 2,
+          "max_chars": 900
+        },
+        {
+          "kind": "file",
+          "title": "Components Deep Dive",
+          "path": "03_COMPONENTS_DEEP_DIVE.md",
+          "tags": ["repo", "components", "deep-dive"],
+          "max_chunks": 2,
+          "max_chars": 900
+        }
+      ]
+    },
+    {
+      "id": "urdu-tech-dictionary",
+      "name": "Urdu Technical Dictionary",
+      "version": "2026.03",
+      "sources": [
+        {
+          "kind": "file",
+          "title": "Roman Urdu Tech Rules",
+          "path": "data/urdu_tech_dictionary.md",
+          "tags": ["urdu", "tech", "dictionary", "roman-urdu"],
+          "max_chunks": 5,
+          "max_chars": 1500
+        }
+      ]
+    }
+  ]
+}

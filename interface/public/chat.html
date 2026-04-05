@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lattice Brain AI | Premium Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <div id="app-container">
+    <header>
+      <h1>Lattice Brain AI</h1>
+      <div id="status">Connecting...</div>
+    </header>
+    
+    <main id="chat">
+      <div class="msg bot">
+        <div class="msg-meta">System</div>
+        Welcome to Lattice Brain. How can I assist you with your project today?
+      </div>
+    </main>
+
+    <footer>
+      <form id="form">
+        <input type="text" id="input" placeholder="Type your message here..." autocomplete="off" />
+        <button type="submit" id="send">Send</button>
+      </form>
+    </footer>
+  </div>
+
+  <script>
+    const chatEl = document.getElementById('chat');
+    const statusEl = document.getElementById('status');
+    const formEl = document.getElementById('form');
+    const inputEl = document.getElementById('input');
+    const sendEl = document.getElementById('send');
+
+    const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
+    let ws = null;
+    let currentBotMsg = null;
+
+    function addMessage(text, type = 'bot', isStreaming = false) {
+      const el = document.createElement('div');
+      el.className = `msg ${type}`;
+      
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      meta.textContent = type === 'user' ? 'You' : 'Brain';
+      el.appendChild(meta);
+
+      const content = document.createElement('div');
+      content.className = 'msg-content';
+      content.textContent = text;
+      el.appendChild(content);
+
+      if (isStreaming) {
+        const dots = document.createElement('div');
+        dots.className = 'typing-dots';
+        dots.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+        el.appendChild(dots);
+      }
+
+      chatEl.appendChild(el);
+      chatEl.scrollTop = chatEl.scrollHeight;
+      return el;
+    }
+
+    function connect() {
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${location.host}/ws`;
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        statusEl.textContent = 'Connected';
+        statusEl.classList.add('connected');
+      };
+
+      ws.onclose = () => {
+        statusEl.textContent = 'Disconnected - reconnecting...';
+        statusEl.classList.remove('connected');
+        setTimeout(connect, 2000);
+      };
+
+      ws.onerror = () => {
+        statusEl.textContent = 'Connection error';
+        statusEl.classList.remove('connected');
+      };
+
+      ws.onmessage = (event) => {
+        let data;
+        try { data = JSON.parse(event.data); } catch { return; }
+
+        if (data.type === 'error') {
+          if (currentBotMsg) currentBotMsg.remove();
+          addMessage(data.content, 'bot error');
+          currentBotMsg = null;
+          sendEl.disabled = false;
+          return;
+        }
+
+        if (data.type === 'token') {
+          if (!currentBotMsg) {
+             currentBotMsg = addMessage('', 'bot');
+          }
+          const contentEl = currentBotMsg.querySelector('.msg-content');
+          contentEl.textContent += data.content;
+          chatEl.scrollTop = chatEl.scrollHeight;
+        }
+
+        if (data.type === 'done') {
+          currentBotMsg = null;
+          sendEl.disabled = false;
+        }
+      };
+    }
+
+    formEl.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = inputEl.value.trim();
+      if (!text || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+      addMessage(text, 'user');
+      inputEl.value = '';
+      sendEl.disabled = true;
+
+      ws.send(JSON.stringify({ modality: "text", input: text, session_id: sessionId }));
+    });
+
+    inputEl.focus();
+    connect();
+  </script>
+</body>
+</html>

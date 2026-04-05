@@ -1,0 +1,73 @@
+{
+  "dataset_id": "general-knowledge",
+  "name": "General Knowledge",
+  "version": "2026.03",
+  "cards": [
+    {
+      "id": "hello-entrypoint",
+      "title": "Hello Hi Hey Salam Entry Point",
+      "tags": ["greeting", "hello", "assistant"],
+      "content": "Hello, hi, hey, salam. If you greet Waseem Brain, the useful response is a short welcome plus what it can do: explain concepts, help with coding, inspect the repo, plan work, recall grounded memory, and answer built-in knowledge questions."
+    },
+    {
+      "id": "greeting",
+      "title": "Greeting And How To Use Waseem Brain",
+      "tags": ["greeting", "assistant", "usage"],
+      "content": "Hello. Waseem Brain is most useful when you give a direct question, a coding problem, a file name, an error message, or a topic you want explained. It can answer from built-in knowledge, recall grounded memory, inspect the current repository, and keep a trace of real sessions for later learning."
+    },
+    {
+      "id": "capabilities",
+      "title": "Core Capabilities",
+      "tags": ["assistant", "capabilities", "overview"],
+      "content": "Waseem Brain can help with chat, coding explanations, repo-grounded debugging, planning, memory recall, and offline factual answers that exist in its checked-in datasets. It works best on specific prompts such as fix this error, explain this concept, compare two approaches, or inspect a file or function."
+    },
+    {
+      "id": "self-learning",
+      "title": "What Self Learning Means Here",
+      "tags": ["learning", "memory", "runtime"],
+      "content": "Self learning in this project means three real things: grounded answers are stored in memory for later recall, real turn traces are written to disk, and the response policy can be retrained from those traces after enough sessions exist. It does not magically invent new facts; it improves from real usage signals and grounded history."
+    },
+    {
+      "id": "internet-vs-memory",
+      "title": "Internet Versus Memory",
+      "tags": ["internet", "memory", "grounding"],
+      "content": "Memory recall uses already stored grounded knowledge from the local runtime, while internet retrieval asks live external sources when the query needs fresh information. Memory is faster and stable for repeated topics, but internet is better for changing facts such as news, prices, schedules, or current events."
+    },
+    {
+      "id": "cpu-ram-storage",
+      "title": "CPU RAM And Storage",
+      "tags": ["hardware", "computer-basics"],
+      "content": "The CPU executes instructions, RAM holds data that active programs need right now, and storage keeps data for the long term. A slow CPU hurts computation speed, low RAM causes swapping or crashes under load, and slow storage delays file access, model loading, and startup time."
+    },
+    {
+      "id": "files-and-folders",
+      "title": "Files And Folders",
+      "tags": ["filesystem", "basics"],
+      "content": "A file stores content such as code, text, images, or configuration, while a folder or directory organizes files into a tree. Paths identify where something lives, for example a relative path stays inside the project context and an absolute path points to one exact location on disk."
+    },
+    {
+      "id": "http-and-json",
+      "title": "HTTP And JSON",
+      "tags": ["web", "api", "json"],
+      "content": "HTTP is the request and response protocol used by browsers, servers, and APIs. JSON is a text format for structured data built from objects, arrays, strings, numbers, booleans, and null, so it is commonly used to send API payloads, config, and runtime messages."
+    },
+    {
+      "id": "databases",
+      "title": "What A Database Does",
+      "tags": ["database", "storage", "sql"],
+      "content": "A database stores and retrieves structured information efficiently. Relational databases organize data into tables and use queries, indexes, and joins, while vector stores support similarity search across embeddings for semantic recall and memory-style retrieval."
+    },
+    {
+      "id": "weather-vs-climate",
+      "title": "Weather Versus Climate",
+      "tags": ["science", "weather", "climate"],
+      "content": "Weather describes short-term atmospheric conditions such as temperature, rain, wind, or humidity over hours and days. Climate describes long-term patterns across many years, so one storm is weather while average seasonal behavior over decades is climate."
+    },
+    {
+      "id": "water-cycle",
+      "title": "The Water Cycle",
+      "tags": ["science", "water-cycle", "earth"],
+      "content": "The water cycle moves water through evaporation, condensation, precipitation, collection, and infiltration. Heat from the sun drives evaporation, clouds form through condensation, rain or snow returns water to Earth, and rivers, lakes, soil, and oceans feed the cycle again."
+    }
+  ]
+}

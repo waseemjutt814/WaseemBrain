@@ -1,0 +1,51 @@
+# Lattice Brain Stabilization Walkthrough
+
+This document outlines the bug fixes and verification steps taken to stabilize the Lattice Brain test suite and ensure production-readiness.
+
+## Issues Identified & Resolved
+
+### 1. Python Coordinator Clarification Bug
+**Symptom**: The unit test [test_coordinator_requests_clarification_for_ambiguous_follow_up](file:///d:/lattice-brain/tests/python/test_components.py#335-354) failed because the query `"fix it"` hit the `language-en` expert (which subsequently crashed looking for evidence) instead of returning a clarification prompt.
+
+**Root Cause**: 
+The `DialoguePlanner.build_plan` method correctly recognized `"fix it"` as highly ambiguous (`needs_clarification=True`, `confidence=0.5`). 
+However, the condition to actually enter the `clarify` mode path was evaluating to `False`:
+```python
+if (
+    state["needs_clarification"]
+    and state["confidence"] <= clarification_floor
+    and not has_memory_answer
+    and (router_confidence < 0.95 or not has_evidence)
+):
+```
+Because [support.py](file:///d:/lattice-brain/tests/python/support.py) seeded the test environment with an explicitly configured `response-policy.json` (which set the `clarification_confidence_floor` to `0.45`), the condition `0.5 <= 0.45` evaluated to `False`. The logic bypassed clarification entirely and continued blindly into expert routing.
+
+**Resolution**: 
+We updated the dialogue planner to properly penalize the internal confidence score if the query falls precisely into the `_AMBIGUOUS_QUERIES` set:
+```python
+if needs_clarification:
+    # Drop confidence heavily so it falls below the clarification floor (usually 0.45-0.55),
+    # even if it gained boosts from code/memory keywords.
+    confidence -= 0.40
+```
+This forces the confidence of inherently ambiguous, fragmented queries to `0.35`, correctly dropping it beneath the floor and routing to the clarification path.
+
+### 2. TypeScript Gateway 500 Error
+**Symptom**: The NodeJS e2e test ([python_gateway.test.ts](file:///d:/lattice-brain/tests/typescript/python_gateway.test.ts)) failed because the `/query` endpoint returned a 500 server error instead of a 200 response when streaming.
+
+**Root Cause**:
+The Node.js gateway relies on spawning a long-lived Python backend ([coordinator_bridge.py](file:///d:/lattice-brain/scripts/coordinator_bridge.py)) and passing JSON-RPC queries. When the Python backend attempted to process ambiguous system testing routes, the exact same unhandled routing edge case caused the engine to throw an unhandled [UnsupportedQueryError](file:///d:/lattice-brain/brain/experts/expert.py#45-47). Since the bridging script crashed/returned a traceback instead of yielded tokens, the Node.js Fastify server converted this into an HTTP 500 error.
+
+**Resolution**:
+Fixing the core [dialogue.py](file:///d:/lattice-brain/brain/dialogue.py) clarification confidence thresholds immediately resolved the upstream failures in the Node bridge. The TS integration tests now pass seamlessly.
+
+## Verification Checklist
+
+All project health metrics are green:
+- [x] **Python Core Validation**: `pytest tests/python` (59/59 passed)
+- [x] **TypeScript Interface Validation**: `npm run test` (9/9 passed)
+- [x] **Compile Checks**: `python -m py_compile` passed across all runtime Python files.
+- [x] **Demos / Placeholders Removed**: `python scripts/guard_no_placeholders.py` confirms no demo shortcuts re-entered the codebase.
+- [x] **End-to-End Chat CLI Test**: The [chat_cli.py](file:///d:/lattice-brain/scripts/chat_cli.py) executes smoothly with active SQLite storage and the offline router fallback functioning. 
+
+*Lattice Brain is now stable and fully ready.*

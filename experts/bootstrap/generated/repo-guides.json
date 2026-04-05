@@ -1,0 +1,119 @@
+{
+  "dataset_id": "repo-guides",
+  "name": "Repo Guides",
+  "version": "2026.03",
+  "cards": [
+    {
+      "id": "project-readme-1",
+      "title": "Project README Part 1",
+      "content": "<!-- internal-author: Muhammad Waseem Akram -->\n\nLattice Brain\n\nLattice Brain is a CPU-first local AI stack built around a Python runtime, a TypeScript Fastify interface, and an optional Rust router daemon. The current repo is designed for real execution: grounded experts, persistent memory, routeable input modalities, measurable traces, and quality gates that reject placeholder behavior.\n\nAuthor: Muhammad Waseem Akram",
+      "tags": [
+        "repo",
+        "readme",
+        "project"
+      ],
+      "source_id": "README.md",
+      "source_label": "README.md",
+      "source_uri": "workspace://README.md",
+      "source_type": "workspace"
+    },
+    {
+      "id": "project-readme-2",
+      "title": "Project README Part 2",
+      "content": "What The Repo Does Today Runs local chat and query flows through brain/ with normalization, emotion tagging, routing, memory recall, expert execution, and response assembly. Exposes HTTP and WebSocket entrypoints from interface/src/. Supports a real terminal chat flow through scripts/chat_cli.py. Stores memory in SQLite metadata plus an HNSW vector index under data/. Uses manifest-driven experts in experts/base/ and a trained router artifact in experts/router.json. Seeds checked-in built-in knowledge packs from experts/bootstrap/ so a fresh runtime is not empty. Builds additional generated knowledge packs from curated online sources declared in experts/knowledge-manifest.json. Records turn traces and automatically refreshes experts/response-policy.json after enough real traces exist.\n\nQuick Start\n\nInstall Python, Node, and repo dependencies:",
+      "tags": [
+        "repo",
+        "readme",
+        "project"
+      ],
+      "source_id": "README.md",
+      "source_label": "README.md",
+      "source_uri": "workspace://README.md",
+      "source_type": "workspace"
+    },
+    {
+      "id": "complete-structure-and-details-1",
+      "title": "Complete Structure And Details Part 1",
+      "content": "<!-- canonical-author-record: Muhammad Waseem Akram -->\n\nLattice Brain Complete Structure And Details\n\nThis is the canonical project reference for the current repository state. If another doc and this file disagree, trust this file first and then verify against the source tree.\n\nAuthor Of Record: Muhammad Waseem Akram\n\n1. Project Snapshot\n\nLattice Brain is a local, CPU-first AI stack with three main layers: Python runtime in brain/ for normalization, emotion, dialogue planning, routing, memory, internet retrieval, experts, and traces TypeScript Fastify interface in interface/src/ for HTTP and WebSocket access Optional Rust gRPC router daemon in router-daemon/ for local routing and expert mapping",
+      "tags": [
+        "repo",
+        "architecture",
+        "guide"
+      ],
+      "source_id": "COMPLETE_STRUCTURE_AND_DETAILS.md",
+      "source_label": "COMPLETE_STRUCTURE_AND_DETAILS.md",
+      "source_uri": "workspace://COMPLETE_STRUCTURE_AND_DETAILS.md",
+      "source_type": "workspace"
+    },
+    {
+      "id": "complete-structure-and-details-2",
+      "title": "Complete Structure And Details Part 2",
+      "content": "The repo is aimed at real execution, not demos: memory is persisted in SQLite plus an HNSW index experts are manifest-driven and grounded traces are collected for offline learning CLI chat prints real runtime metrics placeholder logic is guarded by tests and scripts\n\n2. Current Runtime Shape\n\nThe current checked-in runtime includes: language-en: grounded language and synthesis expert code-general: repo-grounded code expert geography: offline geography dataset expert experts/router.json: trained router artifact optional experts/response-policy.json: learned response-selection artifact when enough real traces exist\n\nThe main product surfaces are: CLI chat through scripts/chat_cli.py HTTP and WebSocket server through interface/src/server.ts Python bridge through scripts/coordinator_bridge.py router daemon lifecycle through scripts/manage_router_daemon.py\n\n3. Verified Commands",
+      "tags": [
+        "repo",
+        "architecture",
+        "guide"
+      ],
+      "source_id": "COMPLETE_STRUCTURE_AND_DETAILS.md",
+      "source_label": "COMPLETE_STRUCTURE_AND_DETAILS.md",
+      "source_uri": "workspace://COMPLETE_STRUCTURE_AND_DETAILS.md",
+      "source_type": "workspace"
+    },
+    {
+      "id": "architecture-overview-1",
+      "title": "Architecture Overview Part 1",
+      "content": "<!-- architecture-author: Muhammad Waseem Akram -->\n\n02 - Architecture Overview\n\nThis file describes the current runtime topology as it exists in the repo today.\n\nHigh-Level Shape\n\nMain Layers\n\nInterface Layer\n\nThe repo exposes two entry surfaces: Fastify server in interface/src/server.ts terminal chat in scripts/chat_cli.py\n\nBoth eventually call the same Python runtime.\n\nBridge Layer\n\nThe TypeScript server does not reimplement runtime logic. It delegates to: interface/src/python_gateway.ts scripts/coordinator_bridge.py\n\nThat bridge keeps transport and orchestration separated.\n\nRuntime Layer\n\nbrain/runtime.py owns runtime assembly: settings memory graph expert registry and pool router client internet module coordinator\n\nDecision Layer\n\nbrain/coordinator.py drives a request through:",
+      "tags": [
+        "repo",
+        "architecture",
+        "runtime"
+      ],
+      "source_id": "02_ARCHITECTURE_OVERVIEW.md",
+      "source_label": "02_ARCHITECTURE_OVERVIEW.md",
+      "source_uri": "workspace://02_ARCHITECTURE_OVERVIEW.md",
+      "source_type": "workspace"
+    },
+    {
+      "id": "architecture-overview-2",
+      "title": "Architecture Overview Part 2",
+      "content": "1. normalization 2. emotion encoding 3. routing 4. memory recall 5. optional internet retrieval 6. expert inference 7. response assembly 8. trace recording\n\nPersistence Layer\n\nState is stored locally through: SQLite metadata in data/sqlite/ HNSW vector index in data/chroma/ expert artifacts in experts/ temporary daemon state in tmp/\n\nRouting Modes\n\nThe router can operate in three modes: local artifact only gRPC daemon only hybrid auto mode with artifact fallback\n\nThat choice is controlled from brain/config.py.\n\nMemory Path\n\nThe current memory path is not just a vector lookup. It combines: FTS text search vector search neighbor expansion confidence, recency, and session-aware scoring relevance gating before a recalled memory is allowed to answer directly\n\nExpert Path",
+      "tags": [
+        "repo",
+        "architecture",
+        "runtime"
+      ],
+      "source_id": "02_ARCHITECTURE_OVERVIEW.md",
+      "source_label": "02_ARCHITECTURE_OVERVIEW.md",
+      "source_uri": "workspace://02_ARCHITECTURE_OVERVIEW.md",
+      "source_type": "workspace"
+    },
+    {
+      "id": "components-deep-dive-1",
+      "title": "Components Deep Dive Part 1",
+      "content": "<!-- components-author: Muhammad Waseem Akram -->\n\n03 - Components Deep Dive\n\nThis file is a practical module-by-module explanation of the current implementation.\n\nShared Contracts\n\nbrain/types.py defines the shared runtime contracts used across the repo. These types are the glue between normalization, routing, memory, experts, learning, and the public interfaces.\n\nInput Normalization\n\nThe normalization layer lives in brain/normalizer/ and currently supports: raw text URLs document bytes with filename hints voice bytes\n\nImportant current behavior: explicit modality_hint wins byte inputs with a non-empty filename hint use DocumentAdapter plain byte inputs without a file hint fall back to voice normalization\n\nEmotion Encoding\n\nThe emotion layer lives in brain/emotion/: text_encoder.py voice_encoder.py fusion.py",
+      "tags": [
+        "repo",
+        "components",
+        "deep-dive"
+      ],
+      "source_id": "03_COMPONENTS_DEEP_DIVE.md",
+      "source_label": "03_COMPONENTS_DEEP_DIVE.md",
+      "source_uri": "workspace://03_COMPONENTS_DEEP_DIVE.md",
+      "source_type": "workspace"
+    },
+    {
+      "id": "components-deep-dive-2",
+      "title": "Components Deep Dive Part 2",
+      "content": "This layer provides context for dialogue planning and response style selection. It is not just cosmetic tone shaping.\n\nDialogue Planning\n\nbrain/dialogue.py infers a bounded dialogue state: intent response style clarification need workspace relevance memory relevance confidence\n\nIt then builds a response plan such as: direct answer memory recall answer plan clarification request\n\nCoordinator\n\nbrain/coordinator.py is the core control loop. Key implementation details: memory recall can short-circuit expert execution recalled memory is filtered by relevance before reuse clarification responses are generated when the input is too ambiguous traces are recorded for every final response mode session traces can be flushed through the runtime for CLI reporting\n\nMemory",
+      "tags": [
+        "repo",
+        "components",
+        "deep-dive"
+      ],
+      "source_id": "03_COMPONENTS_DEEP_DIVE.md",
+      "source_label": "03_COMPONENTS_DEEP_DIVE.md",
+      "source_uri": "workspace://03_COMPONENTS_DEEP_DIVE.md",
+      "source_type": "workspace"
+    }
+  ]
+}

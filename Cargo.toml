@@ -1,0 +1,3 @@
+[workspace]
+members = ["router-daemon"]
+resolver = "2"

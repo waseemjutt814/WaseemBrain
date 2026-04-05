@@ -1,0 +1,44 @@
+[project]
+name = "lattice-brain"
+version = "0.1.0"
+description = "Sparse-activation local AI architecture with memory, experts, and controlled internet access."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+authors = [{ name = "Muhammad Waseem Akram" }]
+dependencies = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests/python"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["E402", "E501"]
+"tests/python/*.py" = ["E501"]
+"tests/python/test_router_grpc.py" = ["N802"]
+"brain/router/generated/*.py" = ["ALL"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+strict_equality = true
+pretty = true
+packages = ["brain"]
+
+[[tool.mypy.overrides]]
+module = ["grpc", "grpc.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["brain.router.generated.*"]
+ignore_errors = true

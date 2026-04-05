@@ -1,0 +1,58 @@
+[
+  {
+    "id": "language-en",
+    "name": "Language Expert",
+    "domains": ["language", "writing", "general"],
+    "kind": "grounded-language",
+    "artifact_root": "language-en",
+    "artifacts": [
+      {
+        "name": "manifest",
+        "path": "manifest.json",
+        "kind": "config"
+      }
+    ],
+    "capabilities": ["grounded-answering", "memory-synthesis", "internet-synthesis"],
+    "load_strategy": "lazy",
+    "description": "Evidence-backed answer synthesis over recalled and live sources."
+  },
+  {
+    "id": "code-general",
+    "name": "Code Expert",
+    "domains": ["code", "python", "typescript", "rust", "repo"],
+    "kind": "repo-code",
+    "artifact_root": "code-general",
+    "artifacts": [
+      {
+        "name": "manifest",
+        "path": "manifest.json",
+        "kind": "config"
+      }
+    ],
+    "capabilities": ["workspace-search", "snippet-citations", "repo-grounded-answering"],
+    "load_strategy": "lazy",
+    "description": "Repository-grounded code retrieval and cited answer synthesis."
+  },
+  {
+    "id": "geography",
+    "name": "Geography Expert",
+    "domains": ["geography", "countries", "maps", "capitals"],
+    "kind": "geography-dataset",
+    "artifact_root": "geography",
+    "artifacts": [
+      {
+        "name": "manifest",
+        "path": "manifest.json",
+        "kind": "config"
+      },
+      {
+        "name": "countries",
+        "path": "countries.json",
+        "kind": "dataset"
+      }
+    ],
+    "capabilities": ["offline-country-lookup", "capital-lookup"],
+    "load_strategy": "lazy",
+    "description": "Offline geography answers backed by a checked-in static dataset."
+  }
+]

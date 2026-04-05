@@ -1,0 +1,31 @@
+{
+  "name": "lattice-brain",
+  "version": "0.1.0",
+  "author": "Muhammad Waseem Akram",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx interface/src/server.ts",
+    "start": "node dist/interface/src/server.js",
+    "test": "tsx --test tests/typescript/*.test.ts"
+  },
+  "dependencies": {
+    "@fastify/multipart": "^9.4.0",
+    "@fastify/static": "^9.0.0",
+    "@fastify/websocket": "^11.2.0",
+    "fastify": "^5.8.4",
+    "node-record-lpcm16": "^1.0.1",
+    "ws": "^8.20.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.15",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
