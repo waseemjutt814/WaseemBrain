@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "clarification_confidence_floor": 0.25,
+  "clarification_confidence_floor": 0.45,
   "intent_mode_bias": {
     "code": {
       "answer": 1.235,
@@ -13,11 +13,8 @@
     "follow_up": {
       "memory-recall": 0.925
     },
-    "general": {
-      "clarify": -0.165
-    },
     "greeting": {
-      "memory-recall": 0.925,
+      "memory-recall": 0.962,
       "unsupported": -0.4
     },
     "planning": {
@@ -46,14 +43,9 @@
         "memory": 0.925
       }
     },
-    "general": {
-      "clarify": {
-        "clarify": -0.165
-      }
-    },
     "greeting": {
       "memory-recall": {
-        "memory": 0.925
+        "memory": 0.962
       },
       "unsupported": {
         "unsupported": -0.4
@@ -78,15 +70,15 @@
       "length_tolerance_tokens": 48
     },
     "memory-recall": {
-      "citation_weight": 0.0,
-      "next_step_weight": 0.0,
-      "confidence_weight": 0.0,
-      "entity_match_weight": 0.0,
-      "length_weight": 0.0,
-      "query_coverage_weight": 0.0,
-      "symbol_anchor_weight": 0.0,
-      "target_length_tokens": 67,
-      "length_tolerance_tokens": 23
+      "citation_weight": 0.35,
+      "next_step_weight": 0.0553,
+      "confidence_weight": -0.0,
+      "entity_match_weight": -0.0292,
+      "length_weight": -0.1274,
+      "query_coverage_weight": -0.1179,
+      "symbol_anchor_weight": -0.0292,
+      "target_length_tokens": 75,
+      "length_tolerance_tokens": 29
     },
     "unsupported": {
       "citation_weight": 0.0,
@@ -107,9 +99,6 @@
     "greeting",
     "planning"
   ],
-  "supportive_intents": [
-    "general",
-    "greeting"
-  ],
-  "trained_trace_count": 18
+  "supportive_intents": [],
+  "trained_trace_count": 19
 }
