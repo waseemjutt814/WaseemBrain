@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from brain.learning.policy import load_response_policy
-from brain.runtime import LatticeBrainRuntime
+from brain.runtime import WaseemBrainRuntime
 from brain.types import SessionId
 from tests.python.support import make_settings, seed_experts
 
@@ -44,7 +44,7 @@ class BootstrapAndLearningRuntimeTestCase(unittest.IsolatedAsyncioTestCase):
                 encoding="utf-8",
             )
 
-            runtime = LatticeBrainRuntime(settings=settings)
+            runtime = WaseemBrainRuntime(settings=settings)
             try:
                 health = runtime.health()
                 self.assertEqual(health["knowledge"]["datasets"], 1)
@@ -64,7 +64,7 @@ class BootstrapAndLearningRuntimeTestCase(unittest.IsolatedAsyncioTestCase):
             settings = make_settings(Path(temp_dir))
             settings = settings.__class__(**{**settings.__dict__, "internet_enabled": False})
             seed_experts(settings)
-            runtime = LatticeBrainRuntime(settings=settings)
+            runtime = WaseemBrainRuntime(settings=settings)
             try:
                 for index, query in enumerate(
                     [

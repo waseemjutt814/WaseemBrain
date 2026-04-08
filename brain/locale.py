@@ -4,23 +4,26 @@ import re
 
 # High-frequency Roman Urdu/Hindi stop words and verbs
 _URDU_KEYWORDS = {
-    "hai", "hain", "ho", "tha", "thi", "thay", "hoon",
-    "kya", "kiya", "kyu", "kyun", "kaise", "kese", "kab", "kahan", "kab", "konsa",
+    "hai", "hain", "ho", "tha", "thi", "thay", "hoon", "hon",
+    "kya", "kiya", "kyu", "kyun", "kaise", "kese", "kab", "kahan", "konsa", "kaun",
     "main", "mera", "meri", "mere", "mujhe", "hum", "hamara", "hamari", "humein",
     "tum", "tumhara", "tumhari", "tumhare", "aap", "aapka", "aapki", "aapke",
-    "karo", "karein", "karain", "kar", "diya", "dena", "do", "karna", "kardo",
-    "bhai", "yar", "yaara", "yaaro", "dost", "sir", "janab",
-    "batao", "suno", "dekho", "samjhao", "likho", "dekhao", "dikhao",
-    "bohat", "bhut", "zyada", "ziyada", "kam", "thora",
-    "nahi", "koi", "kuch", "sab", "sirf", "bhi", "tou", "to",
-    "aur", "ya", "magar", "lekin", "par",
-    "jese", "jaise", "wese", "waise",
-    "bat", "baat", "awaz", "jawab", "sawal",
+    "karo", "karein", "karain", "kar", "diya", "dena", "do", "karna", "kardo", "karke",
+    "bhai", "yar", "yaara", "yaaro", "dost", "sir", "janab", "bhaijaan",
+    "batao", "suno", "dekho", "samjhao", "likho", "dekhao", "dikhao", "bol",
+    "bohat", "bhut", "zyada", "ziyada", "kam", "thora", "bahut",
+    "nahi", "koi", "kuch", "sab", "sirf", "bhi", "tou", "to", "na",
+    "aur", "ya", "magar", "lekin", "par", "phir", "fir",
+    "jese", "jaise", "wese", "waise", "itna", "utna",
+    "bat", "baat", "awaz", "jawab", "sawal", "kaam", "code", "coding",
+    "chahiye", "chahiye", "mila", "mili", "mile", "laga", "lagi",
+    "ab", "abhi", "kal", "aaj", "tab", "jab", "jahan", "wahan",
+    "aa", "ja", "de", "le", "rakh", "nikal", "chal", "ruko",
 }
 
 _TEMPLATES = {
     "en": {
-        "grounded_answer_lead": "Based on the workspace and memory, here is the verified insight:",
+        "grounded_answer_lead": "Here is the grounded answer backed by the workspace and memory:",
         "grounded_plan_lead": "Proposed plan based on your request:",
         "clarification_prompt": "I need one detail to focus: which file, function, or error should I look at for '{query}'?",
         "code_expert_lead": "I found these matching blocks in your code:",

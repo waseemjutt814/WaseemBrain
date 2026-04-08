@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-04-08T03:58:59.186644",
+  "strategies": [
+    {
+      "strategy_id": "strategy-4554934a",
+      "name": "test_op",
+      "description": "Learned strategy for test_op",
+      "steps": [],
+      "success_rate": 0.8,
+      "applicable_conditions": {
+        "input_types": [
+          "x:int"
+        ]
+      }
+    }
+  ]
+}

@@ -1,6 +1,18 @@
-"""Lattice Brain Python core package."""
+"""Waseem Brain Python core package."""
 
 from .config import BrainSettings, load_settings
-from .runtime import LatticeBrainRuntime
+from .runtime import WaseemBrainRuntime
 
-__all__ = ["BrainSettings", "LatticeBrainRuntime", "load_settings"]
+# Import reasoning enhancement modules
+from . import reasoning
+from . import knowledge
+from . import quality
+
+__all__ = [
+    "BrainSettings",
+    "WaseemBrainRuntime", 
+    "load_settings",
+    "reasoning",
+    "knowledge",
+    "quality",
+]

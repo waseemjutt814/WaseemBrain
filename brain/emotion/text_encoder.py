@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import os
+import logging
 from collections.abc import Callable
 from typing import Any, ClassVar, cast
 
@@ -75,7 +76,8 @@ class TextEmotionEncoder:
 
         try:
             predictions = classifier(text)
-        except Exception:
+        except Exception as e:
+            logging.debug(f"Classifier prediction failed, falling back to heuristic: {e}")
             return self._heuristic_probabilities(text)
 
         if not predictions or not isinstance(predictions, list):
@@ -120,7 +122,8 @@ class TextEmotionEncoder:
             return None
         try:
             from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer  # type: ignore
-        except Exception:
+        except Exception as e:
+            logging.debug(f"VADER sentiment unavailable, defaulting to heuristics: {e}")
             cls._sentiment_state = "unavailable"
             return None
         cls._sentiment_analyzer = SentimentIntensityAnalyzer()
@@ -135,7 +138,8 @@ class TextEmotionEncoder:
             return None
         try:
             from transformers import pipeline
-        except Exception:
+        except Exception as e:
+            logging.debug(f"Transformers pipeline unavailable: {e}")
             cls._classifier_state = "unavailable"
             return None
 
@@ -146,7 +150,8 @@ class TextEmotionEncoder:
                 top_k=None,
                 device=-1,
             )
-        except Exception:
+        except Exception as e:
+            logging.debug(f"Failed to load emotion model: {e}")
             cls._classifier_state = "unavailable"
             return None
         cls._classifier_state = "ready"

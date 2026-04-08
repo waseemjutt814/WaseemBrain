@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 from brain.types import SessionId
 
 if TYPE_CHECKING:
-    from brain.runtime import LatticeBrainRuntime
+    from brain.runtime import WaseemBrainRuntime
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE_DIR = ROOT / "tmp" / "runtime-daemon"
@@ -90,11 +90,15 @@ class RuntimeHandleProtocol(Protocol):
         session_id: str,
     ) -> AsyncIterator[str]: ...
 
+    async def assistant(self, request: dict[str, Any]) -> AsyncIterator[dict[str, Any]]: ...
+
     async def health(self) -> dict[str, Any]: ...
 
     async def recall(self, query: str, limit: int = 5) -> list[dict[str, Any]]: ...
 
     async def experts(self) -> dict[str, Any]: ...
+
+    async def actions(self) -> dict[str, Any]: ...
 
     def last_query_result(self) -> dict[str, Any] | None: ...
 
@@ -102,7 +106,7 @@ class RuntimeHandleProtocol(Protocol):
 
 
 class LocalRuntimeHandle:
-    def __init__(self, runtime: "LatticeBrainRuntime") -> None:
+    def __init__(self, runtime: "WaseemBrainRuntime") -> None:
         self._runtime = runtime
         self._last_query_result: dict[str, Any] | None = None
 
@@ -124,6 +128,15 @@ class LocalRuntimeHandle:
             "health": self._runtime.health(),
         }
 
+    async def assistant(self, request: dict[str, Any]) -> AsyncIterator[dict[str, Any]]:
+        session_id = SessionId(str(request.get("session_id", "assistant-session")))
+        try:
+            async for event in self._runtime.assistant(request):
+                yield event
+        finally:
+            if _should_flush_assistant_request(request):
+                self._runtime.flush_session_traces(session_id)
+
     async def health(self) -> dict[str, Any]:
         return self._runtime.health()
 
@@ -132,6 +145,9 @@ class LocalRuntimeHandle:
 
     async def experts(self) -> dict[str, Any]:
         return self._runtime.experts()
+
+    async def actions(self) -> dict[str, Any]:
+        return self._runtime.actions()
 
     def last_query_result(self) -> dict[str, Any] | None:
         return self._last_query_result
@@ -196,6 +212,39 @@ class RuntimeDaemonClient:
             writer.close()
             await writer.wait_closed()
 
+    async def assistant(self, request: dict[str, Any]) -> AsyncIterator[dict[str, Any]]:
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(self._host, self._port),
+            timeout=self._timeout_sec,
+        )
+        request_id = self._build_request_id()
+        writer.write(
+            (json.dumps({"id": request_id, "command": "assistant", "payload": request}) + "\n").encode(
+                "utf-8"
+            )
+        )
+        await writer.drain()
+        try:
+            while True:
+                line = await asyncio.wait_for(reader.readline(), timeout=self._timeout_sec)
+                if line == b"":
+                    break
+                message = json.loads(line.decode("utf-8"))
+                if str(message.get("id", "")) != request_id:
+                    continue
+                event = str(message.get("event", ""))
+                if event == "assistant":
+                    payload = message.get("payload", {})
+                    yield payload if isinstance(payload, dict) else {}
+                    continue
+                if event == "done":
+                    break
+                if event == "error":
+                    raise RuntimeError(str(message.get("content", "Unknown runtime daemon error")))
+        finally:
+            writer.close()
+            await writer.wait_closed()
+
     async def health(self) -> dict[str, Any]:
         return await self._unary("health", {})
 
@@ -206,6 +255,10 @@ class RuntimeDaemonClient:
     async def experts(self) -> dict[str, Any]:
         payload = await self._unary("experts", {})
         return payload if isinstance(payload, dict) else {}
+
+    async def actions(self) -> dict[str, Any]:
+        payload = await self._unary("actions", {})
+        return payload if isinstance(payload, dict) else {"groups": []}
 
     def last_query_result(self) -> dict[str, Any] | None:
         return self._last_query_result
@@ -246,6 +299,11 @@ class RuntimeDaemonClient:
         self._next_request_id += 1
         return f"runtime-{self._next_request_id}"
 
+
+
+def _should_flush_assistant_request(request: dict[str, Any]) -> bool:
+    request_type = str(request.get("type", "chat.submit")).strip().lower()
+    return request_type in {"chat.submit", "voice.stop", "voice.submit"}
 
 def _decode_payload_for_runtime(payload: dict[str, object]) -> tuple[object, str]:
     modality = str(payload.get("modality", "text")).strip().lower()

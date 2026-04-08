@@ -1,0 +1,84 @@
+name: WaseemBrain CI
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  metadata-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Python dev dependencies
+        run: pnpm run setup:python
+      - name: Sync workspace metadata
+        run: pnpm run sync:metadata
+      - name: Assert package metadata is committed
+        run: git diff --exit-code -- package.json
+      - name: Run maintained-core lint and type checks
+        run: pnpm run lint
+
+  test-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Python dependencies
+        run: pnpm run setup:python
+      - name: Run Python tests
+        run: pnpm run test:python
+
+  test-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build TypeScript interface
+        run: pnpm run build
+      - name: Run TS tests
+        run: pnpm run test:ts
+
+  optional-rust-router:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test Rust router accelerator
+        working-directory: ./router-daemon
+        run: cargo test --verbose

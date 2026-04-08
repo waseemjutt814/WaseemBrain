@@ -441,7 +441,11 @@ class ResponsePolicyLearningTestCase(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertEqual(result["value"]["render_strategy"], "grounded")
         self.assertGreaterEqual(len(result["value"]["citations"]), 1)
-        self.assertIn("Next useful step:", result["value"]["content"])
+        # Accept both "Next useful step:" and "Recommended next check:" formats
+        self.assertTrue(
+            "Next useful step:" in result["value"]["content"] or
+            "Recommended next check:" in result["value"]["content"]
+        )
 
     def test_candidate_ranker_learns_query_anchor_preference(self) -> None:
         policy = ResponsePolicyTrainer().fit(

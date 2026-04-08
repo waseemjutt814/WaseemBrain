@@ -3,19 +3,33 @@ from __future__ import annotations
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Protocol, cast
 
 from ..config import BrainSettings, load_settings
 from ..types import EmotionContext, ExpertId, NormalizedSignal, Result, RouterDecision, err, ok
 from .generated import router_pb2 as _router_pb2
 from .generated import router_pb2_grpc as _router_pb2_grpc
-from .model import RouterArtifact
+from .model import RouterArtifact, RouterArtifactError
 
 router_pb2 = cast(Any, _router_pb2)
 router_pb2_grpc = cast(Any, _router_pb2_grpc)
 
 
+class RouterClientProtocol(Protocol):
+    """Protocol for router client implementations."""
+    
+    def decide(
+        self,
+        signal: NormalizedSignal,
+        emotion_context: EmotionContext,
+    ) -> Result[RouterDecision, str]: ...
+    
+    def close(self) -> None: ...
+
+
 class ArtifactRouterClient:
+    """Router client using local artifact file with validation."""
+    
     def __init__(
         self,
         settings: BrainSettings | None = None,
@@ -24,6 +38,7 @@ class ArtifactRouterClient:
         self._settings = settings or load_settings()
         self._artifact_path = artifact_path or self._settings.router_model_path
         self._artifact: RouterArtifact | None = None
+        self._load_error: str | None = None
 
     def decide(
         self,
@@ -33,9 +48,30 @@ class ArtifactRouterClient:
         del emotion_context
         try:
             artifact = self._ensure_artifact()
+        except RouterArtifactError as exc:
+            self._load_error = str(exc)
+            return err(f"Router artifact validation failed: {exc}")
         except Exception as exc:
+            self._load_error = str(exc)
             return err(f"Router artifact unavailable at {self._artifact_path}: {exc}")
         return ok(artifact.decide(signal.get("text", "")))
+    
+    def last_error(self) -> str | None:
+        """Return the last error encountered during artifact load."""
+        return self._load_error
+    
+    def artifact_info(self) -> dict[str, object]:
+        """Return information about the loaded artifact."""
+        if self._artifact is None:
+            return {"loaded": False, "error": self._load_error}
+        return {
+            "loaded": True,
+            "version": self._artifact.version,
+            "checksum": self._artifact.checksum,
+            "sparsity": self._artifact.sparsity(),
+            "memory_savings": self._artifact.memory_savings(),
+            "labels": list(self._artifact.labels),
+        }
 
     def close(self) -> None:
         self._artifact = None
@@ -47,16 +83,24 @@ class ArtifactRouterClient:
 
 
 class RouterDaemonClient:
+    """Router client connecting to gRPC daemon with configurable cooldown."""
+    
     def __init__(
         self,
         target: str,
         timeout_sec: float = 0.5,
-        cooldown_sec: float = 5.0,
+        cooldown_sec: float | None = None,
+        settings: BrainSettings | None = None,
         channel_factory: Callable[[str], object] | None = None,
     ) -> None:
         self._target = target
         self._timeout_sec = timeout_sec
-        self._cooldown_sec = cooldown_sec
+        # Use settings for cooldown if not explicitly provided
+        if cooldown_sec is not None:
+            self._cooldown_sec = cooldown_sec
+        else:
+            _settings = settings or load_settings()
+            self._cooldown_sec = _settings.router_daemon_cooldown_sec
         self._channel_factory = channel_factory or self._default_channel_factory
         self._channel: object | None = None
         self._router_stub: Any | None = None
@@ -182,7 +226,9 @@ class RouterDaemonClient:
 
 
 class HybridRouterClient:
-    def __init__(self, primary: RouterDaemonClient, fallback: Any) -> None:
+    """Router client with primary daemon and local fallback."""
+    
+    def __init__(self, primary: RouterDaemonClient, fallback: RouterClientProtocol) -> None:
         self._primary = primary
         self._fallback = fallback
 
@@ -194,7 +240,10 @@ class HybridRouterClient:
         primary_result = self._primary.decide(signal, emotion_context)
         if primary_result["ok"]:
             return primary_result
+        # Fallback is guaranteed to exist by type
         return self._fallback.decide(signal, emotion_context)
 
     def close(self) -> None:
         self._primary.close()
+        if hasattr(self._fallback, 'close'):
+            self._fallback.close()

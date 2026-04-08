@@ -12,12 +12,12 @@ import asyncio
 import statistics
 import time
 
-from brain.runtime import LatticeBrainRuntime
+from brain.runtime import WaseemBrainRuntime
 from brain.types import SessionId
 
 
 async def run_benchmark(text: str, iterations: int) -> None:
-    runtime = LatticeBrainRuntime()
+    runtime = WaseemBrainRuntime()
     latencies = []
     try:
         for index in range(iterations):

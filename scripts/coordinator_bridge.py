@@ -11,11 +11,16 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from brain.runtime import LatticeBrainRuntime
+from brain.runtime import WaseemBrainRuntime
 from brain.types import SessionId
 
 _WRITE_LOCK = asyncio.Lock()
 
+
+
+def _should_flush_assistant_request(payload: dict[str, Any]) -> bool:
+    request_type = str(payload.get("type", "chat.submit")).strip().lower()
+    return request_type in {"chat.submit", "voice.stop", "voice.submit"}
 
 async def _write_message(message: dict[str, Any]) -> None:
     async with _WRITE_LOCK:
@@ -32,15 +37,19 @@ def _decode_query_payload(payload: dict[str, Any]) -> tuple[object, str]:
     if modality in {"voice", "file"}:
         raw_base64 = str(payload.get("input_base64", ""))
         raw_bytes = base64.b64decode(raw_base64.encode("utf-8"))
-        filename = str(payload.get("filename", modality))
-        return raw_bytes, "voice" if modality == "voice" else filename
+        return (
+            {
+                "data": raw_bytes,
+                "filename": str(payload.get("filename", modality)),
+                "mime_type": str(payload.get("mime_type", "")),
+                "modality": modality,
+            },
+            modality,
+        )
     raise ValueError(f"Unsupported query modality: {modality}")
 
 
-async def _handle_request(
-    runtime: LatticeBrainRuntime,
-    request: dict[str, Any],
-) -> bool:
+async def _handle_request(runtime: WaseemBrainRuntime, request: dict[str, Any]) -> bool:
     request_id = str(request.get("id", ""))
     command = str(request.get("command", "")).strip().lower()
     payload = request.get("payload", {})
@@ -56,20 +65,37 @@ async def _handle_request(
             await _write_message({"id": request_id, "event": "response", "payload": runtime.health()})
             return True
 
+        if command == "actions":
+            await _write_message({"id": request_id, "event": "response", "payload": runtime.actions()})
+            return True
+
         if command == "recall":
             query = str(payload.get("query", ""))
             limit = int(payload.get("limit", 5))
             await _write_message(
-                {
-                    "id": request_id,
-                    "event": "response",
-                    "payload": runtime.recall(query, limit=limit),
-                }
+                {"id": request_id, "event": "response", "payload": runtime.recall(query, limit=limit)}
             )
             return True
 
         if command == "experts":
             await _write_message({"id": request_id, "event": "response", "payload": runtime.experts()})
+            return True
+
+        if command == "assistant":
+            session_id = SessionId(str(payload.get("session_id", "anonymous-session")))
+            async for event in runtime.assistant(payload):
+                await _write_message({"id": request_id, "event": "assistant", "payload": event})
+            latest_trace = None
+            if _should_flush_assistant_request(payload):
+                traces = runtime.flush_session_traces(session_id)
+                latest_trace = traces[-1] if traces else None
+            await _write_message(
+                {
+                    "id": request_id,
+                    "event": "done",
+                    "payload": {"latest_trace": latest_trace, "health": runtime.health()},
+                }
+            )
             return True
 
         if command == "query":
@@ -92,7 +118,7 @@ async def _handle_request(
 
 
 async def _serve() -> None:
-    runtime = LatticeBrainRuntime()
+    runtime = WaseemBrainRuntime()
     tasks: set[asyncio.Task[bool]] = set()
     try:
         while True:
@@ -108,20 +134,13 @@ async def _serve() -> None:
                 await _write_message({"id": "", "event": "error", "content": f"Invalid JSON: {exc}"})
                 continue
             if not isinstance(request, dict):
-                await _write_message(
-                    {
-                        "id": "",
-                        "event": "error",
-                        "content": "Bridge requests must be JSON objects",
-                    }
-                )
+                await _write_message({"id": "", "event": "error", "content": "Bridge requests must be JSON objects"})
                 continue
             if str(request.get("command", "")).strip().lower() == "shutdown":
                 should_continue = await _handle_request(runtime, request)
                 if not should_continue:
                     break
                 continue
-
             task = asyncio.create_task(_handle_request(runtime, request))
             tasks.add(task)
             task.add_done_callback(tasks.discard)

@@ -2,14 +2,17 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import base64
 import contextlib
 import io
 import json
+import mimetypes
 import os
 import shutil
 import sys
 import textwrap
 import time
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -59,6 +62,24 @@ _YELLOW = "\033[33m"
 _RED = "\033[31m"
 _WHITE = "\033[37m"
 
+try:
+    from prompt_toolkit import PromptSession
+    from prompt_toolkit.formatted_text import HTML
+    from prompt_toolkit.history import InMemoryHistory
+    from prompt_toolkit.patch_stdout import patch_stdout
+    from prompt_toolkit.shortcuts import input_dialog, message_dialog, radiolist_dialog, yes_no_dialog
+
+    _PROMPT_TOOLKIT_AVAILABLE = True
+except Exception:
+    PromptSession = None  # type: ignore[assignment]
+    HTML = str  # type: ignore[assignment]
+    InMemoryHistory = None  # type: ignore[assignment]
+    patch_stdout = contextlib.nullcontext  # type: ignore[assignment]
+    input_dialog = None  # type: ignore[assignment]
+    message_dialog = None  # type: ignore[assignment]
+    radiolist_dialog = None  # type: ignore[assignment]
+    yes_no_dialog = None  # type: ignore[assignment]
+    _PROMPT_TOOLKIT_AVAILABLE = False
 
 @contextlib.contextmanager
 def _silence_runtime_io(enabled: bool) -> Any:
@@ -644,7 +665,481 @@ async def _run_turn(
     return 0
 
 
-async def _interactive_chat(
+@dataclass
+class PendingApprovalState:
+    action_id: str
+    inputs: dict[str, str]
+    descriptor: dict[str, Any]
+    preview: dict[str, Any]
+
+
+@dataclass
+class AssistantConsoleState:
+    session_id: str
+    mode: str = "chat"
+    auto_refresh: bool = True
+    show_proof: bool = True
+    last_health: dict[str, Any] = field(default_factory=dict)
+    action_catalog: dict[str, Any] = field(default_factory=lambda: {"groups": []})
+    pending_approval: PendingApprovalState | None = None
+
+
+def _assistant_mode_label(mode: str) -> str:
+    labels = {
+        "chat": "Chat",
+        "repo": "Repo Search",
+        "url": "URL",
+        "file": "Document",
+        "voice": "Voice",
+        "memory": "Memory",
+        "actions": "System Actions",
+        "settings": "Settings",
+    }
+    return labels.get(mode, mode.title())
+
+
+def _assistant_toolbar(state: AssistantConsoleState) -> str:
+    health = state.last_health
+    condition = str(health.get("condition", "checking")).upper()
+    provider = health.get("provider", {}) if isinstance(health.get("provider"), dict) else {}
+    provider_mode = str(provider.get("mode", "local_grounded"))
+    provider_reachable = bool(provider.get("reachable", False))
+    provider_text = provider_mode if provider_reachable else f"{provider_mode}:down"
+    experts_loaded = int(health.get("experts_loaded", 0)) if health else 0
+    memory_nodes = int(health.get("memory_node_count", 0)) if health else 0
+    return (
+        f" Mode: {_assistant_mode_label(state.mode)} | Condition: {condition} | "
+        f"Provider: {provider_text} | Experts: {experts_loaded} | Memory: {memory_nodes} "
+    )
+
+
+def _assistant_mode_prompt(mode: str, prompt: str) -> str:
+    if mode == "repo":
+        return f"Repo work request: {prompt}"
+    if mode == "chat":
+        return prompt
+    if mode == "url":
+        return prompt
+    return prompt
+
+
+def _flatten_actions(action_catalog: dict[str, Any]) -> list[dict[str, Any]]:
+    actions: list[dict[str, Any]] = []
+    groups = action_catalog.get("groups", [])
+    if not isinstance(groups, list):
+        return actions
+    for group in groups:
+        if not isinstance(group, dict):
+            continue
+        for action in group.get("actions", []):
+            if isinstance(action, dict):
+                enriched = dict(action)
+                enriched.setdefault("group_label", group.get("label", "Actions"))
+                actions.append(enriched)
+    return actions
+
+
+async def _refresh_assistant_console_state(
+    runtime: RuntimeHandleProtocol,
+    state: AssistantConsoleState,
+    *,
+    include_actions: bool,
+) -> None:
+    state.last_health = await runtime.health()
+    if include_actions or not state.action_catalog.get("groups"):
+        state.action_catalog = await runtime.actions()
+
+
+async def _choose_mode_dialog(state: AssistantConsoleState) -> str:
+    if radiolist_dialog is None:
+        return state.mode
+    selected = await radiolist_dialog(
+        title="Assistant Modes",
+        text="Choose the primary assistant surface for the next turns.",
+        values=[
+            ("chat", "Chat | natural conversation and coding"),
+            ("repo", "Repo Search | workspace-grounded work"),
+            ("url", "URL | fetch and ground a live web target"),
+            ("file", "Document | analyze a local file"),
+            ("voice", "Voice | send a recorded audio file as a voice turn"),
+            ("memory", "Memory | inspect recall directly"),
+            ("actions", "System Actions | inspect runtime and protected automation"),
+            ("settings", "Settings | toggle terminal assistant behavior"),
+        ],
+    ).run_async()
+    if isinstance(selected, str) and selected:
+        state.mode = selected
+    return state.mode
+
+
+async def _search_action_dialog(
+    state: AssistantConsoleState,
+    search_seed: str = "",
+) -> dict[str, Any] | None:
+    if input_dialog is None or radiolist_dialog is None:
+        return None
+    query = await input_dialog(
+        title="Action Search",
+        text="Search the real action catalog.",
+        default=search_seed,
+    ).run_async()
+    if query is None:
+        return None
+    normalized = str(query).strip().lower()
+    actions = _flatten_actions(state.action_catalog)
+    matches = [
+        action
+        for action in actions
+        if not normalized
+        or normalized in str(action.get("id", "")).lower()
+        or normalized in str(action.get("label", "")).lower()
+        or normalized in str(action.get("description", "")).lower()
+    ]
+    if not matches:
+        if message_dialog is not None:
+            await message_dialog(
+                title="No Actions Found",
+                text="No action matched that search term.",
+            ).run_async()
+        return None
+    selected_id = await radiolist_dialog(
+        title="Action Palette",
+        text="Use arrow keys to select a real capability.",
+        values=[
+            (
+                str(action.get("id", "")),
+                f"{action.get('label', 'Action')} | {action.get('risk', 'low')} | {action.get('description', '')}",
+            )
+            for action in matches
+        ],
+    ).run_async()
+    if not isinstance(selected_id, str) or not selected_id:
+        return None
+    for action in matches:
+        if str(action.get("id", "")) == selected_id:
+            return action
+    return None
+
+
+async def _collect_action_inputs(action: dict[str, Any]) -> dict[str, str] | None:
+    required_inputs = action.get("required_inputs", [])
+    if not isinstance(required_inputs, list):
+        return {}
+    collected: dict[str, str] = {}
+    for input_spec in required_inputs:
+        if not isinstance(input_spec, dict):
+            continue
+        input_id = str(input_spec.get("id", "")).strip()
+        label = str(input_spec.get("label", input_id)).strip() or input_id
+        kind = str(input_spec.get("kind", "text")).strip().lower()
+        required = bool(input_spec.get("required", False))
+        placeholder = str(input_spec.get("placeholder", "")).strip()
+        value = ""
+        if kind == "choice" and radiolist_dialog is not None:
+            options = input_spec.get("options", [])
+            selected = await radiolist_dialog(
+                title=str(action.get("label", "Action")),
+                text=f"Select {label}.",
+                values=[(str(option), str(option)) for option in options if str(option).strip()],
+            ).run_async()
+            if selected is None:
+                return None
+            value = str(selected).strip()
+        elif input_dialog is not None:
+            selected = await input_dialog(
+                title=str(action.get("label", "Action")),
+                text=f"{label}{' (required)' if required else ''}",
+                default=placeholder,
+            ).run_async()
+            if selected is None:
+                return None
+            value = str(selected).strip()
+        if not value and required:
+            if message_dialog is not None:
+                await message_dialog(
+                    title="Missing Input",
+                    text=f"{label} is required for this action.",
+                ).run_async()
+            return None
+        if value:
+            collected[input_id] = value
+    return collected
+
+
+def _render_evidence_lines(citations: list[dict[str, Any]]) -> list[str]:
+    lines: list[str] = []
+    for citation in citations[:4]:
+        label = str(citation.get("label", "evidence"))
+        snippet = str(citation.get("snippet", "")).strip()
+        lines.append(f"{label}: {snippet}" if snippet else label)
+    return lines or ["No evidence lines were attached."]
+
+
+def _proof_lines(metadata: dict[str, Any]) -> list[str]:
+    provider = metadata.get("provider", {}) if isinstance(metadata.get("provider"), dict) else {}
+    tools = metadata.get("tools", []) if isinstance(metadata.get("tools"), list) else []
+    transcript = str(metadata.get("transcript", "")).strip()
+    return [
+        f"route            : {metadata.get('route', 'unknown')}",
+        f"provider         : {provider.get('mode', 'local_grounded')} | reachable={provider.get('reachable', True)}",
+        f"local mode       : {metadata.get('local_mode', True)}",
+        f"tools            : {', '.join(str(tool) for tool in tools) or 'none'}",
+        f"citations        : {metadata.get('citations_count', 0)}",
+        f"render strategy  : {metadata.get('render_strategy', 'direct')}",
+        f"voice transcript : {transcript or 'n/a'}",
+    ]
+
+
+async def _stream_assistant_request(
+    runtime: RuntimeHandleProtocol,
+    request: dict[str, Any],
+    state: AssistantConsoleState,
+    *,
+    color_enabled: bool,
+) -> None:
+    streamed_answer = False
+    for_event_newline = False
+    async for event in runtime.assistant(request):
+        event_type = str(event.get("type", ""))
+        if event_type == "status":
+            print(_paint(f"[status] {event.get('content', '')}", _DIM, _CYAN, enabled=color_enabled))
+            continue
+        if event_type == "transcript.partial":
+            print(_paint(f"[transcript] {event.get('content', '')}", _DIM, _WHITE, enabled=color_enabled))
+            continue
+        if event_type == "tool.start":
+            message = f"[tool:start] {event.get('tool', 'tool')} | {event.get('content', '')}"
+            print(_paint(message, _DIM, _BLUE, enabled=color_enabled))
+            continue
+        if event_type == "tool.result":
+            message = f"[tool:result] {event.get('tool', 'tool')} | {event.get('content', '')}"
+            print(_paint(message, _DIM, _YELLOW, enabled=color_enabled))
+            continue
+        if event_type == "evidence":
+            citations = event.get("citations", [])
+            if isinstance(citations, list):
+                print(_panel("Evidence", _render_evidence_lines(citations), color_enabled=color_enabled, tone="muted"))
+            continue
+        if event_type == "approval.required":
+            descriptor = event.get("descriptor", {})
+            preview = event.get("preview", {})
+            if isinstance(descriptor, dict) and isinstance(preview, dict):
+                state.pending_approval = PendingApprovalState(
+                    action_id=str(preview.get("action_id", descriptor.get("id", ""))),
+                    inputs={str(k): str(v) for k, v in dict(preview.get("inputs", {})).items()},
+                    descriptor=dict(descriptor),
+                    preview=dict(preview),
+                )
+                print(
+                    _panel(
+                        "Approval Required",
+                        [
+                            str(event.get("content", "Action requires confirmation.")),
+                            f"action           : {descriptor.get('label', state.pending_approval.action_id)}",
+                            f"summary          : {preview.get('summary', 'n/a')}",
+                            f"command preview  : {preview.get('command_preview', 'n/a')}",
+                        ],
+                        color_enabled=color_enabled,
+                        tone="warn",
+                    )
+                )
+            continue
+        if event_type == "error":
+            if for_event_newline:
+                sys.stdout.write("\n")
+                sys.stdout.flush()
+                for_event_newline = False
+            print(_paint(f"[error] {event.get('content', '')}", _BOLD, _RED, enabled=color_enabled))
+            continue
+        if event_type == "message.delta":
+            if not streamed_answer:
+                sys.stdout.write(_paint("assistant> ", _BOLD, _GREEN, enabled=color_enabled))
+                streamed_answer = True
+            sys.stdout.write(str(event.get("content", "")))
+            sys.stdout.flush()
+            for_event_newline = True
+            continue
+        if event_type == "message.done":
+            content = str(event.get("content", ""))
+            if streamed_answer and for_event_newline:
+                sys.stdout.write("\n")
+                sys.stdout.flush()
+                for_event_newline = False
+            elif content:
+                print(_paint(f"assistant> {content}", _BOLD, _GREEN, enabled=color_enabled))
+            metadata = event.get("metadata", {})
+            if state.show_proof and isinstance(metadata, dict) and metadata:
+                print(_panel("Proof", _proof_lines(metadata), color_enabled=color_enabled, tone="accent"))
+            continue
+    if state.auto_refresh:
+        await _refresh_assistant_console_state(runtime, state, include_actions=False)
+
+
+async def _execute_action_from_palette(
+    runtime: RuntimeHandleProtocol,
+    state: AssistantConsoleState,
+    action: dict[str, Any],
+    *,
+    color_enabled: bool,
+) -> None:
+    inputs = await _collect_action_inputs(action)
+    if inputs is None:
+        return
+    action_id = str(action.get("id", "")).strip()
+    if not action_id:
+        return
+    state.pending_approval = None
+    if bool(action.get("confirmation_required", False)):
+        await _stream_assistant_request(
+            runtime,
+            {
+                "type": "action.preview",
+                "session_id": state.session_id,
+                "action_id": action_id,
+                "inputs": inputs,
+            },
+            state,
+            color_enabled=color_enabled,
+        )
+        pending = state.pending_approval
+        if pending is None:
+            return
+        confirmed = True
+        if yes_no_dialog is not None:
+            dialog_result = await yes_no_dialog(
+                title="Confirm Protected Action",
+                text=(
+                    f"Execute {pending.descriptor.get('label', pending.action_id)}?\n\n"
+                    f"{pending.preview.get('summary', '')}"
+                ),
+            ).run_async()
+            confirmed = bool(dialog_result)
+        if not confirmed:
+            print(_paint("[action] Preview kept. No system change was executed.", _YELLOW, enabled=color_enabled))
+            return
+        await _stream_assistant_request(
+            runtime,
+            {
+                "type": "action.confirm",
+                "session_id": state.session_id,
+                "action_id": pending.action_id,
+                "inputs": pending.inputs,
+                "confirmed": True,
+            },
+            state,
+            color_enabled=color_enabled,
+        )
+        state.pending_approval = None
+        return
+    await _stream_assistant_request(
+        runtime,
+        {
+            "type": "action.confirm",
+            "session_id": state.session_id,
+            "action_id": action_id,
+            "inputs": inputs,
+            "confirmed": False,
+        },
+        state,
+        color_enabled=color_enabled,
+    )
+
+
+async def _show_settings_dialog(state: AssistantConsoleState) -> None:
+    if yes_no_dialog is None or message_dialog is None:
+        return
+    auto_refresh = await yes_no_dialog(
+        title="Auto Refresh",
+        text=(
+            "Keep runtime health refreshed after each assistant turn?\n\n"
+            f"Current value: {'on' if state.auto_refresh else 'off'}"
+        ),
+    ).run_async()
+    state.auto_refresh = bool(auto_refresh)
+    show_proof = await yes_no_dialog(
+        title="Proof Panels",
+        text=(
+            "Show per-answer proof panels in the terminal?\n\n"
+            f"Current value: {'on' if state.show_proof else 'off'}"
+        ),
+    ).run_async()
+    state.show_proof = bool(show_proof)
+    await message_dialog(
+        title="Settings Updated",
+        text=(
+            f"Auto refresh: {'on' if state.auto_refresh else 'off'}\n"
+            f"Proof panels: {'on' if state.show_proof else 'off'}"
+        ),
+    ).run_async()
+
+
+def _build_binary_assistant_request(mode: str, raw_path: str, session_id: str) -> dict[str, Any]:
+    path = Path(raw_path).expanduser().resolve()
+    if not path.exists() or not path.is_file():
+        raise FileNotFoundError(f"Input file not found: {path}")
+    raw_bytes = path.read_bytes()
+    guessed_mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    encoded = base64.b64encode(raw_bytes).decode("utf-8")
+    if mode == "file":
+        return {
+            "type": "chat.submit",
+            "session_id": session_id,
+            "modality": "file",
+            "input_base64": encoded,
+            "filename": path.name,
+            "mime_type": guessed_mime,
+        }
+    return {
+        "type": "voice.stop",
+        "session_id": session_id,
+        "input_base64": encoded,
+        "filename": path.name,
+        "mime_type": guessed_mime,
+    }
+
+
+def _build_assistant_request(mode: str, prompt: str, session_id: str) -> dict[str, Any]:
+    cleaned = prompt.strip()
+    if mode in {"chat", "repo"}:
+        return {
+            "type": "chat.submit",
+            "session_id": session_id,
+            "modality": "text",
+            "input": _assistant_mode_prompt(mode, cleaned),
+        }
+    if mode == "url":
+        return {
+            "type": "chat.submit",
+            "session_id": session_id,
+            "modality": "url",
+            "input": cleaned,
+        }
+    if mode == "file":
+        return _build_binary_assistant_request("file", cleaned, session_id)
+    if mode == "voice":
+        return _build_binary_assistant_request("voice", cleaned, session_id)
+    raise ValueError(f"Mode {mode!r} does not map to a direct assistant request")
+
+
+def _print_assistant_help(*, color_enabled: bool) -> None:
+    print(
+        _panel(
+            "Assistant Console",
+            [
+                "Arrow-key dialogs are available through /mode, /actions, and /settings.",
+                "Modes           : chat, repo, url, file, voice, memory, actions, settings",
+                "Commands        : /mode, /actions, /confirm, /settings, /status, /learning, /project, /health, /experts, /recall <text>, /clear, /quit",
+                "File mode       : paste a local file path and the assistant will analyze it.",
+                "Voice mode      : paste a recorded audio file path and the assistant will run a voice turn.",
+                "Memory mode     : every prompt runs direct memory recall instead of a full assistant answer.",
+            ],
+            color_enabled=color_enabled,
+            tone="accent",
+        )
+    )
+
+
+async def _interactive_chat_basic(
     runtime: RuntimeHandleProtocol,
     *,
     settings: BrainSettings,
@@ -746,6 +1241,193 @@ async def _interactive_chat(
         )
 
 
+async def _interactive_chat(
+    runtime: RuntimeHandleProtocol,
+    *,
+    settings: BrainSettings,
+    session_id: SessionId,
+    warm_status: dict[str, str] | None,
+    show_metrics: bool,
+    json_metrics: bool,
+    color_enabled: bool,
+    plain_ui: bool,
+    quiet_runtime_io: bool,
+) -> int:
+    if not _PROMPT_TOOLKIT_AVAILABLE or not sys.stdin.isatty() or not sys.stdout.isatty():
+        if not _PROMPT_TOOLKIT_AVAILABLE:
+            print(
+                _paint(
+                    "prompt_toolkit is not installed yet, so the terminal is using the safe compatibility console.",
+                    _YELLOW,
+                    enabled=color_enabled,
+                )
+            )
+        return await _interactive_chat_basic(
+            runtime,
+            settings=settings,
+            session_id=session_id,
+            warm_status=warm_status,
+            show_metrics=show_metrics,
+            json_metrics=json_metrics,
+            color_enabled=color_enabled,
+            plain_ui=plain_ui,
+            quiet_runtime_io=quiet_runtime_io,
+        )
+
+    state = AssistantConsoleState(session_id=str(session_id))
+    await _refresh_assistant_console_state(runtime, state, include_actions=True)
+    print(
+        _paint(
+            "Waseem Brain assistant console is live. Use /mode to switch surfaces and /actions for protected automation.",
+            _BOLD,
+            _CYAN,
+            enabled=color_enabled,
+        )
+    )
+    _print_assistant_help(color_enabled=color_enabled)
+
+    session = PromptSession(
+        history=InMemoryHistory(),
+        bottom_toolbar=lambda: _assistant_toolbar(state),
+    )
+
+    with patch_stdout():
+        while True:
+            try:
+                prompt = await session.prompt_async(HTML("<b>waseem@assistant&gt;</b> "))
+            except EOFError:
+                print()
+                return 0
+            except KeyboardInterrupt:
+                print("\nStopping Waseem Brain.")
+                return 0
+
+            prompt = prompt.strip()
+            if not prompt:
+                continue
+            if prompt in {"/quit", "/exit"}:
+                return 0
+            if prompt in {"/help", "/?"}:
+                _print_assistant_help(color_enabled=color_enabled)
+                continue
+            if prompt in {"/mode", "/modes"}:
+                selected_mode = await _choose_mode_dialog(state)
+                print(_paint(f"[mode] {_assistant_mode_label(selected_mode)}", _GREEN, enabled=color_enabled))
+                continue
+            if prompt in {"/settings"}:
+                await _show_settings_dialog(state)
+                continue
+            if prompt in {"/status", "/dashboard"}:
+                await _print_dashboard(
+                    runtime,
+                    settings=settings,
+                    session_id=session_id,
+                    warm_status=warm_status,
+                    color_enabled=color_enabled,
+                )
+                continue
+            if prompt == "/learning":
+                await _print_learning_status(
+                    runtime,
+                    settings=settings,
+                    session_id=session_id,
+                    warm_status=warm_status,
+                    color_enabled=color_enabled,
+                )
+                continue
+            if prompt == "/project":
+                await _print_project_status(
+                    runtime,
+                    settings=settings,
+                    session_id=session_id,
+                    warm_status=warm_status,
+                    color_enabled=color_enabled,
+                )
+                continue
+            if prompt == "/clear":
+                _clear_screen(color_enabled=color_enabled)
+                _print_banner(color_enabled=color_enabled)
+                await _print_dashboard(
+                    runtime,
+                    settings=settings,
+                    session_id=session_id,
+                    warm_status=warm_status,
+                    color_enabled=color_enabled,
+                )
+                _print_assistant_help(color_enabled=color_enabled)
+                continue
+            if prompt == "/health":
+                await _refresh_assistant_console_state(runtime, state, include_actions=False)
+                print(json.dumps(state.last_health, indent=2))
+                continue
+            if prompt == "/experts":
+                print(json.dumps(await runtime.experts(), indent=2))
+                continue
+            if prompt.startswith("/recall "):
+                recall_query = prompt[len("/recall ") :].strip()
+                print(json.dumps(await runtime.recall(recall_query), indent=2))
+                continue
+            if prompt in {"/actions", "/action"}:
+                selected_action = await _search_action_dialog(state)
+                if selected_action is not None:
+                    await _execute_action_from_palette(
+                        runtime,
+                        state,
+                        selected_action,
+                        color_enabled=color_enabled,
+                    )
+                continue
+            if prompt == "/confirm":
+                pending = state.pending_approval
+                if pending is None:
+                    print(_paint("[action] No protected action is waiting for confirmation.", _YELLOW, enabled=color_enabled))
+                    continue
+                await _stream_assistant_request(
+                    runtime,
+                    {
+                        "type": "action.confirm",
+                        "session_id": state.session_id,
+                        "action_id": pending.action_id,
+                        "inputs": pending.inputs,
+                        "confirmed": True,
+                    },
+                    state,
+                    color_enabled=color_enabled,
+                )
+                state.pending_approval = None
+                continue
+
+            if state.mode == "actions":
+                selected_action = await _search_action_dialog(state, search_seed=prompt)
+                if selected_action is not None:
+                    await _execute_action_from_palette(
+                        runtime,
+                        state,
+                        selected_action,
+                        color_enabled=color_enabled,
+                    )
+                continue
+            if state.mode == "settings":
+                await _show_settings_dialog(state)
+                continue
+            if state.mode == "memory":
+                print(json.dumps(await runtime.recall(prompt), indent=2))
+                if state.auto_refresh:
+                    await _refresh_assistant_console_state(runtime, state, include_actions=False)
+                continue
+
+            try:
+                request = _build_assistant_request(state.mode, prompt, state.session_id)
+            except Exception as exc:
+                print(_paint(f"[error] {exc}", _BOLD, _RED, enabled=color_enabled))
+                continue
+
+            await _stream_assistant_request(
+                runtime,
+                request,
+                state,
+                color_enabled=color_enabled,
+            )
 async def _main_async(args: argparse.Namespace) -> int:
     _enable_windows_ansi()
     color_enabled = _use_color(args.plain_ui)
@@ -769,7 +1451,7 @@ async def _main_async(args: argparse.Namespace) -> int:
                 include_voice=args.include_voice_warmup,
                 quiet=not args.verbose_warmup,
             )
-        runtime = LocalRuntimeHandle(__import__("brain.runtime", fromlist=["LatticeBrainRuntime"]).LatticeBrainRuntime(settings=settings))
+        runtime = LocalRuntimeHandle(__import__("brain.runtime", fromlist=["WaseemBrainRuntime"]).WaseemBrainRuntime(settings=settings))
     try:
         if args.health:
             print(json.dumps(await runtime.health(), indent=2))
@@ -843,7 +1525,7 @@ async def _main_async(args: argparse.Namespace) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Interactive or one-shot CLI for Lattice Brain.")
+    parser = argparse.ArgumentParser(description="Interactive or one-shot CLI for WaseemBrain.")
     parser.add_argument("prompt", nargs="?", help="Prompt text, URL, or file path based on modality.")
     parser.add_argument(
         "--modality",
@@ -923,3 +1605,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+

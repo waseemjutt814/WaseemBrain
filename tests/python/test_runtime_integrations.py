@@ -1,12 +1,14 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import asyncio
+import io
 import json
 import shutil
 import sys
 import tempfile
 import types
 import unittest
+import wave
 from pathlib import Path
 from unittest.mock import patch
 from typing import cast
@@ -18,8 +20,9 @@ from brain.memory.embedder import MemoryEmbedder
 from brain.memory.vector_store import ChromaVectorStore
 from brain.normalizer.url_adapter import UrlAdapter
 from brain.normalizer.voice_adapter import VoiceAdapter
+from brain.runtime import WaseemBrainRuntime
 from brain.types import EmbeddingVector, ExpertId, MemoryNodeId, SessionId
-from tests.python.support import make_settings
+from tests.python.support import make_settings, seed_experts
 
 
 class _FakeEmbedder:
@@ -113,6 +116,17 @@ class _FakeClient:
         return self._collection
 
 
+
+
+def _build_wav_bytes(*, sample_rate: int = 8000, channels: int = 2) -> bytes:
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as wav_file:
+        wav_file.setnchannels(channels)
+        wav_file.setsampwidth(2)
+        wav_file.setframerate(sample_rate)
+        frame = b"\x10\x00" * channels
+        wav_file.writeframes(frame * 64)
+    return buffer.getvalue()
 class RuntimeIntegrationTestCase(unittest.TestCase):
     def setUp(self) -> None:
         MemoryEmbedder._model = None
@@ -442,6 +456,52 @@ class RuntimeIntegrationTestCase(unittest.TestCase):
         self.assertEqual(transcribed_audio[0].dtype.name, "float32")
         self.assertEqual(len(transcribed_audio[0].shape), 1)
 
+    def test_runtime_accepts_browser_wav_voice_payload(self) -> None:
+        class FakeSegment:
+            def __init__(self, text: str) -> None:
+                self.text = text
+
+        class FakeWhisperModel:
+            def __init__(self, model_name: str, *, device: str, compute_type: str) -> None:
+                self.model_name = model_name
+                self.device = device
+                self.compute_type = compute_type
+
+            def transcribe(self, audio: object) -> tuple[list[FakeSegment], object]:
+                return [FakeSegment("what is the capital of France")], object()
+
+        fake_module = types.SimpleNamespace(WhisperModel=FakeWhisperModel)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            settings = make_settings(root)
+            settings = settings.__class__(**{**settings.__dict__, "internet_enabled": False})
+            seed_experts(settings)
+            with patch.dict(sys.modules, {"faster_whisper": fake_module}):
+                runtime = WaseemBrainRuntime(settings=settings)
+                try:
+                    chunks: list[str] = []
+
+                    async def run_query() -> None:
+                        async for chunk in runtime.query(
+                            {
+                                "data": _build_wav_bytes(),
+                                "filename": "browser.wav",
+                                "mime_type": "audio/wav",
+                                "modality": "voice",
+                            },
+                            "voice",
+                            SessionId("voice-wav-1"),
+                        ):
+                            chunks.append(chunk)
+
+                    asyncio.run(run_query())
+                finally:
+                    runtime.close()
+
+        response_text = "".join(chunks)
+        self.assertIn("France", response_text)
+        self.assertIn("Paris", response_text)
+
     def test_grounded_language_expert_requires_real_evidence(self) -> None:
         meta = {
             "id": ExpertId("language-en"),
@@ -614,3 +674,4 @@ class RuntimeIntegrationTestCase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

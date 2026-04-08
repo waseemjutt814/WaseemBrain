@@ -42,6 +42,21 @@ export const StreamMessageSchema = z.object({
   content: z.string(),
 });
 
+export const CitationSchema = z.object({
+  id: z.string(),
+  source_type: z.string(),
+  label: z.string(),
+  snippet: z.string(),
+  uri: z.string(),
+});
+
+export const ProviderStatusSchema = z.object({
+  configured: z.boolean(),
+  mode: z.enum(["local_grounded", "openai_compatible"]),
+  model: z.string(),
+  reachable: z.boolean(),
+});
+
 export const HealthResponseSchema = z.object({
   status: z.literal("ok"),
   project_name: z.string(),
@@ -56,6 +71,13 @@ export const HealthResponseSchema = z.object({
   router_backend: z.string(),
   vector_backend: z.string(),
   components: z.record(z.string()),
+  capabilities: z.object({
+    model_free_core: z.boolean(),
+    api_key_required: z.boolean(),
+    self_improvement_scope: z.string(),
+    router_acceleration_optional: z.boolean(),
+    default_router_backend: z.string(),
+  }),
   learning: z.object({
     enabled: z.boolean(),
     backend: z.string(),
@@ -99,6 +121,16 @@ export const HealthResponseSchema = z.object({
     response_policy_path: z.string(),
     trace_dir: z.string(),
   }),
+  assistant_mode: z.string(),
+  provider: ProviderStatusSchema,
+  realtime_voice: z.object({
+    supported: z.boolean(),
+    mode: z.string(),
+  }),
+  automation: z.object({
+    approval_required: z.boolean(),
+    audit_enabled: z.boolean(),
+  }),
 });
 
 export const MemoryNodeSummarySchema = z.object({
@@ -115,6 +147,155 @@ export const ExpertsStatusSchema = z.object({
   count: z.number().int().nonnegative(),
 });
 
+export const IntegrationEndpointSchema = z.object({
+  id: z.string(),
+  method: z.enum(["GET", "POST", "WS"]),
+  path: z.string(),
+  summary: z.string(),
+  request_format: z.string(),
+  response_format: z.string(),
+});
+
+export const IntegrationCatalogSchema = z.object({
+  project_name: z.string(),
+  api_style: z.string(),
+  auth: z.string(),
+  local_only_default: z.boolean(),
+  openai_compatible: z.boolean(),
+  websocket_path: z.string(),
+  default_surface: z.string(),
+  conversation_modes: z.array(z.string()),
+  voice_modes: z.array(z.string()),
+  structured_session_ws_path: z.string(),
+  notes: z.array(z.string()),
+  endpoints: z.array(IntegrationEndpointSchema),
+});
+
+export const ActionInputSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  kind: z.enum(["text", "number", "choice"]),
+  required: z.boolean(),
+  placeholder: z.string(),
+  options: z.array(z.string()).optional(),
+});
+
+export const ActionDescriptorSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  description: z.string(),
+  risk: z.enum(["low", "medium", "high"]),
+  read_only: z.boolean(),
+  category: z.string(),
+  required_inputs: z.array(ActionInputSchema),
+  confirmation_required: z.boolean(),
+});
+
+export const ActionGroupSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  actions: z.array(ActionDescriptorSchema),
+});
+
+export const ActionCatalogSchema = z.object({
+  groups: z.array(ActionGroupSchema),
+});
+
+export const AssistantMetadataSchema = z.object({
+  route: z.string(),
+  provider: ProviderStatusSchema,
+  tools: z.array(z.string()),
+  citations_count: z.number().int().nonnegative(),
+  render_strategy: z.string(),
+  transcript: z.string(),
+  local_mode: z.boolean(),
+});
+
+export const AssistantChatSubmitSchema = z.object({
+  type: z.literal("chat.submit"),
+  session_id: z.string().min(1),
+  modality: z.enum(["text", "url", "file"]).default("text"),
+  input: z.string().optional(),
+  input_base64: z.string().optional(),
+  filename: z.string().optional(),
+  mime_type: z.string().optional(),
+});
+
+export const AssistantVoiceStartSchema = z.object({
+  type: z.literal("voice.start"),
+  session_id: z.string().min(1),
+});
+
+export const AssistantVoiceChunkSchema = z.object({
+  type: z.literal("voice.chunk"),
+  session_id: z.string().min(1),
+  chunk_base64: z.string().min(1),
+});
+
+export const AssistantVoiceStopSchema = z.object({
+  type: z.literal("voice.stop"),
+  session_id: z.string().min(1),
+  filename: z.string().default("voice.wav"),
+  mime_type: z.string().default("audio/wav"),
+});
+
+export const AssistantActionPreviewSchema = z.object({
+  type: z.literal("action.preview"),
+  session_id: z.string().min(1),
+  action_id: z.string().min(1),
+  inputs: z.record(z.string()).default({}),
+});
+
+export const AssistantActionConfirmSchema = z.object({
+  type: z.literal("action.confirm"),
+  session_id: z.string().min(1),
+  action_id: z.string().min(1),
+  inputs: z.record(z.string()).default({}),
+  confirmed: z.boolean(),
+});
+
+export const AssistantSessionUpdateSchema = z.object({
+  type: z.literal("session.update"),
+  session_id: z.string().min(1),
+});
+
+export const AssistantClientEventSchema = z.discriminatedUnion("type", [
+  AssistantChatSubmitSchema,
+  AssistantVoiceStartSchema,
+  AssistantVoiceChunkSchema,
+  AssistantVoiceStopSchema,
+  AssistantActionPreviewSchema,
+  AssistantActionConfirmSchema,
+  AssistantSessionUpdateSchema,
+]);
+
+export const AssistantServerEventSchema = z.object({
+  type: z.enum([
+    "status",
+    "transcript.partial",
+    "message.delta",
+    "message.done",
+    "tool.start",
+    "tool.result",
+    "evidence",
+    "approval.required",
+    "error",
+  ]),
+  content: z.string().optional(),
+  tool: z.string().optional(),
+  route: z.string().optional(),
+  citations: z.array(CitationSchema).optional(),
+  descriptor: ActionDescriptorSchema.optional(),
+  preview: z.object({
+    action_id: z.string(),
+    summary: z.string(),
+    command_preview: z.string(),
+    risk: z.enum(["low", "medium", "high"]),
+    inputs: z.record(z.string()),
+  }).optional(),
+  metadata: AssistantMetadataSchema.optional(),
+});
+
 export type QueryRequest = z.infer<typeof QueryRequestSchema>;
 export type LegacyQueryRequest = z.infer<typeof LegacyQueryRequestSchema>;
 export type WsQueryRequest = z.infer<typeof WsQueryRequestSchema>;
@@ -122,3 +303,10 @@ export type StreamMessage = z.infer<typeof StreamMessageSchema>;
 export type HealthResponse = z.infer<typeof HealthResponseSchema>;
 export type MemoryNodeSummary = z.infer<typeof MemoryNodeSummarySchema>;
 export type ExpertsStatus = z.infer<typeof ExpertsStatusSchema>;
+export type IntegrationEndpoint = z.infer<typeof IntegrationEndpointSchema>;
+export type IntegrationCatalog = z.infer<typeof IntegrationCatalogSchema>;
+export type ActionDescriptor = z.infer<typeof ActionDescriptorSchema>;
+export type ActionGroup = z.infer<typeof ActionGroupSchema>;
+export type ActionCatalog = z.infer<typeof ActionCatalogSchema>;
+export type AssistantClientEvent = z.infer<typeof AssistantClientEventSchema>;
+export type AssistantServerEvent = z.infer<typeof AssistantServerEventSchema>;

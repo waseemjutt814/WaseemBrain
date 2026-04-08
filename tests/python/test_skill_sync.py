@@ -22,9 +22,9 @@ class SkillSyncTestCase(unittest.TestCase):
             output_root = Path(temp_dir) / "skills"
             sync_all_skills(output_root)
 
-            orchestrator = output_root / "lattice-brain-build-orchestrator"
-            memory_skill = output_root / "lattice-brain-memory-graph"
-            quality_skill = output_root / "lattice-brain-quality-gates"
+            orchestrator = output_root / "waseem-brain-build-orchestrator"
+            memory_skill = output_root / "waseem-brain-memory-graph"
+            quality_skill = output_root / "waseem-brain-quality-gates"
 
             self.assertTrue((orchestrator / "references" / "source-skills.md").exists())
             self.assertFalse((orchestrator / "references" / "component-guide.md").exists())

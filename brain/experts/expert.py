@@ -1,5 +1,6 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
+import importlib
 import json
 import re
 import time
@@ -23,6 +24,14 @@ _EXCLUDED_DIRS = {
     "target",
     "tmp",
 }
+_KNOWLEDGE_MODULES = {
+    "security-knowledge": ("experts.base.cybersecurity_expert", "CybersecurityExpert"),
+    "crypto-knowledge": ("experts.base.cryptography_expert", "CryptographyExpert"),
+    "algorithms-knowledge": ("experts.base.algorithms_expert", "AlgorithmsExpert"),
+    "engineering-knowledge": ("experts.base.engineering_expert", "SystemEngineeringExpert"),
+    "advanced-security-knowledge": ("experts.base.advanced_security_expert", "AdvancedSecurityExpert"),
+}
+
 _TEXT_EXTENSIONS = {
     ".cjs",
     ".css",
@@ -141,7 +150,81 @@ class Expert:
             return _RepoCodeExpert(self._meta, self._settings)
         if kind == "geography-dataset":
             return _GeographyExpert(self._meta, self._artifact_root)
+        if kind in _KNOWLEDGE_MODULES:
+            return _KnowledgeModuleExpert(self._meta, self._artifact_root)
+        if kind == "system-automation":
+            from .system_ops import SystemOperations
+            return _SystemAutomationExpert(self._meta, SystemOperations())
         raise RuntimeError(f"Unsupported expert kind: {kind}")
+
+
+class _KnowledgeModuleExpert:
+    runtime_backend_name = "offline-knowledge"
+
+    def __init__(self, meta: ExpertMeta, artifact_root: Path) -> None:
+        self._meta = meta
+        module_path, class_name = _KNOWLEDGE_MODULES[meta["kind"]]
+        module = importlib.import_module(module_path)
+        expert_cls = getattr(module, class_name)
+        self._expert = expert_cls()
+        self._artifact_path = artifact_root / meta["artifacts"][0]["path"]
+
+    def run(
+        self,
+        query: str,
+        *,
+        max_tokens: int,
+        context: ExpertRequest | None,
+    ) -> tuple[str, list[EvidenceReference], str]:
+        del max_tokens
+        if hasattr(self._expert, "answer_query"):
+            content = str(self._expert.answer_query(query))
+        else:
+            content = str(self._expert.get_summary())
+        if not content.strip():
+            raise UnsupportedQueryError(f"{self._meta['name']} returned an empty answer")
+        if context is not None and context["response_plan"]["include_next_step"]:
+            content = f"{content}\nNext useful step: ask for a deeper scenario, comparison, or implementation checklist."
+        citation: EvidenceReference = {
+            "id": str(self._meta["id"]),
+            "source_type": "workspace",
+            "label": self._meta["name"],
+            "snippet": _clip(content, 180),
+            "uri": str(self._artifact_path),
+        }
+        return (content, [citation], f"{self._meta['name']} offline knowledge response")
+
+
+class _SystemAutomationExpert:
+    runtime_backend_name = "system-ops"
+
+    def __init__(self, meta: ExpertMeta, ops: object) -> None:
+        self._meta = meta
+        self._ops = ops
+
+    def run(
+        self,
+        query: str,
+        *,
+        max_tokens: int,
+        context: ExpertRequest | None,
+    ) -> tuple[str, list[EvidenceReference], str]:
+        # The model-free runtime keeps this expert deterministic.
+        # It reports observable system state and runs only explicitly scoped safe actions.
+        from .system_ops import SystemOperations
+        
+        q = query.lower()
+        if "firewall" in q:
+            rules = SystemOperations.get_firewall_rules("Waseem")
+            content = f"WaseemBrain System Ops: Retrieved Firewall Context.\n" + "\n".join(rules[:5])
+        elif "sandbox" in q:
+            # Safe test command
+            res = SystemOperations.run_in_sandbox("cmd /c echo Sandbox Activated")
+            content = f"WaseemBrain Sandbox Result: {res}"
+        else:
+            content = "WaseemBrain System Automation active. No direct command detected; ask for a safe system task or status check."
+            
+        return (content, [], "System Operations Execution")
 
 
 class _GroundedLanguageExpert:
@@ -427,3 +510,6 @@ def _clip(text: str, limit: int) -> str:
     if len(normalized) <= limit:
         return normalized
     return f"{normalized[: limit - 3].rstrip()}..."
+
+
+

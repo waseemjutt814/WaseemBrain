@@ -1,4 +1,4 @@
-# Lattice Brain Skills Source
+# WaseemBrain Skills Source
 
 This directory contains the project-authored source markdown used by `scripts/sync_codex_skills.py` to generate skill folders under `tmp/skills/`.
 

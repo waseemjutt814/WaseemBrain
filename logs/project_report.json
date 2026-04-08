@@ -1,0 +1,298 @@
+{
+  "generated_at": "2026-04-08T19:52:10.256419+00:00",
+  "root": "D:\\latest brain",
+  "environment": {
+    "python": "Python 3.11.0",
+    "node": "v24.14.1",
+    "npm": "11.11.0"
+  },
+  "inventory": {
+    "total_files": 471,
+    "files_by_top_level": {
+      "(root)": 22,
+      ".github": 1,
+      ".vscode": 1,
+      "agents_and_runners": 24,
+      "assets": 3,
+      "brain": 78,
+      "build": 88,
+      "data": 13,
+      "docker": 2,
+      "docs": 44,
+      "experts": 55,
+      "interface": 26,
+      "logs": 11,
+      "router-daemon": 10,
+      "router_daemon": 2,
+      "scripts": 42,
+      "skills": 13,
+      "tests": 36
+    },
+    "files_by_extension": {
+      ".py": 257,
+      ".md": 60,
+      ".json": 36,
+      ".jsonl": 35,
+      ".ts": 26,
+      ".bat": 7,
+      ".rs": 6,
+      ".mjs": 5,
+      ".toml": 5,
+      ".js": 4,
+      ".txt": 4,
+      "<no-extension>": 4,
+      ".svg": 3,
+      ".ps1": 2,
+      ".yaml": 2,
+      ".yml": 2,
+      ".1-high": 1,
+      ".css": 1,
+      ".db": 1,
+      ".example": 1,
+      ".graphml": 1,
+      ".html": 1,
+      ".index": 1,
+      ".lock": 1,
+      ".node": 1
+    },
+    "python_symbol_inventory": {
+      "files": 257,
+      "functions": 2120,
+      "async_functions": 122,
+      "classes": 538,
+      "parse_failures": []
+    },
+    "tests": {
+      "python_files": 25,
+      "typescript_files": 6,
+      "python_file_list": [
+        "tests\\python\\test_all_phases.py",
+        "tests\\python\\test_assistant_runtime.py",
+        "tests\\python\\test_bootstrap_and_learning.py",
+        "tests\\python\\test_complete_system.py",
+        "tests\\python\\test_components.py",
+        "tests\\python\\test_coordinator.py",
+        "tests\\python\\test_emotion.py",
+        "tests\\python\\test_expert_modules.py",
+        "tests\\python\\test_experts.py",
+        "tests\\python\\test_experts_comprehensive.py",
+        "tests\\python\\test_experts_simple.py",
+        "tests\\python\\test_internet.py",
+        "tests\\python\\test_knowledge_builder.py",
+        "tests\\python\\test_learning.py",
+        "tests\\python\\test_memory.py",
+        "tests\\python\\test_normalizer.py",
+        "tests\\python\\test_project_report.py",
+        "tests\\python\\test_quality_gates.py",
+        "tests\\python\\test_reasoning_enhancement.py",
+        "tests\\python\\test_router_grpc.py",
+        "tests\\python\\test_runtime_integrations.py",
+        "tests\\python\\test_runtime_service.py",
+        "tests\\python\\test_skill_sync.py",
+        "tests\\python\\test_types.py",
+        "tests\\python\\test_unified.py"
+      ],
+      "typescript_file_list": [
+        "tests\\typescript\\browser_shell.test.ts",
+        "tests\\typescript\\python_gateway.test.ts",
+        "tests\\typescript\\runtime_paths.test.ts",
+        "tests\\typescript\\server.test.ts",
+        "tests\\typescript\\voice.test.ts",
+        "tests\\typescript\\ws.test.ts"
+      ]
+    },
+    "dependency_inventory": {
+      "node_runtime": 7,
+      "node_dev": 4,
+      "python_groups": {
+        "runtime": 25,
+        "dev": 12,
+        "training": 9
+      }
+    },
+    "npm_scripts": [
+      "build",
+      "build:all",
+      "build:python",
+      "build:rust",
+      "build:ts",
+      "build:web",
+      "chat",
+      "clean",
+      "dev",
+      "dev:backend",
+      "dev:both",
+      "dev:interface",
+      "dev:interface:raw",
+      "dev:terminal",
+      "docker:smoke",
+      "format",
+      "guard:placeholders",
+      "install:all",
+      "lint",
+      "report:inventory",
+      "report:project",
+      "runtime:start",
+      "runtime:status",
+      "runtime:stop",
+      "setup:python",
+      "setup:python:full",
+      "start",
+      "start:python",
+      "sync:metadata",
+      "test",
+      "test:all",
+      "test:coverage",
+      "test:python",
+      "test:python:suites",
+      "test:rust",
+      "test:ts",
+      "typecheck:ts",
+      "verify:project"
+    ]
+  },
+  "verification": {
+    "overall_status": "pass",
+    "commands": [
+      {
+        "name": "build",
+        "command": "npm run build",
+        "status": "pass",
+        "exit_code": 0,
+        "duration_sec": 41.572,
+        "passed": 0,
+        "failed": 0,
+        "warnings": 0,
+        "output_tail": "> waseem-brain@0.1.0 build\n> node scripts/build_dist.mjs\n\n[build] copied static assets to dist\\interface\\public\n[build] copied generated browser assets to dist\\interface\\generated\nProcessing .\\.\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Getting requirements to build wheel: started\n  Getting requirements to build wheel: finished with status 'done'\n  Preparing metadata (pyproject.toml): started\n  Preparing metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: waseem-brain\n  Building wheel for waseem-brain (pyproject.toml): started\n  Building wheel for waseem-brain (pyproject.toml): finished with status 'done'\n  Created wheel for waseem-brain: filename=waseem_brain-0.1.0-py3-none-any.whl size=187765 sha256=4230bd73714c3b2c240510e119fd3a2af69fb09aa04139004419e99553115ed5\n  Stored in directory: C:\\Users\\waseem\\AppData\\Local\\Temp\\pip-ephem-wheel-cache-nn3rkhbb\\wheels\\2f\\5b\\ec\\79efb360e8b9253b429548474e07e34bc86d30b77dae5ddfdb\nSuccessfully built waseem-brain\n[build] built Python wheel into dist\\python\n[build] dist ready at D:\\latest brain\\dist\nnpm warn Unknown env config \"npm-globalconfig\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"_jsr-registry\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      },
+      {
+        "name": "lint",
+        "command": "npm run lint",
+        "status": "pass",
+        "exit_code": 0,
+        "duration_sec": 18.258,
+        "passed": 0,
+        "failed": 0,
+        "warnings": 0,
+        "output_tail": "> waseem-brain@0.1.0 lint\n> node scripts/run_python.mjs -m ruff check --select E9,F63,F7,F82 brain/runtime.py brain/experts/expert.py brain/experts/pool.py brain/experts/registry.py brain/memory/vector_store.py scripts/runtime_daemon.py scripts/evolve_knowledge.py scripts/project_report.py scripts/sync_workspace_metadata.py && node scripts/run_python.mjs -m mypy --follow-imports=silent brain/runtime.py brain/experts/expert.py brain/experts/pool.py brain/experts/registry.py brain/memory/vector_store.py\n\nAll checks passed!\nSuccess: no issues found in 5 source files\nnpm warn Unknown env config \"npm-globalconfig\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"_jsr-registry\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      },
+      {
+        "name": "guard:placeholders",
+        "command": "npm run guard:placeholders",
+        "status": "pass",
+        "exit_code": 0,
+        "duration_sec": 1.249,
+        "passed": 0,
+        "failed": 0,
+        "warnings": 0,
+        "output_tail": "> waseem-brain@0.1.0 guard:placeholders\n> node scripts/run_python.mjs scripts/guard_no_placeholders.py\n\nPlaceholder guard passed for D:\\latest brain\nnpm warn Unknown env config \"npm-globalconfig\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"_jsr-registry\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      },
+      {
+        "name": "test:ts",
+        "command": "npm run test:ts",
+        "status": "pass",
+        "exit_code": 0,
+        "duration_sec": 64.672,
+        "passed": 25,
+        "failed": 0,
+        "warnings": 0,
+        "output_tail": "\u2714 query route returns 500 when stream fails before first token (36.6768ms)\n\u2714 query route appends stream error after partial output (24.4183ms)\n\u2714 file and voice routes accept multipart uploads on the root app (55.9999ms)\n\u2714 health route backfills capabilities for legacy runtime payloads (29.0641ms)\n\u2714 catalog and actions routes expose assistant-first metadata (29.3427ms)\n\u2714 VoiceRecorder captures audio chunks and returns capture metadata (9.7074ms)\n\u2714 VoiceRecorder rejects invalid state transitions (2.0843ms)\n\u2714 VoicePlayer writes payloads to disk and can skip auto-open (43.141ms)\n\u2714 streamToSocket sends token and done messages (1.9337ms)\n\u2714 streamToSocket sends error messages on failure (0.7973ms)\n\u2714 websocket route streams token and done messages (1065.2418ms)\n\u2714 websocket route returns an error on invalid json (71.9007ms)\n\u2714 assistant websocket streams structured assistant events (77.1754ms)\n\u2714 assistant websocket rejects action preview on compatibility fallback (50.8383ms)\n\u2139 tests 25\n\u2139 suites 0\n\u2139 pass 25\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 52166.741\nnpm warn Unknown env config \"npm-globalconfig\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"_jsr-registry\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      },
+      {
+        "name": "test:python",
+        "command": "npm run test:python",
+        "status": "pass",
+        "exit_code": 0,
+        "duration_sec": 23.515,
+        "passed": 146,
+        "failed": 0,
+        "warnings": 1,
+        "output_tail": "> waseem-brain@0.1.0 test:python\n> node scripts/run_python.mjs -m pytest tests/python -q\n\n........................................................................ [ 49%]\n........................................................................ [ 98%]\n..                                                                       [100%]\n============================== warnings summary ===============================\nbrain\\normalizer\\voice_adapter.py:3\n  D:\\latest brain\\brain\\normalizer\\voice_adapter.py:3: DeprecationWarning: 'audioop' is deprecated and slated for removal in Python 3.13\n    import audioop\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n146 passed, 1 warning in 19.07s\nnpm warn Unknown env config \"npm-globalconfig\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\nnpm warn Unknown env config \"_jsr-registry\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      }
+    ],
+    "commands_passed": 5,
+    "commands_failed": 0
+  },
+  "assistant_surfaces": {
+    "primary_contract": "/ws/assistant",
+    "web_console": {
+      "status": "ready",
+      "path": "interface/public/chat.html",
+      "missing_snippets": []
+    },
+    "browser_shell": {
+      "status": "ready",
+      "path": "interface/src/web/app.ts",
+      "missing_snippets": []
+    },
+    "assistant_ws_bridge": {
+      "status": "ready",
+      "path": "interface/src/ws/assistant.ts",
+      "missing_snippets": []
+    },
+    "catalog_route": {
+      "status": "ready",
+      "path": "interface/src/routes/catalog.ts",
+      "missing_snippets": []
+    },
+    "actions_route": {
+      "status": "ready",
+      "path": "interface/src/routes/actions.ts",
+      "missing_snippets": []
+    },
+    "terminal_console": {
+      "status": "ready",
+      "entrypoint": "pnpm run chat",
+      "autostart": true
+    },
+    "discovery_routes": {
+      "status": "ready",
+      "paths": [
+        "/health",
+        "/api/catalog",
+        "/api/actions"
+      ]
+    },
+    "runtime_daemon": {
+      "status": "running",
+      "host": "127.0.0.1",
+      "port": 55881
+    },
+    "docker_compose": {
+      "status": "ready",
+      "path": "docker-compose.yml",
+      "interface_public_port": true,
+      "runtime_internal_only": false,
+      "persistent_data_mount": true,
+      "persistent_logs_mount": true,
+      "persistent_tmp_mount": true
+    }
+  },
+  "docker_smoke": {
+    "status": "skipped",
+    "reason": "docker CLI is not available on PATH"
+  },
+  "runtime_health": {
+    "status": "ok",
+    "condition": "strong",
+    "ready": true,
+    "router_backend": "local",
+    "vector_backend": "hnsw",
+    "experts_available": 8,
+    "components": {
+      "router_artifact": "ready",
+      "response_policy": "ready",
+      "expert_registry": "ready",
+      "router_daemon": "not-needed",
+      "internet": "enabled",
+      "knowledge": "ready"
+    },
+    "capabilities": {
+      "model_free_core": true,
+      "api_key_required": false,
+      "self_improvement_scope": "knowledge-only",
+      "router_acceleration_optional": true,
+      "default_router_backend": "local"
+    }
+  }
+}

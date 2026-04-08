@@ -17,6 +17,13 @@ const healthPayload = {
   uptime_sec: 3,
   router_backend: "local",
   vector_backend: "hnsw",
+  capabilities: {
+    model_free_core: true,
+    api_key_required: false,
+    self_improvement_scope: "knowledge-only",
+    router_acceleration_optional: true,
+    default_router_backend: "local",
+  },
   components: {
     router_artifact: "ready",
     expert_registry: "ready",
@@ -245,5 +252,85 @@ test("file and voice routes accept multipart uploads on the root app", async () 
   );
   assert.equal(Buffer.from(fileRequest.input_base64, "base64").toString("utf-8"), "hello from file");
   assert.equal(Buffer.from(voiceRequest.input_base64, "base64").toString("utf-8"), "voice-bytes");
+  await app.close();
+});
+
+test("health route backfills capabilities for legacy runtime payloads", async () => {
+  const { capabilities: _unusedCapabilities, ...legacyHealthPayload } = healthPayload;
+  const app = createServer({
+    async *query(): AsyncIterable<string> {
+      yield "ok";
+    },
+    async health() {
+      return legacyHealthPayload as unknown as typeof healthPayload;
+    },
+    async recall() {
+      return [];
+    },
+    async experts() {
+      return { loaded: [], count: 0 };
+    },
+  });
+
+  const response = await app.inject({ method: "GET", url: "/health" });
+  assert.equal(response.statusCode, 200);
+  const payload = JSON.parse(response.body) as { capabilities: { default_router_backend: string; model_free_core: boolean } };
+  assert.equal(payload.capabilities.model_free_core, true);
+  assert.equal(payload.capabilities.default_router_backend, legacyHealthPayload.router_backend);
+  await app.close();
+});
+test("catalog and actions routes expose assistant-first metadata", async () => {
+  const app = createServer({
+    async *query(): AsyncIterable<string> {
+      yield "ok";
+    },
+    async health() {
+      return healthPayload;
+    },
+    async recall() {
+      return [];
+    },
+    async experts() {
+      return { loaded: [], count: 0 };
+    },
+    async actions() {
+      return {
+        groups: [
+          {
+            id: "system",
+            label: "Approved System Actions",
+            actions: [
+              {
+                id: "system.runtime.status",
+                label: "Runtime Status",
+                description: "Inspect the live runtime health.",
+                risk: "low",
+                read_only: true,
+                category: "system",
+                required_inputs: [],
+                confirmation_required: false,
+              },
+            ],
+          },
+        ],
+      };
+    },
+  });
+
+  const catalog = await app.inject({ method: "GET", url: "/api/catalog" });
+  assert.equal(catalog.statusCode, 200);
+  const catalogPayload = JSON.parse(catalog.body) as {
+    default_surface: string;
+    structured_session_ws_path: string;
+  };
+  assert.equal(catalogPayload.default_surface, "assistant");
+  assert.equal(catalogPayload.structured_session_ws_path, "/ws/assistant");
+
+  const actions = await app.inject({ method: "GET", url: "/api/actions" });
+  assert.equal(actions.statusCode, 200);
+  const actionPayload = JSON.parse(actions.body) as {
+    groups: Array<{ actions: Array<{ id: string }> }>;
+  };
+  assert.equal(actionPayload.groups[0]?.actions[0]?.id, "system.runtime.status");
   await app.close();
 });

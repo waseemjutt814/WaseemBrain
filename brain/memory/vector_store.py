@@ -1,20 +1,18 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
+import json
+import math
 from pathlib import Path
-import warnings
+from typing import Any, Protocol
 
 try:
-    import hnswlib  # type: ignore[import-untyped]
-    _HNSWLIB_AVAILABLE = True
+    import hnswlib as imported_hnswlib  # type: ignore[import-untyped]
 except ImportError:
-    _HNSWLIB_AVAILABLE = False
-    warnings.warn(
-        "hnswlib not available - vector search disabled. "
-        "Install: pip install hnswlib (requires Microsoft Visual C++ 14.0 Build Tools)",
-        ImportWarning,
-    )
+    imported_hnswlib = None
 
-from ..types import MemoryNode, MemoryNodeId, Result, err, ok
+_HNSWLIB_AVAILABLE = imported_hnswlib is not None
+
+from ..types import EmbeddingVector, MemoryNode, MemoryNodeId, Result, err, ok
 from .embedder import MemoryEmbedder
 from .sqlite_store import SqliteMetaStore
 
@@ -22,11 +20,154 @@ _MIN_INDEX_CAPACITY = 1024
 _DEFAULT_SEARCH_EF = 100
 _INDEX_CONSTRUCTION_EF = 200
 _INDEX_M = 16
+_TEXT_BACKEND_ALIASES = {"text", "fts", "sqlite", "text-fts-only"}
+
+
+class _IndexProtocol(Protocol):
+    def init_index(self, *, max_elements: int, ef_construction: int, m: int) -> None: ...
+
+    def load_index(self, path: str, *, max_elements: int) -> None: ...
+
+    def save_index(self, path: str) -> None: ...
+
+    def add_items(self, vectors: list[list[float]], labels: list[int]) -> None: ...
+
+    def knn_query(self, vector: list[float], *, k: int) -> tuple[list[list[int]], list[list[float]]]: ...
+
+    def get_current_count(self) -> int: ...
+
+    def get_max_elements(self) -> int: ...
+
+    def resize_index(self, max_elements: int) -> None: ...
+
+    def set_ef(self, value: int) -> None: ...
+
+
+class _NativeHnswIndex:
+    def __init__(self, dimensions: int) -> None:
+        assert imported_hnswlib is not None
+        self._index = imported_hnswlib.Index(space="cosine", dim=dimensions)
+
+    def init_index(self, *, max_elements: int, ef_construction: int, m: int) -> None:
+        self._index.init_index(max_elements=max_elements, ef_construction=ef_construction, M=m)
+
+    def load_index(self, path: str, *, max_elements: int) -> None:
+        self._index.load_index(path, max_elements=max_elements)
+
+    def save_index(self, path: str) -> None:
+        self._index.save_index(path)
+
+    def add_items(self, vectors: list[list[float]], labels: list[int]) -> None:
+        self._index.add_items(vectors, labels)
+
+    def knn_query(self, vector: list[float], *, k: int) -> tuple[list[list[int]], list[list[float]]]:
+        labels, distances = self._index.knn_query(vector, k=k)
+        return [list(row) for row in labels], [list(row) for row in distances]
+
+    def get_current_count(self) -> int:
+        return int(self._index.get_current_count())
+
+    def get_max_elements(self) -> int:
+        return int(self._index.get_max_elements())
+
+    def resize_index(self, max_elements: int) -> None:
+        self._index.resize_index(max_elements)
+
+    def set_ef(self, value: int) -> None:
+        self._index.set_ef(value)
+
+
+class _PortableHnswIndex:
+    def __init__(self, dimensions: int) -> None:
+        self._dimensions = dimensions
+        self._max_elements = _MIN_INDEX_CAPACITY
+        self._vectors: dict[int, list[float]] = {}
+
+    def init_index(self, *, max_elements: int, ef_construction: int, m: int) -> None:
+        del ef_construction, m
+        self._max_elements = max(max_elements, _MIN_INDEX_CAPACITY)
+        self._vectors = {}
+
+    def load_index(self, path: str, *, max_elements: int) -> None:
+        try:
+            payload = json.loads(Path(path).read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RuntimeError(f"failed to load portable index: {exc}") from exc
+        if not isinstance(payload, dict):
+            raise RuntimeError("portable index payload must be a JSON object")
+        dimensions = int(payload.get("dimensions", self._dimensions))
+        if dimensions != self._dimensions:
+            raise RuntimeError(
+                f"portable index dimensions mismatch: expected {self._dimensions}, got {dimensions}"
+            )
+        raw_records = payload.get("records", [])
+        if not isinstance(raw_records, list):
+            raise RuntimeError("portable index records must be a list")
+        records: dict[int, list[float]] = {}
+        for item in raw_records:
+            if not isinstance(item, dict):
+                raise RuntimeError("portable index record must be a dict")
+            label = int(item["label"])
+            vector = [float(value) for value in item["vector"]]
+            if len(vector) != self._dimensions:
+                raise RuntimeError(
+                    f"portable index vector dimensions mismatch for label {label}: {len(vector)}"
+                )
+            records[label] = vector
+        self._vectors = records
+        stored_max = int(payload.get("max_elements", len(records) or _MIN_INDEX_CAPACITY))
+        self._max_elements = max(stored_max, max_elements, len(records), _MIN_INDEX_CAPACITY)
+
+    def save_index(self, path: str) -> None:
+        payload = {
+            "dimensions": self._dimensions,
+            "max_elements": self._max_elements,
+            "records": [
+                {"label": label, "vector": vector}
+                for label, vector in sorted(self._vectors.items())
+            ],
+        }
+        Path(path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    def add_items(self, vectors: list[list[float]], labels: list[int]) -> None:
+        for vector, label in zip(vectors, labels, strict=True):
+            if len(vector) != self._dimensions:
+                raise RuntimeError(
+                    f"portable index vector dimensions mismatch: {len(vector)} != {self._dimensions}"
+                )
+            new_count = len(self._vectors) + (0 if label in self._vectors else 1)
+            if new_count > self._max_elements:
+                raise RuntimeError(
+                    f"portable index capacity exceeded: {new_count} > {self._max_elements}"
+                )
+            self._vectors[int(label)] = [float(value) for value in vector]
+
+    def knn_query(self, vector: list[float], *, k: int) -> tuple[list[list[int]], list[list[float]]]:
+        scored = sorted(
+            self._vectors.items(),
+            key=lambda item: _cosine_similarity(vector, item[1]),
+            reverse=True,
+        )[:k]
+        labels = [[label for label, _ in scored]]
+        distances = [[1.0 - _cosine_similarity(vector, values) for _, values in scored]]
+        return labels, distances
+
+    def get_current_count(self) -> int:
+        return len(self._vectors)
+
+    def get_max_elements(self) -> int:
+        return self._max_elements
+
+    def resize_index(self, max_elements: int) -> None:
+        self._max_elements = max(max_elements, len(self._vectors), _MIN_INDEX_CAPACITY)
+
+    def set_ef(self, value: int) -> None:
+        del value
 
 
 class _TextOnlyVectorStore:
-    """Fallback vector store that only uses SQLite FTS when hnswlib is unavailable."""
-    
+    """Fallback vector store that only uses SQLite FTS."""
+
     def __init__(
         self,
         storage_dir: Path,
@@ -41,7 +182,8 @@ class _TextOnlyVectorStore:
         self._dimensions = dimensions
 
     def add(self, node: MemoryNode) -> Result[None, str]:
-        self._sqlite_store.upsert_node(node, vector_label=None)
+        vector_label = self._next_label()
+        self._sqlite_store.upsert_node(node, vector_label=vector_label)
         return ok(None)
 
     def search(self, query_text: str, limit: int) -> Result[list[MemoryNode], str]:
@@ -57,6 +199,7 @@ class _TextOnlyVectorStore:
         return ok(node)
 
     def delete(self, node_id: MemoryNodeId) -> Result[None, str]:
+        del node_id
         return err("Memory deletion is not implemented")
 
     def update_access(self, node_id: MemoryNodeId) -> Result[None, str]:
@@ -66,7 +209,10 @@ class _TextOnlyVectorStore:
         return self._sqlite_store.list_nodes()
 
     def persist_node(self, node: MemoryNode) -> None:
-        self._sqlite_store.upsert_node(node, vector_label=None)
+        label = self._sqlite_store.get_vector_label(node["id"])
+        if label is None:
+            label = self._next_label()
+        self._sqlite_store.upsert_node(node, vector_label=label)
 
     def count(self) -> int:
         return len(self._sqlite_store.list_nodes())
@@ -75,7 +221,15 @@ class _TextOnlyVectorStore:
         return "text-fts-only"
 
     def close(self) -> None:
-        pass
+        return None
+
+    def _next_label(self) -> int:
+        labels = [
+            label
+            for node in self._sqlite_store.list_nodes()
+            if (label := self._sqlite_store.get_vector_label(node["id"])) is not None
+        ]
+        return max(labels, default=0) + 1
 
 
 class ChromaVectorStore:
@@ -87,28 +241,36 @@ class ChromaVectorStore:
         sqlite_store: SqliteMetaStore | None = None,
         dimensions: int = 384,
     ) -> None:
-        del backend_preference
-        
-        # Use fallback if hnswlib unavailable
-        if not _HNSWLIB_AVAILABLE:
-            self._impl = _TextOnlyVectorStore(storage_dir, embedder, sqlite_store, dimensions)
-            return
-        
         self._storage_dir = Path(storage_dir)
         self._storage_dir.mkdir(parents=True, exist_ok=True)
         self._embedder = embedder or MemoryEmbedder()
         self._sqlite_store = sqlite_store or SqliteMetaStore(self._storage_dir)
         self._index_path = self._storage_dir / "memory.index"
         self._dimensions = dimensions
-        self._index = hnswlib.Index(space="cosine", dim=self._dimensions)
+        self._backend_preference = backend_preference.strip().lower() or "auto"
+        self._impl: _TextOnlyVectorStore | None = None
+
+        if self._backend_preference in _TEXT_BACKEND_ALIASES:
+            self._impl = _TextOnlyVectorStore(
+                self._storage_dir,
+                self._embedder,
+                self._sqlite_store,
+                dimensions,
+            )
+            return
+
+        self._index: _IndexProtocol = _create_index(self._dimensions)
         self._initialize_index()
-        self._impl = None
 
     def add(self, node: MemoryNode) -> Result[None, str]:
         if self._impl is not None:
             return self._impl.add(node)
         existing_label = self._sqlite_store.get_vector_label(node["id"])
-        vector_label = self._next_label() if existing_label is None else existing_label
+        if existing_label is not None:
+            self._sqlite_store.upsert_node(node, vector_label=existing_label)
+            self._rebuild_index_from_sqlite()
+            return ok(None)
+        vector_label = self._next_label()
         self._ensure_capacity(self._index.get_current_count() + 1)
         self._index.add_items([list(node["embedding"])], [vector_label])
         self._sqlite_store.upsert_node(node, vector_label=vector_label)
@@ -137,6 +299,7 @@ class ChromaVectorStore:
     def delete(self, node_id: MemoryNodeId) -> Result[None, str]:
         if self._impl is not None:
             return self._impl.delete(node_id)
+        del node_id
         return err("Memory deletion is not implemented in the hardened store")
 
     def update_access(self, node_id: MemoryNodeId) -> Result[None, str]:
@@ -158,7 +321,7 @@ class ChromaVectorStore:
             self.add(node)
             return
         self._sqlite_store.upsert_node(node, vector_label=label)
-        self._save_index()
+        self._rebuild_index_from_sqlite()
 
     def count(self) -> int:
         if self._impl is not None:
@@ -186,16 +349,13 @@ class ChromaVectorStore:
                 if self._index.get_current_count() == len(labels):
                     return
             except RuntimeError:
-                self._index = hnswlib.Index(space="cosine", dim=self._dimensions)
+                self._index = _create_index(self._dimensions)
         self._rebuild_index(labels, vectors)
 
     def _next_label(self) -> int:
-        existing_nodes = self._sqlite_store.list_nodes()
-        if not existing_nodes:
-            return 1
         existing_labels = [
             label
-            for node in existing_nodes
+            for node in self._sqlite_store.list_nodes()
             if (label := self._sqlite_store.get_vector_label(node["id"])) is not None
         ]
         return max(existing_labels, default=0) + 1
@@ -254,11 +414,11 @@ class ChromaVectorStore:
         self._rebuild_index(labels, vectors)
 
     def _rebuild_index(self, labels: list[int], vectors: list[list[float]]) -> None:
-        self._index = hnswlib.Index(space="cosine", dim=self._dimensions)
+        self._index = _create_index(self._dimensions)
         self._index.init_index(
             max_elements=self._next_capacity(len(labels)),
             ef_construction=_INDEX_CONSTRUCTION_EF,
-            M=_INDEX_M,
+            m=_INDEX_M,
         )
         if labels:
             self._index.add_items(vectors, labels)
@@ -282,3 +442,20 @@ class ChromaVectorStore:
 
     def _set_search_ef(self, query_limit: int = 0) -> None:
         self._index.set_ef(max(_DEFAULT_SEARCH_EF, query_limit))
+
+
+def _create_index(dimensions: int) -> _IndexProtocol:
+    if _HNSWLIB_AVAILABLE:
+        return _NativeHnswIndex(dimensions)
+    return _PortableHnswIndex(dimensions)
+
+
+def _cosine_similarity(left: list[float], right: list[float] | EmbeddingVector) -> float:
+    numerator = sum(a * b for a, b in zip(left, right, strict=True))
+    left_norm = math.sqrt(sum(value * value for value in left)) or 1.0
+    right_norm = math.sqrt(sum(value * value for value in right)) or 1.0
+    return numerator / (left_norm * right_norm)
+
+
+
+

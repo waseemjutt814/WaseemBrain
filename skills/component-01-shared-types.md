@@ -8,7 +8,7 @@ Build the shared type system in `brain/types.py` so all later components import 
 - Do not implement normalizer, emotion, memory, experts, internet, learning, coordinator, TS API, or Rust daemon here.
 
 ## Global Context (paste before execution)
-- Architecture: Lattice Brain with lightweight router + dynamically loaded experts.
+- Architecture: WaseemBrain with lightweight router + dynamically loaded experts.
 - Stack: Rust router daemon, Python core, TypeScript interface, SQLite metadata.
 - Quality rules:
   - Full type annotations only.

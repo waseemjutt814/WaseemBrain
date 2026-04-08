@@ -1,0 +1,101 @@
+[
+  {
+    "domain": "cryptography",
+    "topic": "Quantum resistant algorithms",
+    "new_info": "Post-quantum cryptography is important for future security...",
+    "source": "NIST recommendations",
+    "suggested_at": "2026-04-06T00:23:42.776820",
+    "status": "pending_review",
+    "validation_score": 0.6
+  },
+  {
+    "domain": "cryptography",
+    "topic": "Quantum resistant algorithms",
+    "new_info": "Post-quantum cryptography is important for future security...",
+    "source": "NIST recommendations",
+    "suggested_at": "2026-04-06T00:26:58.659885",
+    "status": "pending_review",
+    "validation_score": 0.6
+  },
+  {
+    "domain": "cryptography",
+    "topic": "Quantum resistant algorithms",
+    "new_info": "Post-quantum cryptography is important for future security...",
+    "source": "NIST recommendations",
+    "suggested_at": "2026-04-06T00:27:21.826474",
+    "status": "pending_review",
+    "validation_score": 0.6
+  },
+  {
+    "domain": "cryptography",
+    "topic": "Quantum resistant algorithms",
+    "new_info": "Post-quantum cryptography is important for future security...",
+    "source": "NIST recommendations",
+    "suggested_at": "2026-04-06T00:27:29.460864",
+    "status": "pending_review",
+    "validation_score": 0.6
+  },
+  {
+    "domain": "cryptography",
+    "topic": "Quantum resistant algorithms",
+    "new_info": "Post-quantum cryptography is important for future security...",
+    "source": "NIST recommendations",
+    "suggested_at": "2026-04-06T00:27:35.066126",
+    "status": "pending_review",
+    "validation_score": 0.6
+  },
+  {
+    "domain": "cryptography",
+    "topic": "Quantum resistant algorithms",
+    "new_info": "Post-quantum cryptography is important for future security...",
+    "source": "NIST recommendations",
+    "suggested_at": "2026-04-06T00:27:41.877540",
+    "status": "pending_review",
+    "validation_score": 0.6
+  },
+  {
+    "domain": "cybersecurity",
+    "topic": "SQL Injection",
+    "new_info": "SQL injection is a code injection technique used to attack databases",
+    "source": "OWASP",
+    "suggested_at": "2026-04-06T00:46:32.263037",
+    "status": "pending_review",
+    "validation_score": 0.8
+  },
+  {
+    "domain": "cybersecurity",
+    "topic": "SQL Injection",
+    "new_info": "SQL injection is a code injection technique used to attack databases",
+    "source": "OWASP",
+    "suggested_at": "2026-04-06T00:48:17.953761",
+    "status": "pending_review",
+    "validation_score": 0.8
+  },
+  {
+    "domain": "cybersecurity",
+    "topic": "SQL Injection",
+    "new_info": "SQL injection is a code injection technique used to attack databases",
+    "source": "OWASP",
+    "suggested_at": "2026-04-06T00:48:24.387890",
+    "status": "pending_review",
+    "validation_score": 0.8
+  },
+  {
+    "domain": "cybersecurity",
+    "topic": "SQL Injection",
+    "new_info": "SQL injection is a code injection technique used to attack databases",
+    "source": "OWASP",
+    "suggested_at": "2026-04-06T00:48:32.652399",
+    "status": "pending_review",
+    "validation_score": 0.8
+  },
+  {
+    "domain": "cybersecurity",
+    "topic": "SQL Injection",
+    "new_info": "SQL injection is a code injection technique used to attack databases",
+    "source": "OWASP",
+    "suggested_at": "2026-04-06T01:01:26.729864",
+    "status": "pending_review",
+    "validation_score": 0.8
+  }
+]

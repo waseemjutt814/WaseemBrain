@@ -1,170 +1,164 @@
-<!-- internal-author: Muhammad Waseem Akram -->
+<p align="center">
+  <img src="assets/waseembrain-logo.svg" alt="Waseem Brain logo" width="980" />
+</p>
 
-# Lattice Brain
+<p align="center">
+  <strong>Waseem Brain</strong><br />
+  Assistant-first local intelligence runtime with grounded chat, hybrid agent power, protected automation, memory, repo work, and live voice-ready delivery.
+</p>
 
-Lattice Brain is a CPU-first local AI stack built around a Python runtime, a TypeScript Fastify interface, and an optional Rust router daemon. The current repo is designed for real execution: grounded experts, persistent memory, routeable input modalities, measurable traces, and quality gates that reject placeholder behavior.
+<p align="center">
+  Created, architected, and owned by <strong>Muhammad Waseem Akram</strong>.<br />
+  Source-visible and restricted-use. This repository is not open source.
+</p>
 
-Author: Muhammad Waseem Akram
+## Ownership And Usage Status
+Waseem Brain is source-visible for inspection and private evaluation only. Permission to reuse, modify, redistribute, benchmark publicly, train on, commercialize, deploy as a service, or extract substantial parts of the codebase is not granted by default.
 
-## What The Repo Does Today
+See [LICENSE.md](LICENSE.md) and [NOTICE.md](NOTICE.md).
 
-- Runs local chat and query flows through `brain/` with normalization, emotion tagging, routing, memory recall, expert execution, and response assembly.
-- Exposes HTTP and WebSocket entrypoints from `interface/src/`.
-- Supports a real terminal chat flow through `scripts/chat_cli.py`.
-- Stores memory in SQLite metadata plus an HNSW vector index under `data/`.
-- Uses manifest-driven experts in `experts/base/` and a trained router artifact in `experts/router.json`.
-- Records turn traces that can later train a response policy when enough real data exists.
+## Product Direction
+Waseem Brain is being rebuilt as one professional assistant product instead of a dashboard collection.
+
+Current direction:
+- local grounded mode is the explicit default and works without an API key or a required local LLM
+- hybrid mode stays optional and additive: memory, repo search, web grounding, and protected automation remain local while an OpenAI-compatible backend upgrades answer quality when configured
+- the main web surface is assistant-first: chat in the center, voice inline, proof on every meaningful answer, and actions/settings as secondary panels
+- the terminal is being upgraded to the same assistant protocol with modes, searchable actions, proof, and runtime status
+- dangerous automation never runs silently; preview plus confirmation is required
+
+## Main Surfaces
+- Web assistant console: `/chat.html`
+- Structured assistant websocket: `GET /ws/assistant`
+- Action catalog: `GET /api/actions`
+- Runtime health: `GET /health`
+- Compatibility routes: `/query/text`, `/query/url`, `/query/file`, `/query/voice`, and `/ws`
+
+## Runtime Modes
+- `local grounded`: no external model required; answers come from workspace evidence, built-in knowledge, memory, repo search, and available tools
+- `hybrid`: same local grounding plus an OpenAI-compatible model for broader conversational and coding quality when configured
+- `protected actions`: system reads execute immediately when safe; state-changing actions require preview and explicit confirmation
 
 ## Quick Start
-
-Install Python, Node, and repo dependencies:
-
-```powershell
-python -m pip install -r requirements-runtime.txt -r requirements-dev.txt
-python -m pip install -r requirements-training.txt
+```bash
 pnpm install
+pnpm run setup:python
+pnpm run dev
 ```
 
-Prepare the runtime, warm real backends, and run a smoke query:
+`pnpm run dev` opens the launcher for interface, terminal, both, or backend only. Interface and terminal flows auto-start the backend daemon when needed.
 
-```powershell
-run.bat prepare
+Direct entrypoints:
+```bash
+pnpm run chat
+pnpm run dev:interface
+pnpm run dev:terminal
+pnpm run dev:both
+pnpm run runtime:start
 ```
 
-Open the interactive CLI chat:
-
-```powershell
-run.bat chat
+## Docker Compose
+```bash
+docker compose up --build
 ```
 
-Show the branded runtime dashboard only:
+Compose runs two real services:
+- `brain-runtime`: the Python assistant runtime daemon on the internal Compose network
+- `interface`: the Fastify assistant console on `8080`
 
-```powershell
-python scripts/chat_cli.py --dashboard
-```
+Healthchecks are included for both services, shared `data/logs/tmp` directories persist on the host, and only the browser surface is published by default.
 
-Start the Fastify development server:
-
-```powershell
-run.bat dev
-```
-
-## Common Commands
-
-```powershell
-run.bat prepare
-run.bat chat
-run.bat bench
-run.bat build
-run.bat test
-run.bat doctor
-run.bat router-status
-run.bat router-stop
-```
-
-Useful direct script entrypoints:
-
-```powershell
-python scripts/chat_cli.py --once "what is the capital of France"
-python scripts/chat_cli.py --once --modality url "https://example.com"
-python scripts/prepare_runtime.py --skip-smoke-query
-python scripts/manage_router_daemon.py start --skip-build
-python scripts/benchmark.py "hello world" --iterations 5
-```
-
-## Interfaces
-
-HTTP routes exposed by the TypeScript layer:
-
-- `POST /query`
-- `POST /query/text`
-- `POST /query/url`
-- `POST /query/file`
-- `POST /query/voice`
-- `GET /health`
-- `GET /memory/recall`
-- `GET /experts`
-
-CLI features exposed by `scripts/chat_cli.py`:
-
-- one-shot queries with `--once`
-- interactive chat with `/health`, `/experts`, `/recall <text>`, `/quit`
-- branded `Waseem Brain` dashboard with `/status`, `/dashboard`, `/learning`, `/project`, and `/clear`
-- per-turn metrics such as `response_tokens`, `expert_id`, `response_mode`, `confidence`, and `decision_trace`
-
-## Documentation Map
-
-- [COMPLETE_STRUCTURE_AND_DETAILS.md](COMPLETE_STRUCTURE_AND_DETAILS.md): canonical full-project guide
-- [01_PHYSICS_AND_REASONING.md](01_PHYSICS_AND_REASONING.md): design principles and constraints
-- [02_ARCHITECTURE_OVERVIEW.md](02_ARCHITECTURE_OVERVIEW.md): runtime topology and data flow
-- [03_COMPONENTS_DEEP_DIVE.md](03_COMPONENTS_DEEP_DIVE.md): module-by-module implementation notes
-- [04_DEPENDENCIES_AND_STACK.md](04_DEPENDENCIES_AND_STACK.md): dependency groups and toolchain
-- [05_PROJECT_STRUCTURE.md](05_PROJECT_STRUCTURE.md): source tree map
-- [PLAN.md](PLAN.md): current near-term roadmap and remaining gaps
-- [ALGORITHMIC_BRAIN_PLAN.md](ALGORITHMIC_BRAIN_PLAN.md): long-range product direction
-- [06_MASTER_BUILD_PROMPT.md](06_MASTER_BUILD_PROMPT.md): contributor prompt for AI-assisted work
+## Configuration
+Use `.env.example` as the baseline. The assistant rebuild adds these important controls:
+- `ASSISTANT_MODE=local|hybrid`
+- `MODEL_PROVIDER=openai_compatible`
+- `MODEL_BASE_URL`
+- `MODEL_NAME`
+- `MODEL_API_KEY`
+- `VOICE_TTS_ENABLED=true|false`
+- `ACTION_AUDIT_PATH`
 
 ## Verification
-
-```powershell
-python -m ruff check brain tests/python scripts
-python -m mypy brain
-python -m pytest tests/python -q
-python -m compileall brain tests/python scripts
-python scripts/guard_no_placeholders.py
+Fast gate:
+```bash
 pnpm test
-pnpm run build
-powershell -ExecutionPolicy Bypass -File scripts/test_rust.ps1
 ```
 
-## Honest Notes
+That runs:
+- lint
+- placeholder guard
+- TypeScript suite
+- Python suite
 
-- `scripts/prepare_runtime.py` only trains `experts/response-policy.json` when real trace files exist. Otherwise it reports an honest skip.
-- Voice warmup is real, not mocked, and is skipped when the system drive has less than 2 GiB free for model cache.
-- `brain/runtime.py` still reports `ready: true` in health snapshots even when the system is running in a degraded state. That gap is tracked in [PLAN.md](PLAN.md).
-- The repo currently ships three checked-in experts: `language-en`, `code-general`, and `geography`.
+Full report with counts, pass/fail, and project inventory:
+```bash
+pnpm run report:project
+```
 
-[INFO] Starting local router daemon...
+Industrial Docker smoke:
+```bash
+pnpm run docker:smoke
+```
 
-                    W   W  AAAAA  SSSSS  EEEEE  EEEEE  M   M        BBBB   RRRR    AAAAA  III  N   N
-                    W   W  A   A  S      E      E      MM MM        B   B  R   R   A   A   I   NN  N
-                    W W W  AAAAA  SSSS   EEE    EEE    M M M        BBBB   RRRR    AAAAA   I   N N N
-                    WW WW  A   A      S  E      E      M   M        B   B  R R     A   A   I   N  NN
-                    W   W  A   A  SSSSS  EEEEE  EEEEE  M   M        BBBB   R  RR   A   A  III  N   N
-                             Waseem Brain Terminal | Runtime | Memory | Experts | Learning
-========================================================================================================================
-+- Project Condition --------------------------------------------------------------------------------------------------+
-| brain name       : Waseem Brain                                                                                      |
-| condition        : READY | response policy still in rule-default mode                                                |   
-| session          : cli-1774707039                                                                                    |   
-| pipeline         : normalize > emotion > route > memory > experts > render                                           |   
-+----------------------------------------------------------------------------------------------------------------------+   
-+- Runtime Status -----------------------------------------------------------------------------------------------------+   
-| router           : auto | artifact ready | daemon pid 13564 port 50051 | uptime 14.1h                                |   
-| memory           : 3 nodes | backend hnsw | index data\chroma\memory.index                                           |   
-| experts          : 3 available | 0 loaded | max 3                                                                    |   
-| expert ids       : language-en, code-general, geography                                                              |   
-| internet         : enabled | max 5 requests per query                                                                |   
-| warmup           : text=ready | embedder=sentence-transformers | voice=not warmed                                    |   
-+----------------------------------------------------------------------------------------------------------------------+   
-+- Learning Status ----------------------------------------------------------------------------------------------------+
-| learning         : enabled | backend auto                                                                            |   
-| response policy  : rule-default                                                                                      |   
-| trace corpus     : 0 session files | 0 turns                                                                         |   
-| expert traces    : 0 files | 0 turns                                                                                 |   
-| training jobs    : 0 pending manifests | 0 datasets                                                                  |   
-| learning phase   : collecting real traces                                                                            |   
-+----------------------------------------------------------------------------------------------------------------------+   
-+- Commands -----------------------------------------------------------------------------------------------------------+
-| /status or /dashboard : full branded runtime dashboard                                                               |   
-| /learning             : learning-only status panel                                                                   |   
-| /project              : project condition summary                                                                    |   
-| /health               : raw runtime health snapshot                                                                  |   
-| /experts              : currently loaded expert ids                                                                  |   
-| /recall <text>        : inspect memory recall results                                                                |   
-| /clear                : redraw the Waseem Brain screen                                                               |   
-| /quit                 : exit the terminal chat                                                                       |   
-+----------------------------------------------------------------------------------------------------------------------+   
-Waseem Brain terminal is live. Type /status to see the full dashboard.
+That report writes:
+- `logs/project_report.json`
+- `logs/project_report.md`
 
-waseem@terminal>
+It includes:
+- total file count
+- top-level directory counts
+- extension counts
+- Python function, async-function, and class counts
+- test file counts
+- per-command pass/fail summaries
+- runtime health snapshot
+
+## Architecture
+| Layer | Responsibility |
+| --- | --- |
+| `brain/` | assistant orchestration, coordinator logic, memory, routing, learning, provider integration, and health |
+| `interface/` | Fastify server, assistant websocket, action/catalog routes, browser shell, and generated web assets |
+| `experts/` | expert manifests, router artifact, response policy, and bootstrap knowledge |
+| `scripts/` | daemon lifecycle, terminal client, build/report tooling, metadata sync, and safety guards |
+| `tests/` | Python and TypeScript verification for runtime, routes, browser shell, assistant websocket, and quality gates |
+| `dist/` | deployable bundle output |
+
+## Repository Landmarks
+- `brain/runtime.py`: main assistant runtime and health surface
+- `brain/assistant/`: assistant orchestration, provider abstraction, action registry, and event types
+- `interface/src/server.ts`: interface bootstrap, gateway selection, and backend autostart logic
+- `interface/src/ws/assistant.ts`: structured assistant session bridge for web chat, voice, and protected actions
+- `interface/src/web/`: assistant-first web UI sources
+- `scripts/chat_cli.py`: terminal assistant console
+- `scripts/guard_no_placeholders.py`: no-fake-work safety gate
+- `scripts/project_report.py`: one-command inventory and verification summary
+
+## Living Roadmap
+The industrial implementation roadmap and completion log live in docs/INDUSTRIAL_REBUILD_PLAN.md.
+
+## Build And Dist
+```bash
+pnpm run build
+```
+
+That produces `dist/` with:
+- compiled Fastify server code
+- generated browser assets
+- runtime public assets
+- Python runtime source
+- expert registry and bootstrap knowledge
+- runtime bridge/daemon scripts
+- Python wheel and runtime dependency snapshot
+- copied license and ownership files
+
+## Protection Model
+Readable source cannot be meaningfully DRM-protected once it is shared in Git form. The practical protection applied in this repository is intentional and honest:
+- a source-visible restricted-use license in `LICENSE.md`
+- explicit author and ownership notice in `NOTICE.md`
+- `package.json` remains `private` to reduce accidental registry publication
+- build artifacts inherit the same licensing and ownership metadata
+
+## Author And Stewardship
+Waseem Brain was created and is actively developed by **Muhammad Waseem Akram**.
+
+Product direction, architecture, implementation, branding, and licensing authority remain with the author. If someone wants reuse, deployment, derivative rights, or commercial access, that permission should come from the author in writing.

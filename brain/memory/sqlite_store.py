@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
+import threading
 import time
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -20,6 +21,10 @@ from ..types import (
     ok,
 )
 
+# Connection pool settings
+_POOL_MAX_SIZE = 5
+_POOL_TIMEOUT_SEC = 30.0
+
 # Older installs may have node_meta from a smaller schema; CREATE TABLE IF NOT EXISTS does not
 # upgrade columns. These ALTERs bring legacy databases in line with current code.
 _NODE_META_COLUMN_MIGRATIONS: tuple[tuple[str, str], ...] = (
@@ -32,16 +37,23 @@ _NODE_META_COLUMN_MIGRATIONS: tuple[tuple[str, str], ...] = (
     ("confidence", "REAL NOT NULL DEFAULT 0.5"),
     ("session_id", "TEXT NOT NULL DEFAULT ''"),
     ("embedding_json", "TEXT NOT NULL DEFAULT '[]'"),
+    ("vector_label", "INTEGER UNIQUE NOT NULL DEFAULT 0"),
 )
 _FTS_TOKEN_PATTERN = re.compile(r"[A-Za-z0-9_/-]{2,}")
 _MAX_FTS_TERMS = 12
 
 
 class SqliteMetaStore:
-    def __init__(self, sqlite_dir: Path) -> None:
+    """SQLite metadata store with connection pooling for improved concurrency."""
+    
+    def __init__(self, sqlite_dir: Path, pool_size: int = _POOL_MAX_SIZE) -> None:
         self._sqlite_dir = Path(sqlite_dir)
         self._sqlite_dir.mkdir(parents=True, exist_ok=True)
         self._db_path = self._sqlite_dir / "metadata.db"
+        self._pool_size = min(pool_size, _POOL_MAX_SIZE)
+        self._pool: list[sqlite3.Connection] = []
+        self._pool_lock = threading.Lock()
+        self._initialized = False
         self._initialize()
 
     def create_session(self, session_id: SessionId) -> Result[None, str]:
@@ -158,7 +170,128 @@ class SqliteMetaStore:
         return self._row_to_node(row, provenance_rows)
 
     def get_nodes(self, node_ids: list[MemoryNodeId]) -> list[MemoryNode]:
-        return [node for node_id in node_ids if (node := self.get_node(node_id)) is not None]
+        """Batch retrieval of nodes for improved performance."""
+        if not node_ids:
+            return []
+        with self._connection() as connection:
+            placeholders = ", ".join("?" for _ in node_ids)
+            rows = connection.execute(
+                f"""
+                SELECT id, content, source, source_type, created_at, last_accessed,
+                       access_count, confidence, session_id, embedding_json
+                FROM node_meta
+                WHERE id IN ({placeholders})
+                """,
+                [str(nid) for nid in node_ids],
+            ).fetchall()
+            
+            # Get all provenance in one query
+            provenance_map: dict[str, list[tuple[object, ...]]] = {}
+            prov_rows = connection.execute(
+                f"""
+                SELECT node_id, source_type, source_id, label, uri, snippet
+                FROM node_provenance
+                WHERE node_id IN ({placeholders})
+                ORDER BY node_id, rowid ASC
+                """,
+                [str(nid) for nid in node_ids],
+            ).fetchall()
+            for row in prov_rows:
+                node_id = str(row[0])
+                if node_id not in provenance_map:
+                    provenance_map[node_id] = []
+                provenance_map[node_id].append(row[1:])
+        
+        return [
+            self._row_to_node(row, provenance_map.get(str(row[0]), []))
+            for row in rows
+        ]
+    
+    def upsert_nodes_batch(self, nodes: list[tuple[MemoryNode, int]]) -> Result[None, str]:
+        """Batch upsert multiple nodes with their vector labels.
+        
+        Args:
+            nodes: List of (MemoryNode, vector_label) tuples
+        
+        Returns:
+            Result indicating success or error
+        """
+        if not nodes:
+            return ok(None)
+        
+        with self._connection() as connection:
+            # Batch insert nodes
+            connection.executemany(
+                """
+                INSERT INTO node_meta(
+                    id, content, source, source_type, created_at, last_accessed,
+                    access_count, confidence, session_id, vector_label, embedding_json
+                )
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                    content = excluded.content,
+                    source = excluded.source,
+                    source_type = excluded.source_type,
+                    last_accessed = excluded.last_accessed,
+                    access_count = excluded.access_count,
+                    confidence = excluded.confidence,
+                    session_id = excluded.session_id,
+                    vector_label = excluded.vector_label,
+                    embedding_json = excluded.embedding_json
+                """,
+                [
+                    (
+                        str(node["id"]),
+                        node["content"],
+                        node["source"],
+                        node["source_type"],
+                        node["created_at"],
+                        node["last_accessed"],
+                        node["access_count"],
+                        node["confidence"],
+                        str(node["session_id"]),
+                        label,
+                        json.dumps(list(node["embedding"])),
+                    )
+                    for node, label in nodes
+                ],
+            )
+            
+            # Delete old provenance and search entries
+            node_ids = [str(node["id"]) for node, _ in nodes]
+            placeholders = ", ".join("?" for _ in node_ids)
+            connection.execute(f"DELETE FROM node_provenance WHERE node_id IN ({placeholders})", node_ids)
+            connection.execute(f"DELETE FROM node_search WHERE id IN ({placeholders})", node_ids)
+            
+            # Batch insert search entries
+            connection.executemany(
+                "INSERT INTO node_search(id, content) VALUES(?, ?)",
+                [(str(node["id"]), node["content"]) for node, _ in nodes],
+            )
+            
+            # Batch insert provenance
+            provenance_data = []
+            for node, _ in nodes:
+                for record in node["provenance"]:
+                    provenance_data.append(
+                        (
+                            str(node["id"]),
+                            record["source_type"],
+                            record["source_id"],
+                            record["label"],
+                            record["uri"],
+                            record["snippet"],
+                        )
+                    )
+            if provenance_data:
+                connection.executemany(
+                    """
+                    INSERT INTO node_provenance(node_id, source_type, source_id, label, uri, snippet)
+                    VALUES(?, ?, ?, ?, ?, ?)
+                    """,
+                    provenance_data,
+                )
+        return ok(None)
 
     def get_node_ids_for_session(self, session_id: SessionId) -> list[MemoryNodeId]:
         with self._connection() as connection:
@@ -331,17 +464,49 @@ class SqliteMetaStore:
 
     @contextmanager
     def _connection(self) -> Iterator[sqlite3.Connection]:
-        connection = sqlite3.connect(self._db_path)
+        """Get a connection from the pool or create a new one."""
+        connection = self._get_connection()
         try:
-            connection.execute("PRAGMA journal_mode=WAL;")
-            connection.execute("PRAGMA synchronous=NORMAL;")
             yield connection
             connection.commit()
+        except Exception:
+            connection.rollback()
+            raise
         finally:
-            connection.close()
+            self._return_connection(connection)
+    
+    def _get_connection(self) -> sqlite3.Connection:
+        """Get a connection from the pool."""
+        with self._pool_lock:
+            if self._pool:
+                return self._pool.pop()
+        # Create new connection if pool is empty
+        return self._create_connection()
+    
+    def _return_connection(self, connection: sqlite3.Connection) -> None:
+        """Return a connection to the pool."""
+        with self._pool_lock:
+            if len(self._pool) < self._pool_size:
+                self._pool.append(connection)
+            else:
+                # Pool is full, close the connection
+                connection.close()
+    
+    def _create_connection(self) -> sqlite3.Connection:
+        """Create a new database connection with proper settings."""
+        connection = sqlite3.connect(self._db_path, timeout=_POOL_TIMEOUT_SEC)
+        connection.execute("PRAGMA journal_mode=WAL;")
+        connection.execute("PRAGMA synchronous=NORMAL;")
+        connection.execute("PRAGMA cache_size=-64000;")  # 64MB cache
+        connection.execute("PRAGMA temp_store=MEMORY;")
+        return connection
 
     def _initialize(self) -> None:
-        with self._connection() as connection:
+        """Initialize database schema using a dedicated connection."""
+        if self._initialized:
+            return
+        connection = self._create_connection()
+        try:
             connection.executescript(
                 """
                 CREATE TABLE IF NOT EXISTS sessions (
@@ -398,6 +563,10 @@ class SqliteMetaStore:
                 """
             )
             self._migrate_node_meta_schema(connection)
+            connection.commit()
+            self._initialized = True
+        finally:
+            self._return_connection(connection)
 
     def _migrate_node_meta_schema(self, connection: sqlite3.Connection) -> None:
         table = connection.execute(
@@ -411,12 +580,14 @@ class SqliteMetaStore:
         }
         for column_name, ddl in _NODE_META_COLUMN_MIGRATIONS:
             if column_name not in columns:
-                connection.execute(f"ALTER TABLE node_meta ADD COLUMN {column_name} {ddl}")
+                # Skip UNIQUE constraint for existing tables with data
+                if column_name == "vector_label":
+                    connection.execute("ALTER TABLE node_meta ADD COLUMN vector_label INTEGER DEFAULT 0")
+                else:
+                    connection.execute(f"ALTER TABLE node_meta ADD COLUMN {column_name} {ddl}")
                 columns.add(column_name)
-        if "vector_label" not in columns:
-            connection.execute("ALTER TABLE node_meta ADD COLUMN vector_label INTEGER")
-            columns.add("vector_label")
-        self._backfill_vector_labels(connection)
+        if "vector_label" in columns:
+            self._backfill_vector_labels(connection)
         self._rebuild_node_search_fts(connection)
 
     def _backfill_vector_labels(self, connection: sqlite3.Connection) -> None:
@@ -478,6 +649,25 @@ class SqliteMetaStore:
             "session_id": SessionId(str(row[8])),
             "provenance": provenance,
         }
+
+
+    def close(self) -> None:
+        """Close all connections in the pool."""
+        with self._pool_lock:
+            for connection in self._pool:
+                try:
+                    connection.close()
+                except Exception:
+                    pass
+            self._pool.clear()
+    
+    def pool_status(self) -> dict[str, int]:
+        """Return connection pool status for monitoring."""
+        with self._pool_lock:
+            return {
+                "pool_size": len(self._pool),
+                "max_pool_size": self._pool_size,
+            }
 
 
 def _fts_match_query(query: str) -> str | None:

@@ -22,7 +22,7 @@ from brain.config import load_settings
 from brain.emotion.text_encoder import TextEmotionEncoder
 from brain.memory.embedder import MemoryEmbedder
 from brain.normalizer.voice_adapter import VoiceAdapter
-from brain.runtime import LatticeBrainRuntime
+from brain.runtime import WaseemBrainRuntime
 from brain.types import SessionId
 from scripts.runtime_client import (
     LocalRuntimeHandle,
@@ -289,7 +289,7 @@ def _ensure_runtime_daemon() -> dict[str, Any]:
 
 
 def _local_runtime_handle() -> LocalRuntimeHandle:
-    return LocalRuntimeHandle(LatticeBrainRuntime())
+    return LocalRuntimeHandle(WaseemBrainRuntime())
 
 
 async def _runtime_health(

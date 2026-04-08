@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from brain.runtime import LatticeBrainRuntime
+from brain.runtime import WaseemBrainRuntime
 from brain.types import SessionId
 from tests.python.support import make_settings, seed_experts
 
@@ -20,7 +20,7 @@ class RuntimeServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 }
             )
             seed_experts(settings)
-            runtime = LatticeBrainRuntime(settings=settings)
+            runtime = WaseemBrainRuntime(settings=settings)
             try:
                 initial_health = runtime.health()
                 self.assertEqual(initial_health["memory_node_count"], 0)

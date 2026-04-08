@@ -96,7 +96,7 @@ def validate_skill_dir(skill_dir: Path) -> list[str]:
         if not reference_path.exists():
             errors.append(f"{reference_path}: required reference is missing")
 
-    if skill_dir.name == "lattice-brain-build-orchestrator":
+    if skill_dir.name == "waseem-brain-build-orchestrator":
         if not (references_dir / "source-skills.md").exists():
             errors.append(f"{references_dir / 'source-skills.md'}: missing orchestrator index")
         if (references_dir / "component-guide.md").exists():

@@ -49,8 +49,16 @@ class DocumentAdapter(InputAdapter):
         except Exception:
             return self._extract_printable_strings(raw_bytes)
 
-        reader = PdfReader(BytesIO(raw_bytes))
-        return "\n".join((page.extract_text() or "") for page in reader.pages)
+        try:
+            reader = PdfReader(BytesIO(raw_bytes))
+            text = "\n".join((page.extract_text() or "") for page in reader.pages)
+            if text.strip():
+                return text
+        except Exception:
+            # Fallback to printable strings if PDF parsing fails
+            pass
+        
+        return self._extract_printable_strings(raw_bytes)
 
     def _extract_docx_text(self, raw_bytes: bytes) -> str:
         try:

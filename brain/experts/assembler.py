@@ -193,6 +193,7 @@ class ResponseAssembler:
         included_outputs = outputs[:2]
         included_citations: list[EvidenceReference] = []
         if query:
+            loc = response_plan.get("locale", "en") if response_plan else "en"
             lines.append(f"{LocaleEngine.t(loc, 'query_focus')} {query.strip()[:160]}")
         lines.extend(output["content"].strip() for output in included_outputs)
         if citations and response_plan is not None and response_plan["include_sources"]:

@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-04-08T03:58:59.184643",
+  "patterns": [
+    {
+      "pattern_id": "pattern-test_op-4554934a",
+      "pattern_type": "execution_success",
+      "description": "Successful execution pattern for test_op",
+      "frequency": 4,
+      "success_rate": 0.8,
+      "conditions": {
+        "common_inputs": [
+          "x"
+        ],
+        "avg_duration_ms": 100.0
+      },
+      "recommendations": [
+        "Ensure inputs include: x",
+        "Expected duration: ~100.0ms"
+      ]
+    },
+    {
+      "pattern_id": "pattern-test_op-fail-4554934a",
+      "pattern_type": "execution_failure",
+      "description": "Failure pattern for test_op",
+      "frequency": 1,
+      "success_rate": 0.0,
+      "conditions": {
+        "common_inputs": [
+          "x"
+        ],
+        "avg_duration_ms": 100.0
+      },
+      "recommendations": [
+        "Review conditions before execution",
+        "Add validation for common failure points"
+      ]
+    }
+  ]
+}

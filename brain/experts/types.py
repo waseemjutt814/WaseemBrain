@@ -11,6 +11,18 @@ from ..types import (
     SessionId,
 )
 
+ExpertKind = Literal[
+    'grounded-language',
+    'repo-code',
+    'geography-dataset',
+    'security-knowledge',
+    'crypto-knowledge',
+    'algorithms-knowledge',
+    'engineering-knowledge',
+    'advanced-security-knowledge',
+    'system-automation',
+]
+
 
 class ExpertArtifact(TypedDict):
     name: str
@@ -22,11 +34,11 @@ class ExpertMeta(TypedDict):
     id: ExpertId
     name: str
     domains: list[str]
-    kind: Literal["grounded-language", "repo-code", "geography-dataset"]
+    kind: ExpertKind
     artifact_root: str
     artifacts: list[ExpertArtifact]
     capabilities: list[str]
-    load_strategy: Literal["lazy", "pinned"]
+    load_strategy: Literal['lazy', 'pinned']
     description: str
 
 

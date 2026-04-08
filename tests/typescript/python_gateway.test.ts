@@ -8,9 +8,9 @@ import { PythonCoordinatorGateway } from "../../interface/src/python_gateway.js"
 import { createServer } from "../../interface/src/server.js";
 
 test("python gateway serves live coordinator-backed routes", async () => {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "lattice-brain-gateway-"));
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "waseem-brain-gateway-"));
   const gateway = new PythonCoordinatorGateway({
-    pythonExecutable: process.env.PYTHON_EXECUTABLE ?? "python",
+    pythonExecutable: process.env.PYTHON_EXECUTABLE,
     bridgePath: path.resolve(process.cwd(), "scripts", "coordinator_bridge.py"),
     env: {
       ...process.env,

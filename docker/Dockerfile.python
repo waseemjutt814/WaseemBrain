@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY README.md LICENSE.md NOTICE.md pyproject.toml .env.example waseem.manifest.json ./
+COPY brain ./brain
+COPY experts ./experts
+COPY scripts ./scripts
+COPY assets ./assets
+
+RUN python -m pip install --upgrade pip
+RUN python -m pip install --no-cache-dir -e .[runtime]
+RUN mkdir -p /app/data /app/logs /app/tmp
+
+ENV PYTHONUNBUFFERED=1
+ENV REPO_ROOT=/app
+ENV RUNTIME_DAEMON_HOST=0.0.0.0
+ENV RUNTIME_DAEMON_PORT=55881
+
+EXPOSE 55881
+
+CMD ["python", "scripts/runtime_daemon.py", "0.0.0.0", "55881"]

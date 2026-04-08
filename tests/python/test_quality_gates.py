@@ -94,6 +94,36 @@ class PlaceholderGuardTestCase(unittest.TestCase):
             errors = guard_repo(root)
             self.assertTrue(any("ONNX" in error for error in errors))
 
+    def test_guard_accepts_file_based_python_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _seed_repo(root)
+            module_path = root / "experts" / "base" / "cybersecurity_expert.py"
+            module_path.write_text(
+                "class CybersecurityExpert:\n    capability = 'network-security'\n",
+                encoding="utf-8",
+            )
+            payload = json.loads((root / "experts" / "registry.json").read_text(encoding="utf-8"))
+            payload.append(
+                {
+                    "id": "cybersecurity",
+                    "kind": "security-knowledge",
+                    "artifact_root": "cybersecurity_expert",
+                    "artifacts": [
+                        {
+                            "name": "module",
+                            "path": "cybersecurity_expert.py",
+                            "kind": "python-module",
+                        }
+                    ],
+                }
+            )
+            (root / "experts" / "registry.json").write_text(
+                json.dumps(payload, indent=2),
+                encoding="utf-8",
+            )
+            self.assertEqual(guard_repo(root), [])
+
 
 if __name__ == "__main__":
     unittest.main()

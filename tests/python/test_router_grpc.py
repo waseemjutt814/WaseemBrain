@@ -9,7 +9,7 @@ import grpc
 
 from brain.router import HybridRouterClient, RouterDaemonClient
 from brain.router.generated import router_pb2, router_pb2_grpc
-from brain.runtime import LatticeBrainRuntime
+from brain.runtime import WaseemBrainRuntime
 from brain.types import SessionId
 from tests.python.support import make_settings, seed_experts
 
@@ -140,7 +140,7 @@ class RouterGrpcTestCase(unittest.IsolatedAsyncioTestCase):
                 }
             )
             seed_experts(settings)
-            runtime = LatticeBrainRuntime(settings=settings)
+            runtime = WaseemBrainRuntime(settings=settings)
             try:
                 chunks = []
                 async for chunk in runtime.query(

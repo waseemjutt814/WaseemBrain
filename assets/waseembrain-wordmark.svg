@@ -1,0 +1,31 @@
+<svg width="1280" height="280" viewBox="0 0 1280 280" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">WaseemBrain Wordmark</title>
+  <desc id="desc">Waseem Brain horizontal wordmark for shared product branding.</desc>
+  <defs>
+    <linearGradient id="word" x1="248" y1="48" x2="1088" y2="224" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F6FBFF" />
+      <stop offset="0.62" stop-color="#CBEAFC" />
+      <stop offset="1" stop-color="#77E2D2" />
+    </linearGradient>
+    <linearGradient id="accent" x1="64" y1="36" x2="200" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C8F5D6" />
+      <stop offset="0.55" stop-color="#84D7FA" />
+      <stop offset="1" stop-color="#53E2D0" />
+    </linearGradient>
+  </defs>
+
+  <rect x="32" y="52" width="152" height="152" rx="44" fill="#0C1623" stroke="#183147" stroke-width="2" />
+  <circle cx="108" cy="128" r="52" fill="#0F2031" stroke="url(#accent)" stroke-width="8" />
+  <circle cx="108" cy="128" r="23" fill="#152E42" stroke="#C8F5D6" stroke-width="6" />
+  <path d="M108 76C136 76 159 99 159 127" stroke="#84D7FA" stroke-width="8" stroke-linecap="round" />
+  <path d="M64 118C68 95 88 78 111 78" stroke="#53E2D0" stroke-width="8" stroke-linecap="round" />
+  <path d="M76 159C90 177 116 184 137 174" stroke="#C8F5D6" stroke-width="8" stroke-linecap="round" />
+  <circle cx="111" cy="78" r="8" fill="#53E2D0" />
+  <circle cx="159" cy="127" r="8" fill="#84D7FA" />
+  <circle cx="76" cy="159" r="8" fill="#C8F5D6" />
+
+  <text x="236" y="126" fill="url(#word)" font-family="Segoe UI, Arial, sans-serif" font-size="84" font-weight="800" letter-spacing="2">WASEEMBRAIN</text>
+  <text x="240" y="178" fill="#AFC0CF" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="4">OFFLINE-FIRST MULTIMODAL INTELLIGENCE RUNTIME</text>
+  <rect x="240" y="204" width="392" height="10" rx="5" fill="#53E2D0" opacity="0.96" />
+  <rect x="648" y="204" width="214" height="10" rx="5" fill="#84D7FA" opacity="0.74" />
+</svg>

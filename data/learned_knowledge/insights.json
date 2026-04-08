@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-04-08T03:58:59.187645",
+  "insights": [
+    {
+      "insight_id": "insight-pattern-test_op-fail-4554934a",
+      "category": "risk",
+      "title": "Failure pattern detected: Failure pattern for test_op",
+      "description": "Found 1 failures with common conditions",
+      "confidence": 0.8,
+      "actionable": true,
+      "priority": "high"
+    }
+  ]
+}

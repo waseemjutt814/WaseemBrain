@@ -6,7 +6,7 @@
     {
       "id": "project-readme-1",
       "title": "Project README Part 1",
-      "content": "<!-- internal-author: Muhammad Waseem Akram -->\n\nLattice Brain\n\nLattice Brain is a CPU-first local AI stack built around a Python runtime, a TypeScript Fastify interface, and an optional Rust router daemon. The current repo is designed for real execution: grounded experts, persistent memory, routeable input modalities, measurable traces, and quality gates that reject placeholder behavior.\n\nAuthor: Muhammad Waseem Akram",
+      "content": "<!-- internal-author: Muhammad Waseem Akram -->\n\nWaseemBrain\n\nWaseemBrain is a CPU-first local AI stack built around a Python runtime, a TypeScript Fastify interface, and an optional Rust router daemon. The current repo is designed for real execution: grounded experts, persistent memory, routeable input modalities, measurable traces, and quality gates that reject placeholder behavior.\n\nAuthor: Muhammad Waseem Akram",
       "tags": [
         "repo",
         "readme",
@@ -34,7 +34,7 @@
     {
       "id": "complete-structure-and-details-1",
       "title": "Complete Structure And Details Part 1",
-      "content": "<!-- canonical-author-record: Muhammad Waseem Akram -->\n\nLattice Brain Complete Structure And Details\n\nThis is the canonical project reference for the current repository state. If another doc and this file disagree, trust this file first and then verify against the source tree.\n\nAuthor Of Record: Muhammad Waseem Akram\n\n1. Project Snapshot\n\nLattice Brain is a local, CPU-first AI stack with three main layers: Python runtime in brain/ for normalization, emotion, dialogue planning, routing, memory, internet retrieval, experts, and traces TypeScript Fastify interface in interface/src/ for HTTP and WebSocket access Optional Rust gRPC router daemon in router-daemon/ for local routing and expert mapping",
+      "content": "<!-- canonical-author-record: Muhammad Waseem Akram -->\n\nWaseemBrain Complete Structure And Details\n\nThis is the canonical project reference for the current repository state. If another doc and this file disagree, trust this file first and then verify against the source tree.\n\nAuthor Of Record: Muhammad Waseem Akram\n\n1. Project Snapshot\n\nWaseemBrain is a local, CPU-first AI stack with three main layers: Python runtime in brain/ for normalization, emotion, dialogue planning, routing, memory, internet retrieval, experts, and traces TypeScript Fastify interface in interface/src/ for HTTP and WebSocket access Optional Rust gRPC router daemon in router-daemon/ for local routing and expert mapping",
       "tags": [
         "repo",
         "architecture",

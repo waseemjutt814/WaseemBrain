@@ -3,134 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lattice Brain AI | Premium Intelligence</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <title>Waseem Brain | AI Assistant</title>
+  <link rel="icon" href="/assets/waseembrain-emoji.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/index.css">
 </head>
 <body>
-  <div id="app-container">
-    <header>
-      <h1>Lattice Brain AI</h1>
-      <div id="status">Connecting...</div>
+  <div class="chat-app">
+    <!-- Header -->
+    <header class="chat-header">
+      <div class="chat-header__brand">
+        <img src="/assets/waseembrain-emoji.svg" alt="Brain" class="chat-header__logo">
+        <div class="chat-header__info">
+          <h1>Waseem Brain</h1>
+          <span class="connection-status" id="connection-status" data-status="connecting">
+            <span class="connection-status__dot"></span>
+            <span id="connection-text">Connecting...</span>
+          </span>
+        </div>
+      </div>
+      <div class="chat-header__actions">
+        <button type="button" class="icon-button" id="new-chat-btn" title="New Chat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </button>
+        <button type="button" class="icon-button" id="theme-toggle" title="Toggle Theme">
+          <span id="theme-icon">??</span>
+        </button>
+      </div>
     </header>
-    
-    <main id="chat">
-      <div class="msg bot">
-        <div class="msg-meta">System</div>
-        Welcome to Lattice Brain. How can I assist you with your project today?
+
+    <!-- Messages Area -->
+    <main class="chat-messages" id="chat-messages">
+      <div class="welcome-message">
+        <img src="/assets/waseembrain-emoji.svg" alt="Brain" class="welcome-message__logo">
+        <h2>Hello! I'm Waseem Brain</h2>
+        <p>Your AI assistant for coding, planning, and automation.</p>
+        <div class="quick-prompts">
+          <button class="quick-prompt" data-prompt="Explain how this project works">Explain project</button>
+          <button class="quick-prompt" data-prompt="Help me write better code">Code help</button>
+          <button class="quick-prompt" data-prompt="Search the codebase for">Search code</button>
+          <button class="quick-prompt" data-prompt="Run tests and show results">Run tests</button>
+        </div>
       </div>
     </main>
 
-    <footer>
-      <form id="form">
-        <input type="text" id="input" placeholder="Type your message here..." autocomplete="off" />
-        <button type="submit" id="send">Send</button>
+    <!-- Typing Indicator -->
+    <div class="typing-indicator" id="typing-indicator" hidden>
+      <div class="typing-indicator__dots">
+        <span class="typing-indicator__dot"></span>
+        <span class="typing-indicator__dot"></span>
+        <span class="typing-indicator__dot"></span>
+      </div>
+      <span>Thinking...</span>
+    </div>
+
+    <!-- Input Area -->
+    <footer class="chat-input-area">
+      <form class="chat-form" id="chat-form">
+        <div class="chat-input-wrapper">
+          <textarea 
+            id="chat-input" 
+            placeholder="Type your message..." 
+            rows="1"
+            autofocus
+          ></textarea>
+          <div class="chat-input-actions">
+            <button type="button" class="icon-button" id="voice-btn" title="Voice Input">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </button>
+            <button type="submit" class="send-button" id="send-btn" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
       </form>
+      <p class="chat-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to send</p>
     </footer>
+
+    <!-- Voice Recording Modal -->
+    <div class="voice-modal" id="voice-modal" hidden>
+      <div class="voice-modal__content">
+        <div class="voice-waveform" id="voice-waveform">
+          <span class="voice-waveform__bar"></span>
+          <span class="voice-waveform__bar"></span>
+          <span class="voice-waveform__bar"></span>
+          <span class="voice-waveform__bar"></span>
+          <span class="voice-waveform__bar"></span>
+          <span class="voice-waveform__bar"></span>
+          <span class="voice-waveform__bar"></span>
+        </div>
+        <p class="voice-modal__status" id="voice-status">Listening...</p>
+        <div class="voice-modal__actions">
+          <button type="button" class="ghost-button" id="voice-cancel">Cancel</button>
+          <button type="button" class="primary-button" id="voice-send">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
   </div>
 
-  <script>
-    const chatEl = document.getElementById('chat');
-    const statusEl = document.getElementById('status');
-    const formEl = document.getElementById('form');
-    const inputEl = document.getElementById('input');
-    const sendEl = document.getElementById('send');
-
-    const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
-    let ws = null;
-    let currentBotMsg = null;
-
-    function addMessage(text, type = 'bot', isStreaming = false) {
-      const el = document.createElement('div');
-      el.className = `msg ${type}`;
-      
-      const meta = document.createElement('div');
-      meta.className = 'msg-meta';
-      meta.textContent = type === 'user' ? 'You' : 'Brain';
-      el.appendChild(meta);
-
-      const content = document.createElement('div');
-      content.className = 'msg-content';
-      content.textContent = text;
-      el.appendChild(content);
-
-      if (isStreaming) {
-        const dots = document.createElement('div');
-        dots.className = 'typing-dots';
-        dots.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-        el.appendChild(dots);
-      }
-
-      chatEl.appendChild(el);
-      chatEl.scrollTop = chatEl.scrollHeight;
-      return el;
-    }
-
-    function connect() {
-      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${protocol}//${location.host}/ws`;
-      ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        statusEl.textContent = 'Connected';
-        statusEl.classList.add('connected');
-      };
-
-      ws.onclose = () => {
-        statusEl.textContent = 'Disconnected - reconnecting...';
-        statusEl.classList.remove('connected');
-        setTimeout(connect, 2000);
-      };
-
-      ws.onerror = () => {
-        statusEl.textContent = 'Connection error';
-        statusEl.classList.remove('connected');
-      };
-
-      ws.onmessage = (event) => {
-        let data;
-        try { data = JSON.parse(event.data); } catch { return; }
-
-        if (data.type === 'error') {
-          if (currentBotMsg) currentBotMsg.remove();
-          addMessage(data.content, 'bot error');
-          currentBotMsg = null;
-          sendEl.disabled = false;
-          return;
-        }
-
-        if (data.type === 'token') {
-          if (!currentBotMsg) {
-             currentBotMsg = addMessage('', 'bot');
-          }
-          const contentEl = currentBotMsg.querySelector('.msg-content');
-          contentEl.textContent += data.content;
-          chatEl.scrollTop = chatEl.scrollHeight;
-        }
-
-        if (data.type === 'done') {
-          currentBotMsg = null;
-          sendEl.disabled = false;
-        }
-      };
-    }
-
-    formEl.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const text = inputEl.value.trim();
-      if (!text || !ws || ws.readyState !== WebSocket.OPEN) return;
-
-      addMessage(text, 'user');
-      inputEl.value = '';
-      sendEl.disabled = true;
-
-      ws.send(JSON.stringify({ modality: "text", input: text, session_id: sessionId }));
-    });
-
-    inputEl.focus();
-    connect();
-  </script>
+  <script type="module" src="/generated/app.js"></script>
 </body>
 </html>

@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import inspect
 import time
+import logging
 from collections import deque
 from collections.abc import Callable
 from urllib.parse import urlparse
@@ -69,7 +70,8 @@ class DuckDuckGoSearch:
     def _default_backend(self, query: str, max_results: int) -> list[SearchResult]:
         try:
             from duckduckgo_search import DDGS
-        except Exception:
+        except Exception as e:
+            logging.debug(f"DuckDuckGo search unavailable (running without API dependencies): {e}")
             return []
 
         with DDGS() as client:

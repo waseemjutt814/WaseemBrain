@@ -2,7 +2,11 @@
   {
     "id": "language-en",
     "name": "Language Expert",
-    "domains": ["language", "writing", "general"],
+    "domains": [
+      "language",
+      "writing",
+      "general"
+    ],
     "kind": "grounded-language",
     "artifact_root": "language-en",
     "artifacts": [
@@ -12,14 +16,21 @@
         "kind": "config"
       }
     ],
-    "capabilities": ["grounded-answering", "memory-synthesis", "internet-synthesis"],
+    "capabilities": [
+      "grounded-answering"
+    ],
     "load_strategy": "lazy",
-    "description": "Evidence-backed answer synthesis over recalled and live sources."
+    "description": "Evidence-backed synthesis"
   },
   {
     "id": "code-general",
     "name": "Code Expert",
-    "domains": ["code", "python", "typescript", "rust", "repo"],
+    "domains": [
+      "code",
+      "python",
+      "typescript",
+      "rust"
+    ],
     "kind": "repo-code",
     "artifact_root": "code-general",
     "artifacts": [
@@ -29,14 +40,19 @@
         "kind": "config"
       }
     ],
-    "capabilities": ["workspace-search", "snippet-citations", "repo-grounded-answering"],
+    "capabilities": [
+      "workspace-search"
+    ],
     "load_strategy": "lazy",
-    "description": "Repository-grounded code retrieval and cited answer synthesis."
+    "description": "Workspace search expert"
   },
   {
     "id": "geography",
     "name": "Geography Expert",
-    "domains": ["geography", "countries", "maps", "capitals"],
+    "domains": [
+      "geography",
+      "countries"
+    ],
     "kind": "geography-dataset",
     "artifact_root": "geography",
     "artifacts": [
@@ -51,8 +67,10 @@
         "kind": "dataset"
       }
     ],
-    "capabilities": ["offline-country-lookup", "capital-lookup"],
+    "capabilities": [
+      "capital-lookup"
+    ],
     "load_strategy": "lazy",
-    "description": "Offline geography answers backed by a checked-in static dataset."
+    "description": "Offline geography lookup"
   }
 ]

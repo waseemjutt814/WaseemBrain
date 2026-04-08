@@ -25,7 +25,7 @@ Build a hybrid memory system combining embeddings (vector similarity), graph rel
    - Cache embeddings by text hash.
    - If cache size > 10,000, clear cache safely.
 2. `vector_store.py`:
-   - Persistent Chroma client, collection `lattice_memories`.
+   - Persistent Chroma client, collection `waseem_memories`.
    - Methods:
      - `add(node)`
      - `search(query_text, limit)`

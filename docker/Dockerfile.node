@@ -1,0 +1,25 @@
+﻿FROM node:20-bookworm-slim
+
+WORKDIR /app
+
+COPY package.json package-lock.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json tsconfig.test.json tsconfig.web.json ./
+COPY README.md LICENSE.md NOTICE.md pyproject.toml .env.example waseem.manifest.json ./
+COPY assets ./assets
+COPY brain ./brain
+COPY experts ./experts
+COPY interface ./interface
+COPY scripts ./scripts
+
+RUN corepack enable
+RUN pnpm install --frozen-lockfile
+RUN pnpm run build:web && pnpm run build:ts
+
+ENV NODE_ENV=production
+ENV API_HOST=0.0.0.0
+ENV API_PORT=8080
+ENV WB_GATEWAY_MODE=daemon
+ENV WB_AUTO_OPEN_BROWSER=false
+
+EXPOSE 8080
+
+CMD ["node", "dist/interface/src/server.js"]

@@ -5,6 +5,7 @@ import { once } from "node:events";
 import WebSocket from "ws";
 
 import { createServer } from "../../interface/src/server.js";
+import type { AssistantServerEvent } from "../../interface/src/types.js";
 import { streamToSocket } from "../../interface/src/ws/stream.js";
 
 const healthPayload = {
@@ -20,6 +21,13 @@ const healthPayload = {
   uptime_sec: 0,
   router_backend: "local",
   vector_backend: "hnsw",
+  capabilities: {
+    model_free_core: true,
+    api_key_required: false,
+    self_improvement_scope: "knowledge-only",
+    router_acceleration_optional: true,
+    default_router_backend: "local",
+  },
   components: {
     router_artifact: "ready",
     expert_registry: "ready",
@@ -190,3 +198,113 @@ test("websocket route returns an error on invalid json", async () => {
     await app.close();
   }
 });
+
+test("assistant websocket streams structured assistant events", async () => {
+  const app = createServer({
+    async *query(): AsyncIterable<string> {
+      yield "unused";
+    },
+    async *assistant(): AsyncIterable<AssistantServerEvent> {
+      yield { type: "status", content: "Assistant mode: conversational answer path.", route: "general_chat" };
+      yield {
+        type: "message.done",
+        content: "Hello from assistant.",
+        route: "general_chat",
+        metadata: {
+          route: "general_chat",
+          provider: { configured: false, mode: "local_grounded", model: "local-grounded", reachable: true },
+          tools: ["local-grounded"],
+          citations_count: 0,
+          render_strategy: "direct",
+          transcript: "",
+          local_mode: true,
+        },
+      };
+    },
+    async health() {
+      return healthPayload;
+    },
+    async recall() {
+      return [];
+    },
+    async experts() {
+      return { loaded: [], count: 0 };
+    },
+    async actions() {
+      return { groups: [] };
+    },
+  });
+
+  await app.listen({ port: 0, host: "127.0.0.1" });
+  const address = app.server.address();
+  assert.ok(address && typeof address === "object");
+  const socket = new WebSocket(`ws://127.0.0.1:${address.port}/ws/assistant`);
+
+  try {
+    await once(socket, "open");
+    const messages: Array<{ type: string; content?: string; metadata?: { local_mode: boolean } }> = [];
+    socket.on("message", (payload: WebSocket.RawData) => {
+      messages.push(JSON.parse(payload.toString("utf-8")) as { type: string; content?: string; metadata?: { local_mode: boolean } });
+    });
+    socket.send(JSON.stringify({ type: "chat.submit", session_id: "assistant-ws-1", modality: "text", input: "hello" }));
+
+    await new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("timed out waiting for assistant done event")), 5000);
+      const check = setInterval(() => {
+        if (messages.some((message) => message.type === "message.done")) {
+          clearTimeout(timer);
+          clearInterval(check);
+          resolve();
+        }
+      }, 20);
+    });
+
+    assert.deepEqual(
+      messages.map((message) => message.type),
+      ["status", "message.done"],
+    );
+    assert.equal(messages[1]?.content, "Hello from assistant.");
+    assert.equal(messages[1]?.metadata?.local_mode, true);
+  } finally {
+    socket.close();
+    await app.close();
+  }
+});
+
+test("assistant websocket rejects action preview on compatibility fallback", async () => {
+  const app = createServer({
+    async *query(): AsyncIterable<string> {
+      yield "unused";
+    },
+    async health() {
+      return healthPayload;
+    },
+    async recall() {
+      return [];
+    },
+    async experts() {
+      return { loaded: [], count: 0 };
+    },
+    async actions() {
+      return { groups: [] };
+    },
+  });
+
+  await app.listen({ port: 0, host: "127.0.0.1" });
+  const address = app.server.address();
+  assert.ok(address && typeof address === "object");
+  const socket = new WebSocket(`ws://127.0.0.1:${address.port}/ws/assistant`);
+
+  try {
+    await once(socket, "open");
+    socket.send(JSON.stringify({ type: "action.preview", session_id: "assistant-ws-2", action_id: "system.runtime.status", inputs: {} }));
+    const [payload] = (await once(socket, "message")) as [WebSocket.RawData];
+    const parsed = JSON.parse(payload.toString("utf-8")) as { type: string; content: string };
+    assert.equal(parsed.type, "error");
+    assert.match(parsed.content, /action\.preview/);
+  } finally {
+    socket.close();
+    await app.close();
+  }
+});
+

@@ -1,21 +1,58 @@
 {
-  "name": "lattice-brain",
+  "name": "waseem-brain",
   "version": "0.1.0",
+  "description": "Offline-first multimodal brain runtime for memory, routing, typed experts, and deployable web delivery.",
   "author": "Muhammad Waseem Akram",
+  "license": "SEE LICENSE IN LICENSE.md",
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=20",
+    "python": ">=3.11,<3.12"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "tsx interface/src/server.ts",
+    "build": "node scripts/build_dist.mjs",
+    "build:rust": "cd router-daemon && cargo build --release",
+    "build:all": "pnpm run build",
+    "dev": "node scripts/dev.mjs",
     "start": "node dist/interface/src/server.js",
-    "test": "tsx --test tests/typescript/*.test.ts"
+    "start:python": "node scripts/run_python.mjs -m brain.runtime",
+    "test": "pnpm run lint && pnpm run guard:placeholders && pnpm run test:ts && pnpm run test:python",
+    "test:python": "node scripts/run_python.mjs -m pytest tests/python -q",
+    "test:ts": "pnpm run typecheck:ts && tsx --test tests/typescript/*.test.ts",
+    "test:rust": "cd router-daemon && cargo test",
+    "test:all": "pnpm run lint && pnpm run guard:placeholders && pnpm run test:ts && pnpm run test:python",
+    "lint": "node scripts/run_python.mjs -m ruff check --select E9,F63,F7,F82 brain/runtime.py brain/experts/expert.py brain/experts/pool.py brain/experts/registry.py brain/memory/vector_store.py scripts/runtime_daemon.py scripts/evolve_knowledge.py scripts/project_report.py scripts/sync_workspace_metadata.py && node scripts/run_python.mjs -m mypy --follow-imports=silent brain/runtime.py brain/experts/expert.py brain/experts/pool.py brain/experts/registry.py brain/memory/vector_store.py",
+    "guard:placeholders": "node scripts/run_python.mjs scripts/guard_no_placeholders.py",
+    "format": "node scripts/run_python.mjs -m black brain scripts tests/python && node scripts/run_python.mjs -m ruff format brain scripts tests/python experts",
+    "clean": "node -e \"for (const p of ['dist','interface/generated','node_modules','__pycache__','.pytest_cache','.mypy_cache','.ruff_cache','target']) { require('fs').rmSync(p,{recursive:true,force:true}); }\"",
+    "setup:python": "node scripts/run_python.mjs -m pip install -e .[runtime,dev]",
+    "install:all": "pnpm install && pnpm run setup:python && pnpm run sync:metadata && pnpm run build:all",
+    "setup:python:full": "node scripts/run_python.mjs -m pip install -e .[runtime,dev,training]",
+    "sync:metadata": "node scripts/run_python.mjs scripts/sync_workspace_metadata.py",
+    "report:inventory": "node scripts/run_python.mjs scripts/project_report.py --inventory-only",
+    "report:project": "node scripts/run_python.mjs scripts/project_report.py",
+    "verify:project": "pnpm run sync:metadata && pnpm run report:project",
+    "docker:smoke": "node scripts/run_python.mjs scripts/docker_smoke.py",
+    "test:coverage": "node scripts/run_python.mjs -m pytest tests/python --cov=brain --cov-report=html --cov-report=term",
+    "test:python:suites": "node scripts/run_python.mjs tests/python/run_all_tests.py",
+    "build:ts": "tsc -p tsconfig.json",
+    "typecheck:ts": "tsc --noEmit -p tsconfig.test.json",
+    "build:python": "node scripts/run_python.mjs -m pip wheel --no-deps --wheel-dir dist/python .",
+    "build:web": "node -e \"require('fs').rmSync('interface/generated',{recursive:true,force:true})\" && tsc -p tsconfig.web.json && node scripts/annotate_generated_js.mjs interface/generated",
+    "dev:interface": "node scripts/dev.mjs --target interface",
+    "dev:terminal": "node scripts/dev.mjs --target terminal",
+    "dev:both": "node scripts/dev.mjs --target both",
+    "dev:backend": "node scripts/dev.mjs --target backend",
+    "dev:interface:raw": "pnpm run build:web && pnpm exec tsx interface/src/server.ts",
+    "runtime:start": "node scripts/run_python.mjs scripts/manage_runtime_daemon.py start",
+    "runtime:stop": "node scripts/run_python.mjs scripts/manage_runtime_daemon.py stop",
+    "runtime:status": "node scripts/run_python.mjs scripts/manage_runtime_daemon.py status",
+    "chat": "node scripts/launch_terminal.mjs"
   },
   "dependencies": {
     "@fastify/multipart": "^9.4.0",
-    "@fastify/static": "^9.0.0",
+    "@fastify/static": "^9.1.0",
     "@fastify/websocket": "^11.2.0",
     "fastify": "^5.8.4",
     "node-record-lpcm16": "^1.0.1",
@@ -23,9 +60,248 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^22.19.15",
+    "@types/node": "^22.19.17",
     "@types/ws": "^8.18.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "keywords": [
+    "offline-first",
+    "model-free",
+    "agent-runtime",
+    "memory-graph",
+    "expert-routing",
+    "typescript-interface",
+    "python-runtime"
+  ],
+  "pythonDependencyGroups": {
+    "runtime": [
+      "faster-whisper>=0.10.0",
+      "feedparser>=6.0.11",
+      "grpcio>=1.60.0",
+      "hnswlib>=0.8.0",
+      "httpx[http2]>=0.26.0",
+      "langdetect>=1.0.9",
+      "librosa>=0.10.0",
+      "loguru>=0.7.2",
+      "numpy>=1.26.0",
+      "onnxruntime>=1.17.0",
+      "openpyxl>=3.1.2",
+      "pandas>=2.2.0",
+      "pillow>=10.2.0",
+      "protobuf>=4.25.0",
+      "pydantic>=2.6.0",
+      "pypdf>=4.0.0",
+      "python-docx>=1.1.0",
+      "python-dotenv>=1.0.0",
+      "prompt_toolkit>=3.0.43",
+      "scikit-learn>=1.3.0",
+      "soundfile>=0.12.0",
+      "tenacity>=8.2.3",
+      "trafilatura>=1.8.0",
+      "vaderSentiment>=3.3.2",
+      "duckduckgo-search>=5.3.0"
+    ],
+    "dev": [
+      "black>=23.0.0",
+      "flake8>=6.1.0",
+      "mypy>=1.10.0",
+      "pylint>=2.17.0",
+      "pytest>=8.2.0",
+      "pytest-asyncio>=0.23.0",
+      "pytest-cov>=4.0.0",
+      "pytest-httpx>=0.30.0",
+      "respx>=0.21.0",
+      "ruff>=0.5.0",
+      "sphinx>=7.0.0",
+      "sphinx-rtd-theme>=2.0.0"
+    ],
+    "training": [
+      "datasets>=2.16.0",
+      "grpcio-tools>=1.60.0",
+      "onnx>=1.20.1",
+      "optimum[onnxruntime]>=1.16.0",
+      "peft>=0.8.0",
+      "scikit-learn>=1.5.0",
+      "sentence-transformers>=2.4.0",
+      "torch>=2.1.0",
+      "transformers>=4.37.0"
+    ]
+  },
+  "projectMetadata": {
+    "runtimeContract": {
+      "offlineFirst": true,
+      "modelFreeCore": true,
+      "apiKeysRequired": false,
+      "defaultRouterBackend": "local",
+      "selfImprovementScope": "knowledge-only",
+      "optionalAccelerators": [
+        "router-daemon",
+        "grpc router client",
+        "native hnswlib backend"
+      ]
+    },
+    "manifests": {
+      "node": "package.json",
+      "python": "pyproject.toml",
+      "project": "waseem.manifest.json",
+      "environment": ".env.example"
+    },
+    "directories": {
+      "runtime": "brain",
+      "interface": "interface",
+      "experts": "experts",
+      "routerRust": "router-daemon",
+      "routerPython": "router_daemon",
+      "scripts": "scripts",
+      "testsPython": "tests/python",
+      "testsTypescript": "tests/typescript",
+      "docs": "docs",
+      "data": "data",
+      "logs": "logs"
+    },
+    "reports": {
+      "projectJson": "logs/project_report.json",
+      "projectMarkdown": "logs/project_report.md",
+      "knowledgeEvolution": "logs/knowledge_evolution_report.json"
+    },
+    "dependencySources": {
+      "node": "package.json dependencies/devDependencies",
+      "python": "pyproject.toml project.optional-dependencies",
+      "mirroredPythonGroups": [
+        "runtime",
+        "dev",
+        "training"
+      ]
+    },
+    "lockfiles": {
+      "npm": "package-lock.json",
+      "pnpm": "pnpm-lock.yaml",
+      "cargo": "Cargo.lock"
+    },
+    "documentation": {
+      "rootReadme": "README.md",
+      "canonicalDocs": [
+        "docs/README.md",
+        "docs/INDUSTRIAL_REBUILD_PLAN.md",
+        "docs/architecture.md",
+        "docs/api.md",
+        "docs/build.md",
+        "docs/components.md",
+        "docs/testing.md",
+        "docs/CAPABILITY_MATRIX.md"
+      ]
+    }
+  },
+  "commandMetadata": {
+    "build": {
+      "category": "build",
+      "description": "Build the app dist and copy the required static assets."
+    },
+    "build:ts": {
+      "category": "build",
+      "description": "Compile the app-only TypeScript sources into dist."
+    },
+    "build:python": {
+      "category": "build",
+      "description": "Build the Python wheel into dist/python."
+    },
+    "build:rust": {
+      "category": "build",
+      "description": "Build the optional Rust router accelerator."
+    },
+    "setup:python": {
+      "category": "setup",
+      "description": "Install the maintained runtime and development Python extras."
+    },
+    "setup:python:full": {
+      "category": "setup",
+      "description": "Install runtime, development, and training Python extras."
+    },
+    "sync:metadata": {
+      "category": "metadata",
+      "description": "Mirror pyproject metadata and dependency groups into package.json."
+    },
+    "report:inventory": {
+      "category": "reporting",
+      "description": "Write a file and dependency inventory without running verification commands."
+    },
+    "report:project": {
+      "category": "reporting",
+      "description": "Generate inventory, verification summaries, assistant-surface readiness, and Docker smoke status."
+    },
+    "verify:project": {
+      "category": "verification",
+      "description": "Sync metadata, then generate the full project report artifacts and Docker smoke status."
+    },
+    "docker:smoke": {
+      "category": "verification",
+      "description": "Run the industrial Docker smoke verification for compose boot, assistant reachability, and restart persistence."
+    },
+    "lint": {
+      "category": "verification",
+      "description": "Run the maintained-core Python lint and type gate."
+    },
+    "typecheck:ts": {
+      "category": "verification",
+      "description": "Typecheck the interface and TypeScript tests without emitting dist files."
+    },
+    "test:python": {
+      "category": "verification",
+      "description": "Run the Python runtime and integration test suite."
+    },
+    "test:ts": {
+      "category": "verification",
+      "description": "Typecheck and run the TypeScript interface test suite."
+    },
+    "test:all": {
+      "category": "verification",
+      "description": "Run the TypeScript and Python baseline verification suites."
+    },
+    "test:coverage": {
+      "category": "verification",
+      "description": "Run Python tests with coverage output."
+    },
+    "runtime:start": {
+      "category": "runtime",
+      "description": "Start the detached Python runtime daemon."
+    },
+    "runtime:stop": {
+      "category": "runtime",
+      "description": "Stop the detached Python runtime daemon."
+    },
+    "runtime:status": {
+      "category": "runtime",
+      "description": "Show the detached Python runtime daemon status."
+    },
+    "chat": {
+      "category": "runtime",
+      "description": "Start the terminal chat against the hot runtime daemon."
+    },
+    "start:python": {
+      "category": "runtime",
+      "description": "Start the Python runtime module directly."
+    },
+    "dev": {
+      "category": "runtime",
+      "description": "Open the interactive dev launcher for interface, terminal, and backend."
+    },
+    "dev:interface": {
+      "category": "runtime",
+      "description": "Start the browser interface and auto-start the backend daemon."
+    },
+    "dev:terminal": {
+      "category": "runtime",
+      "description": "Start the terminal chat and auto-start the backend daemon."
+    },
+    "dev:both": {
+      "category": "runtime",
+      "description": "Start the browser interface and terminal chat on the same hot backend."
+    },
+    "dev:backend": {
+      "category": "runtime",
+      "description": "Start the backend daemon only and leave the UI selection for later."
+    }
+  },
+  "packageManager": "pnpm@10.33.0"
 }

@@ -1,0 +1,112 @@
+[
+  {
+    "query": "Test query",
+    "expert_domain": "cybersecurity",
+    "response": "Test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": null,
+    "timestamp": "2026-04-06T00:23:42.776820",
+    "user_id": null
+  },
+  {
+    "query": "Test query",
+    "expert_domain": "cybersecurity",
+    "response": "Test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": null,
+    "timestamp": "2026-04-06T00:26:58.655421",
+    "user_id": null
+  },
+  {
+    "query": "Test query",
+    "expert_domain": "cybersecurity",
+    "response": "Test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": null,
+    "timestamp": "2026-04-06T00:27:21.826474",
+    "user_id": null
+  },
+  {
+    "query": "Test query",
+    "expert_domain": "cybersecurity",
+    "response": "Test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": null,
+    "timestamp": "2026-04-06T00:27:29.460864",
+    "user_id": null
+  },
+  {
+    "query": "Test query",
+    "expert_domain": "cybersecurity",
+    "response": "Test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": null,
+    "timestamp": "2026-04-06T00:27:35.064167",
+    "user_id": null
+  },
+  {
+    "query": "Test query",
+    "expert_domain": "cybersecurity",
+    "response": "Test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": null,
+    "timestamp": "2026-04-06T00:27:41.877540",
+    "user_id": null
+  },
+  {
+    "query": "test query",
+    "expert_domain": "cybersecurity",
+    "response": "test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": "Good response",
+    "timestamp": "2026-04-06T00:46:32.263037",
+    "user_id": null
+  },
+  {
+    "query": "test query",
+    "expert_domain": "cybersecurity",
+    "response": "test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": "Good response",
+    "timestamp": "2026-04-06T00:48:17.953761",
+    "user_id": null
+  },
+  {
+    "query": "test query",
+    "expert_domain": "cybersecurity",
+    "response": "test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": "Good response",
+    "timestamp": "2026-04-06T00:48:24.385928",
+    "user_id": null
+  },
+  {
+    "query": "test query",
+    "expert_domain": "cybersecurity",
+    "response": "test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": "Good response",
+    "timestamp": "2026-04-06T00:48:32.650404",
+    "user_id": null
+  },
+  {
+    "query": "test query",
+    "expert_domain": "cybersecurity",
+    "response": "test response",
+    "helpful": true,
+    "rating": 5,
+    "feedback_text": "Good response",
+    "timestamp": "2026-04-06T01:01:26.729864",
+    "user_id": null
+  }
+]

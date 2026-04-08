@@ -1,5 +1,4 @@
 {
   "kind": "grounded-language",
-  "strategy": "evidence-synthesis",
   "requires_evidence": true
 }

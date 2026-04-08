@@ -1,0 +1,252 @@
+{
+  "summary": {
+    "total_files": 14,
+    "total_tests": 85,
+    "passed": 85,
+    "failed": 0,
+    "pass_rate": 100.0,
+    "duration_seconds": 70.76
+  },
+  "categories": {
+    "types": {
+      "files": 1,
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 4.297849416732788
+    },
+    "normalizer": {
+      "files": 1,
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "duration": 5.870115518569946
+    },
+    "memory": {
+      "files": 1,
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 6.63867974281311
+    },
+    "components": {
+      "files": 1,
+      "tests": 13,
+      "passed": 13,
+      "failed": 0,
+      "duration": 12.540592193603516
+    },
+    "learning": {
+      "files": 1,
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "duration": 5.223316431045532
+    },
+    "router": {
+      "files": 1,
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 6.759547710418701
+    },
+    "reasoning": {
+      "files": 1,
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "duration": 4.63877010345459
+    },
+    "quality": {
+      "files": 1,
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 1.3933515548706055
+    },
+    "bootstrap": {
+      "files": 1,
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 5.7249839305877686
+    },
+    "runtime": {
+      "files": 1,
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "duration": 5.39976954460144
+    },
+    "skill": {
+      "files": 1,
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 1.6194865703582764
+    },
+    "knowledge": {
+      "files": 1,
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "duration": 4.335774898529053
+    },
+    "experts": {
+      "files": 1,
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "duration": 1.2138497829437256
+    },
+    "unified": {
+      "files": 1,
+      "tests": 36,
+      "passed": 36,
+      "failed": 0,
+      "duration": 5.104446649551392
+    }
+  },
+  "files": [
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_types.py",
+      "name": "test_types.py",
+      "category": "types",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 4.3,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_normalizer.py",
+      "name": "test_normalizer.py",
+      "category": "normalizer",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "duration": 5.87,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_memory.py",
+      "name": "test_memory.py",
+      "category": "memory",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 6.64,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_components.py",
+      "name": "test_components.py",
+      "category": "components",
+      "tests": 13,
+      "passed": 13,
+      "failed": 0,
+      "duration": 12.54,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_learning.py",
+      "name": "test_learning.py",
+      "category": "learning",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "duration": 5.22,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_router_grpc.py",
+      "name": "test_router_grpc.py",
+      "category": "router",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 6.76,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_reasoning_enhancement.py",
+      "name": "test_reasoning_enhancement.py",
+      "category": "reasoning",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "duration": 4.64,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_quality_gates.py",
+      "name": "test_quality_gates.py",
+      "category": "quality",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 1.39,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_bootstrap_and_learning.py",
+      "name": "test_bootstrap_and_learning.py",
+      "category": "bootstrap",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 5.72,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_runtime_service.py",
+      "name": "test_runtime_service.py",
+      "category": "runtime",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "duration": 5.4,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_skill_sync.py",
+      "name": "test_skill_sync.py",
+      "category": "skill",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 1.62,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_knowledge_builder.py",
+      "name": "test_knowledge_builder.py",
+      "category": "knowledge",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "duration": 4.34,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_experts_simple.py",
+      "name": "test_experts_simple.py",
+      "category": "experts",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "duration": 1.21,
+      "status": "PASS"
+    },
+    {
+      "path": "D:\\latest brain\\tests\\python\\test_unified.py",
+      "name": "test_unified.py",
+      "category": "unified",
+      "tests": 36,
+      "passed": 36,
+      "failed": 0,
+      "duration": 5.1,
+      "status": "PASS"
+    }
+  ]
+}

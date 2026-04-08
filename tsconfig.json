@@ -12,8 +12,11 @@
     "types": ["node"]
   },
   "include": [
-    "interface/src/**/*.ts",
-    "tests/typescript/**/*.ts"
+    "interface/src/**/*.ts"
+  ],
+  "exclude": [
+    "interface/src/web/**/*.ts",
+    "interface/generated",
+    "dist"
   ]
 }
-

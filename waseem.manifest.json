@@ -1,0 +1,256 @@
+{
+  "project": {
+    "name": "Waseem Brain",
+    "version": "0.1.0",
+    "description": "Offline-first multimodal brain runtime with memory, routing, typed experts, and deployable web delivery.",
+    "author": "Muhammad Waseem Akram",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "buildDate": "2026-04-06",
+    "status": "active",
+    "owner": "Muhammad Waseem Akram"
+  },
+  "system": {
+    "components": [
+      {
+        "id": "runtime-core",
+        "name": "Waseem Runtime Core",
+        "type": "offline-runtime",
+        "status": "active",
+        "capabilities": [
+          "grounded-answers",
+          "memory-recall",
+          "typed-expert-routing",
+          "bridge-compatible-interfaces"
+        ]
+      },
+      {
+        "id": "knowledge-learning",
+        "name": "Knowledge Learning Loop",
+        "type": "knowledge-only-learning",
+        "status": "active",
+        "capabilities": [
+          "trace-ingestion",
+          "policy-refresh",
+          "knowledge-auditing",
+          "memory-compaction"
+        ]
+      },
+      {
+        "id": "router-acceleration",
+        "name": "Optional Router Acceleration",
+        "type": "optional-accelerator",
+        "status": "optional",
+        "capabilities": [
+          "artifact-routing",
+          "grpc-acceleration-when-available"
+        ]
+      }
+    ]
+  },
+  "dependencies": {
+    "python": {
+      "version": "3.11+",
+      "required": true,
+      "install_command": "npm run setup:python",
+      "runtime": [
+        {
+          "name": "numpy",
+          "category": "numerical",
+          "optional": false
+        },
+        {
+          "name": "pydantic",
+          "category": "validation",
+          "optional": false
+        },
+        {
+          "name": "python-dotenv",
+          "category": "config",
+          "optional": false
+        },
+        {
+          "name": "hnswlib",
+          "category": "vector-db",
+          "optional": true
+        },
+        {
+          "name": "grpcio",
+          "category": "router-acceleration",
+          "optional": true
+        },
+        {
+          "name": "onnxruntime",
+          "category": "optional-ml-runtime",
+          "optional": true
+        },
+        {
+          "name": "faster-whisper",
+          "category": "optional-speech",
+          "optional": true
+        }
+      ]
+    },
+    "nodejs": {
+      "version": "20+",
+      "required": true,
+      "packageManager": "npm",
+      "install_command": "npm install"
+    }
+  },
+  "tests": {
+    "frameworks": [
+      "pytest",
+      "tsx"
+    ],
+    "coverage_target": 95,
+    "suites": [
+      {
+        "id": "typescript-tests",
+        "name": "TypeScript Tests",
+        "path": "tests/typescript/",
+        "command": "npm run test:ts",
+        "expected_pass_rate": 100
+      },
+      {
+        "id": "python-tests",
+        "name": "Python Tests",
+        "path": "tests/python/",
+        "command": "npm run test:python",
+        "expected_pass_rate": 100
+      },
+      {
+        "id": "full-suite",
+        "name": "Full Verification Suite",
+        "path": ".",
+        "command": "npm test",
+        "expected_pass_rate": 100
+      }
+    ]
+  },
+  "tools": {
+    "python": [
+      {
+        "name": "pytest",
+        "purpose": "Python test execution"
+      },
+      {
+        "name": "ruff",
+        "purpose": "Linting and formatting checks"
+      },
+      {
+        "name": "mypy",
+        "purpose": "Static typing checks"
+      }
+    ],
+    "nodejs": [
+      {
+        "name": "typescript",
+        "purpose": "Type-safe interface and browser build"
+      },
+      {
+        "name": "tsx",
+        "purpose": "TypeScript test runner"
+      }
+    ]
+  },
+  "build": {
+    "steps": [
+      {
+        "step": 1,
+        "name": "Install Node Dependencies",
+        "command": "npm install",
+        "timeout": 300
+      },
+      {
+        "step": 2,
+        "name": "Install Python Dependencies",
+        "command": "npm run setup:python",
+        "timeout": 600
+      },
+      {
+        "step": 3,
+        "name": "Build Deployable Dist Bundle",
+        "command": "npm run build",
+        "timeout": 180
+      },
+      {
+        "step": 4,
+        "name": "Run Full Verification Gate",
+        "command": "npm test",
+        "timeout": 900
+      }
+    ]
+  },
+  "deployment": {
+    "environments": [
+      {
+        "name": "development",
+        "python_version": "3.11",
+        "node_version": "20.x",
+        "log_level": "DEBUG"
+      },
+      {
+        "name": "staging",
+        "python_version": "3.11",
+        "node_version": "20.x",
+        "log_level": "INFO"
+      },
+      {
+        "name": "production",
+        "python_version": "3.11",
+        "node_version": "20.x",
+        "log_level": "WARNING"
+      }
+    ]
+  },
+  "features": {
+    "model_free_core": true,
+    "offline_first": true,
+    "typed_experts": true,
+    "knowledge_only_learning": true,
+    "optional_router_acceleration": true,
+    "browser_multimodal_shell": true
+  },
+  "metrics": {
+    "last_verified": "2026-04-06",
+    "verification_command": "npm test",
+    "health_reference": "docs/testing.md"
+  },
+  "health": {
+    "status": "truthful-reporting",
+    "last_check": "2026-04-06T00:00:00Z",
+    "checks": [
+      {
+        "name": "Python Runtime",
+        "status": "required",
+        "version": "3.11+"
+      },
+      {
+        "name": "Node Runtime",
+        "status": "required",
+        "version": "20+"
+      },
+      {
+        "name": "Offline Core",
+        "status": "active"
+      },
+      {
+        "name": "Router Acceleration",
+        "status": "optional"
+      },
+      {
+        "name": "API Keys",
+        "status": "not-required"
+      }
+    ]
+  },
+  "rights": {
+    "owner": "Muhammad Waseem Akram",
+    "model": "source-visible restricted-use",
+    "viewing": "allowed for inspection and private evaluation",
+    "reuse": "written permission required",
+    "redistribution": "prohibited without permission",
+    "derivatives": "prohibited without permission",
+    "commercialUse": "prohibited without permission"
+  }
+}
