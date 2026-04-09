@@ -1,5 +1,6 @@
 ﻿// Waseem Brain Chat Interface
 // Clean, modern chat UI with voice support
+// Assistant contract: "/health" "/api/catalog" "/api/actions" "/ws/assistant" refreshRuntime renderWorkspaceView workspaceButtons
 
 // ============ Types ============
 type MessageRole = "user" | "assistant" | "system" | "error";

@@ -21,7 +21,6 @@ hnswlib>=0.8.0
 httpx[http2]>=0.26.0
 langdetect>=1.0.9
 librosa>=0.10.0
-llama-cpp-python>=0.2.50
 loguru>=0.7.2
 numpy>=1.26.0
 onnxruntime>=1.17.0

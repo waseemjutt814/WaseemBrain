@@ -227,7 +227,7 @@ class ExpertPool:
                     ),
                     timeout=effective_timeout,
                 )
-                return result  # type: ignore[return-value]
+                return result
             except asyncio.TimeoutError:
                 return err(f"Expert {expert._meta['id']} inference timed out after {effective_timeout}s")
 
@@ -266,6 +266,14 @@ class ExpertPool:
 
     def loaded_ids(self) -> list[ExpertId]:
         return [ExpertId(expert_id) for expert_id in self._loaded]
+
+    def status(self) -> dict[str, object]:
+        """Return current pool status."""
+        return {
+            "loaded_count": len(self._loaded),
+            "loaded_ids": [str(eid) for eid in self._loaded],
+            "shutdown": self._shutdown,
+        }
 
     def close(self) -> None:
         """Gracefully shutdown the pool with proper resource cleanup."""

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import shutil
 import sqlite3
-import tempfile
 from pathlib import Path
 
 from brain.memory.sqlite_store import SqliteMetaStore
@@ -20,8 +19,9 @@ def _workspace_temp_dir(name: str) -> Path:
 
 def test_sqlite_migrates_legacy_node_meta_missing_modern_columns() -> None:
     """Older metadata.db files may predate current node_meta columns; migration must ALTER ADD."""
-    with tempfile.TemporaryDirectory() as tmp:
-        db_dir = Path(tmp)
+    tmp = _workspace_temp_dir("sqlite-migration")
+    try:
+        db_dir = tmp
         db_path = db_dir / "metadata.db"
         connection = sqlite3.connect(db_path)
         try:
@@ -49,6 +49,8 @@ def test_sqlite_migrates_legacy_node_meta_missing_modern_columns() -> None:
         assert "content" in column_names
         assert "vector_label" in column_names
         assert store.list_nodes() == []
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 def test_sqlite_search_text_handles_punctuation_heavy_queries() -> None:

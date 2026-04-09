@@ -391,7 +391,8 @@ class WaseemBrainRuntime:
                 issues.append("no memory nodes stored")
             
             # Check embedding cache hit rate
-            cache_stats = stats.get("embedding_cache", {})
+            from typing import cast
+            cache_stats = cast(dict[str, int], stats.get("embedding_cache", {}))
             hits = cache_stats.get("hits", 0)
             misses = cache_stats.get("misses", 0)
             if hits + misses > 100:
@@ -557,24 +558,24 @@ class WaseemBrainRuntime:
                     "status": "degraded",
                     "latency_ms": (time.monotonic() - start) * 1000,
                     "message": "Provider not configured",
-                    "details": snapshot,
+                    "details": cast(dict[str, object], dict(snapshot)),
                 }
-            
+
             if not reachable:
                 return {
                     "name": "provider",
                     "status": "degraded",
                     "latency_ms": (time.monotonic() - start) * 1000,
                     "message": "Provider configured but not reachable",
-                    "details": snapshot,
+                    "details": cast(dict[str, object], dict(snapshot)),
                 }
-            
+
             return {
                 "name": "provider",
                 "status": "healthy",
                 "latency_ms": (time.monotonic() - start) * 1000,
                 "message": f"Provider {snapshot.get('model', 'unknown')} ready",
-                "details": snapshot,
+                "details": cast(dict[str, object], dict(snapshot)),
             }
         except Exception as exc:
             return {
@@ -651,7 +652,7 @@ class WaseemBrainRuntime:
         
         # Get embedding cache stats from memory graph
         stats = self._memory_graph.stats()
-        cache_stats = stats.get("embedding_cache", {})
+        cache_stats = cast(dict[str, int], stats.get("embedding_cache", {}))
         
         return {
             "total_requests": self._total_requests,

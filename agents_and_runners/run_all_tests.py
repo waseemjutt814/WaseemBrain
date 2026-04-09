@@ -16,7 +16,7 @@ class WaseemTestRunner:
     """Complete test orchestration and reporting"""
     
     def __init__(self):
-        self.project_root = Path("d:\\latest brain")
+        self.project_root = Path("d:\\WaseemBrain")
         self.results = []
         self.start_time = datetime.now()
         self.manifest = self._load_manifest()

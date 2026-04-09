@@ -1,0 +1,26 @@
+(* Rare & powerful OCaml demo *)
+let rec factorial n =
+  if n <= 1 then 1 else n * factorial (n - 1)
+
+let numbers = [1;2;3;4;5]
+
+let squares = List.map (fun x -> x * x) numbers
+
+let () =
+  List.iter (fun x -> Printf.printf "Square: %d\n" x) squares;
+  Printf.printf "Factorial of 5: %d\n" (factorial 5)
+  
+  
+  
+  use std::thread;
+
+fn main() {
+    let data = vec![10, 20, 30, 40];
+    let handle = thread::spawn(move || {
+        for val in data {
+            println!("Thread value: {}", val);
+        }
+    });
+    handle.join().unwrap();
+    println!("Main thread done.");
+}

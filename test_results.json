@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-04-09T02:23:27.491608",
+  "project": {
+    "name": "Waseem Brain",
+    "version": "0.1.0",
+    "description": "Offline-first multimodal brain runtime with memory, routing, typed experts, and deployable web delivery.",
+    "author": "Muhammad Waseem Akram",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "buildDate": "2026-04-06",
+    "status": "active",
+    "owner": "Muhammad Waseem Akram"
+  },
+  "duration_seconds": 96.898394,
+  "results": [
+    {
+      "suite": "TypeScript Tests",
+      "command": "npm run test:ts",
+      "status": "PASSED",
+      "exit_code": 0,
+      "output_lines": 43,
+      "timestamp": "2026-04-09T02:22:36.654467"
+    },
+    {
+      "suite": "Python Tests",
+      "command": "npm run test:python",
+      "status": "FAILED",
+      "exit_code": 1,
+      "output_lines": 684,
+      "timestamp": "2026-04-09T02:23:08.808329"
+    },
+    {
+      "suite": "Full Verification Suite",
+      "command": "npm test",
+      "status": "FAILED",
+      "exit_code": 1,
+      "output_lines": 47,
+      "timestamp": "2026-04-09T02:23:27.474917"
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 1,
+    "failed": 2,
+    "pass_rate": "33.3%"
+  }
+}

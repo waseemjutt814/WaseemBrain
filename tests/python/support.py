@@ -2,9 +2,22 @@ from __future__ import annotations
 
 import json
 import shutil
+import tempfile
+import time
 from pathlib import Path
 
 from brain.config import BrainSettings
+
+
+def create_temp_dir() -> Path:
+    """Create a Windows-safe temporary directory in the project folder."""
+    # Use project tmp folder instead of system temp to avoid Windows path issues
+    tmp_base = Path(__file__).resolve().parents[2] / "tmp"
+    tmp_base.mkdir(exist_ok=True)
+    # Create unique subfolder using timestamp
+    temp_dir = tmp_base / f"test_{int(time.time() * 1000)}_{id(object())}"
+    temp_dir.mkdir(exist_ok=True)
+    return temp_dir
 
 
 def make_settings(root: Path) -> BrainSettings:
