@@ -16,7 +16,9 @@ brain/session.py
 brain/types.py
 brain/assistant/__init__.py
 brain/assistant/actions.py
+brain/assistant/builtin_llm.py
 brain/assistant/local_responder.py
+brain/assistant/ollama_provider.py
 brain/assistant/orchestrator.py
 brain/assistant/providers.py
 brain/assistant/types.py

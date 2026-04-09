@@ -258,9 +258,6 @@ function connectWebSocket() {
 }
 
 function handleWebSocketMessage(data: any) {
-  // Debug: log all messages
-  console.log("[WS] Received:", data.type, data);
-  
   // Handle various message types from backend
   switch (data.type) {
     case "status":
