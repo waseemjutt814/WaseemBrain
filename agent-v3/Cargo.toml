@@ -1,0 +1,65 @@
+[package]
+name = "agent-v3"
+version = "3.0.0"
+edition = "2021"
+authors = ["Waseem <waseem@example.com>"]
+description = "Top-tier production agent written in pure Rust"
+license = "MIT"
+repository = "https://github.com/waseemjutt814/WaseemBrain"
+rust-version = "1.75"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json", "multipart"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID generation
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Regex for parsing
+regex = "1.10"
+
+# File system operations
+tokio-fs = "0.1"
+walkdir = "2.4"
+
+# Process execution
+tokio-process = "0.2"
+
+# Configuration
+config = "0.14"
+toml = "0.8"
+
+# CLI (optional)
+clap = { version = "4.4", features = ["derive"], optional = true }
+
+[features]
+default = ["cli"]
+cli = ["dep:clap"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[[bin]]
+name = "agent-v3"
+path = "src/main.rs"
