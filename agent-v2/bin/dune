@@ -1,4 +1,5 @@
 (executable
- (name main)
+ (name main_real)
  (public_name agent-v2)
- (libraries agent lwt lwt.unix))
+ (libraries agent lwt lwt.unix)
+ (modules main_real))
