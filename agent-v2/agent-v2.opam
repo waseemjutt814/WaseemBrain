@@ -1,0 +1,34 @@
+opam-version: "2.0"
+synopsis: "High-level OCaml Agent Framework"
+description: """
+A powerful agent framework written in OCaml for the WaseemBrain project.
+Supports async operations, state management, action execution, and context tracking.
+"""
+maintainer: ["Waseem"]
+authors: ["Waseem"]
+license: "MIT"
+tags: ["agent" "ai" "automation" "framework"]
+homepage: "https://github.com/waseemjutt814/WaseemBrain"
+doc: "https://github.com/waseemjutt814/WaseemBrain"
+bug-reports: "https://github.com/waseemjutt814/WaseemBrain/issues"
+depends: [
+  "ocaml" {>= "4.14.0"}
+  "dune" {>= "3.10"}
+  "lwt" {>= "5.6.0"}
+  "lwt_ppx" {>= "2.1.0"}
+]
+build: [
+  ["dune" "subst"] {dev}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest" {with-test}
+    "@doc" {with-doc}
+  ]
+]
+dev-repo: "git+https://github.com/waseemjutt814/WaseemBrain.git"

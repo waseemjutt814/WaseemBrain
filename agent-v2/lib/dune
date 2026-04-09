@@ -1,0 +1,5 @@
+(library
+ (name agent)
+ (public_name agent-v2)
+ (libraries lwt lwt.unix)
+ (flags (:standard -w -33)))

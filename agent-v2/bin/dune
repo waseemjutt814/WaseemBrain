@@ -1,0 +1,4 @@
+(executable
+ (name main)
+ (public_name agent-v2)
+ (libraries agent lwt lwt.unix))

@@ -1,0 +1,23 @@
+(lang dune 3.10)
+
+(name agent-v2)
+
+(generate_opam_files true)
+
+(source
+ (github waseemjutt814/WaseemBrain))
+
+(authors "Waseem")
+
+(maintainers "Waseem")
+
+(license MIT)
+
+(documentation https://github.com/waseemjutt814/WaseemBrain)
+
+(package
+ (name agent-v2)
+ (synopsis "High-level OCaml Agent Framework")
+ (description "A powerful agent framework written in OCaml for the WaseemBrain project")
+ (depends ocaml dune lwt lwt_ppx)
+ (tags (agent ai automation framework)))

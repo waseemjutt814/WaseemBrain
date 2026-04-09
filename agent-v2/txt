@@ -1,26 +1,29 @@
-(* Rare & powerful OCaml demo *)
+(* ============================================================ *)
+(* AGENT V2 - TOP LEVEL OCAML AGENT FRAMEWORK                   *)
+(* ============================================================ *)
+(* NOTE: This is a demo file. The actual agent is in:           *)
+(*       - lib/agent.ml        (Core implementation)            *)
+(*       - lib/agent.mli       (Public interface)                *)
+(*       - bin/main.ml         (Demo executable)                 *)
+(*       - test/test_agent.ml  (Unit tests)                      *)
+(* ============================================================ *)
+
+(* Demo: Factorial and List Operations *)
 let rec factorial n =
   if n <= 1 then 1 else n * factorial (n - 1)
 
-let numbers = [1;2;3;4;5]
+let numbers = [1; 2; 3; 4; 5]
 
 let squares = List.map (fun x -> x * x) numbers
 
 let () =
+  print_endline "=== Agent v2 Demo Output ===";
   List.iter (fun x -> Printf.printf "Square: %d\n" x) squares;
-  Printf.printf "Factorial of 5: %d\n" (factorial 5)
-  
-  
-  
-  use std::thread;
+  Printf.printf "Factorial of 5: %d\n" (factorial 5);
+  print_endline "==========================="
 
-fn main() {
-    let data = vec![10, 20, 30, 40];
-    let handle = thread::spawn(move || {
-        for val in data {
-            println!("Thread value: {}", val);
-        }
-    });
-    handle.join().unwrap();
-    println!("Main thread done.");
-}
+(* ============================================================ *)
+(* For the full agent framework, see:                           *)
+(*   https://github.com/waseemjutt814/WaseemBrain               *)
+(*   Path: agent-v2/                                           *)
+(* ============================================================ *)
