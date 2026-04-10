@@ -1,0 +1,42 @@
+# Release configuration for Waseem Brain
+# Author: MUHAMMAD WASEEM AKRAM
+
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - octocat
+  categories:
+    - title: 🚀 World-First Features
+      labels:
+        - world-first
+        - innovation
+    - title: 🧠 Brain Capabilities
+      labels:
+        - brain
+        - intelligence
+        - memory
+    - title: 🤖 Agent Frameworks
+      labels:
+        - agent
+        - agent-v1
+        - agent-v2
+        - agent-v3
+    - title: 🔒 Security & Protection
+      labels:
+        - security
+        - protection
+        - safety
+    - title: 🛠️ Improvements
+      labels:
+        - enhancement
+        - improvement
+    - title: 🐛 Bug Fixes
+      labels:
+        - bug
+        - fix
+    - title: 📚 Documentation
+      labels:
+        - documentation
+        - docs

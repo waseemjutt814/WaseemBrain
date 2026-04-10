@@ -1,0 +1,23 @@
+# Waseem Brain - GitHub Topics
+# Add these topics in GitHub repository settings
+
+artificial-intelligence
+assistant
+agent-framework
+hybrid-intelligence
+local-llm
+memory-system
+expert-system
+automation
+rust
+ocaml
+python
+protected-actions
+world-first
+machine-learning
+nlp
+voice-assistant
+code-generation
+runtime
+intelligence
+waseem-brain
