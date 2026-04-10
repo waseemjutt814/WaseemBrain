@@ -14,6 +14,40 @@
 
 set -e
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🔐 AUTHOR AUTHENTICATION - DO NOT REMOVE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+AUTHOR_PASSWORD_HASH="a3b9c2e8f5d1a7b4c6e9f0d8a2b5c7e1"
+REQUIRED_PASSWORD="waseemjutt814mirha@888"
+
+echo ""
+echo "╔══════════════════════════════════════════════════════════════════════════╗"
+echo "║                    🔐 AUTHOR AUTHENTICATION REQUIRED 🔐                  ║"
+echo "╚══════════════════════════════════════════════════════════════════════════╝"
+echo ""
+
+# Check for password from environment or prompt
+if [ -z "$WASEEM_BRAIN_PASSWORD" ]; then
+    read -sp "Enter Author Password: " USER_PASSWORD
+    echo ""
+else
+    USER_PASSWORD="$WASEEM_BRAIN_PASSWORD"
+fi
+
+if [ "$USER_PASSWORD" != "$REQUIRED_PASSWORD" ]; then
+    echo ""
+    echo "❌ INVALID PASSWORD - Access Denied"
+    echo ""
+    echo "Author: MUHAMMAD WASEEM AKRAM"
+    echo "Contact: waseemjutt814@gmail.com | +923164290739"
+    echo ""
+    exit 1
+fi
+
+echo "✅ Authentication Successful - Proceeding with installation..."
+echo ""
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'

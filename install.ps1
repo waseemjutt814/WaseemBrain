@@ -13,6 +13,39 @@
 
 $ErrorActionPreference = "Stop"
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🔐 AUTHOR AUTHENTICATION - DO NOT REMOVE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+$REQUIRED_PASSWORD = "waseemjutt814mirha@888"
+
+Write-Host ""
+Write-Host "╔══════════════════════════════════════════════════════════════════════════╗"
+Write-Host "║                    🔐 AUTHOR AUTHENTICATION REQUIRED 🔐                  ║"
+Write-Host "╚══════════════════════════════════════════════════════════════════════════╝"
+Write-Host ""
+
+# Check for password from environment or prompt
+if ($env:WASEEM_BRAIN_PASSWORD) {
+    $USER_PASSWORD = $env:WASEEM_BRAIN_PASSWORD
+} else {
+    $USER_PASSWORD = Read-Host "Enter Author Password" -AsSecureString
+    $USER_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($USER_PASSWORD))
+}
+
+if ($USER_PASSWORD -ne $REQUIRED_PASSWORD) {
+    Write-Host ""
+    Write-Host "❌ INVALID PASSWORD - Access Denied" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Author: MUHAMMAD WASEEM AKRAM"
+    Write-Host "Contact: waseemjutt814@gmail.com | +923164290739"
+    Write-Host ""
+    exit 1
+}
+
+Write-Host "✅ Authentication Successful - Proceeding with installation..." -ForegroundColor Green
+Write-Host ""
+
 # Colors
 function Write-Color($Text, $Color) {
     Write-Host $Text -ForegroundColor $Color
