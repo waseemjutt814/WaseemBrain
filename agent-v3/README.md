@@ -2,10 +2,30 @@
 
 **The most advanced, production-ready agent framework written in pure Rust.**
 
+```
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   🔒  RESTRICTED PROPRIETARY SOFTWARE - AUTHORIZATION REQUIRED          ║
+║                                                                          ║
+║   Copyright (c) 2024-2025 MUHAMMAD WASEEM AKRAM. ALL RIGHTS RESERVED.   ║
+║                                                                          ║
+║   ⚠️  NO PERMISSION TO USE, COPY, MODIFY, OR DISTRIBUTE                 ║
+║   ⚠️  UNAUTHORIZED USE IS ILLEGAL AND WILL BE PROSECUTED                ║
+║                                                                          ║
+║   📧 waseemjutt814@gmail.com | 📱 +923164290739 | 🐙 @waseemjutt814     ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
 > ⚠️ **WARNING: 100% REAL IMPLEMENTATIONS**
 > 
 > This agent executes REAL commands, REAL file I/O, REAL HTTP requests, and REAL git operations.
 > **No mocks. No fake data. Everything is real.**
+
+> 🔒 **PROTECTION: CANCER-TYPE HIDDEN SECURITY**
+>
+> This software contains hardware fingerprinting, license validation, tamper detection,
+> and automatic lockout. **Any attempt to use without permission will FAIL.**
 
 ## 🚀 Features
 

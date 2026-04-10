@@ -1,6 +1,8 @@
-# Agent v2 - OCaml Agent Framework
+# Agent v2 - REAL OCaml Production Agent
 
-A high-level, powerful agent framework written in **OCaml** for the WaseemBrain project.
+A **production-ready, powerful agent framework** written in **OCaml** for the WaseemBrain project.
+
+> ⚠️ **THIS IS THE REAL AGENT** - Not a demo. Executes real commands, real file I/O, real git operations.
 
 ## Features
 

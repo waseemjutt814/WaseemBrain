@@ -1,6 +1,20 @@
 #!/usr/bin/env python3
 """
-WASEEM AGENT - Autonomous Project Intelligence System
+═══════════════════════════════════════════════════════════════════════════════
+                    WASEEM AGENT V1 - PYTHON FOUNDATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Author:     MUHAMMAD WASEEM AKRAM
+Email:      waseemjutt814@gmail.com
+WhatsApp:   +923164290739
+GitHub:     @waseemjutt814
+
+License:    RESTRICTED USE - NO PERMISSIONS GRANTED
+Copyright:  2024-2025 MUHAMMAD WASEEM AKRAM. All Rights Reserved.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Autonomous Project Intelligence System
 Real execution + deep reasoning + full project access
 """
 

@@ -15,6 +15,30 @@ use tracing::{info, warn};
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 🔒 AUTHORIZATION CHECK - CANCER TYPE PROTECTION
+    // This MUST be the first thing to run - blocks all unauthorized use
+    // ═══════════════════════════════════════════════════════════════════════════
+    if let Err(e) = agent_v3::protection::initialize_protection() {
+        eprintln!("\n❌ AUTHORIZATION FAILED ❌");
+        eprintln!("Error: {}", e);
+        eprintln!("\n╔══════════════════════════════════════════════════════════════════════════╗");
+        eprintln!("║  🔒  RESTRICTED PROPRIETARY SOFTWARE  🔒                                ║");
+        eprintln!("║                                                                          ║");
+        eprintln!("║  Author:   MUHAMMAD WASEEM AKRAM                                         ║");
+        eprintln!("║  Email:    waseemjutt814@gmail.com                                       ║");
+        eprintln!("║  WhatsApp: +923164290739                                                 ║");
+        eprintln!("║  GitHub:   @waseemjutt814                                                ║");
+        eprintln!("║                                                                          ║");
+        eprintln!("║  This software requires explicit written authorization.                ║");
+        eprintln!("║  Unauthorized use is ILLEGAL and will be PROSECUTED.                   ║");
+        eprintln!("╚══════════════════════════════════════════════════════════════════════════╝");
+        std::process::exit(1);
+    }
+    
+    // Hidden watermark for tracking
+    let _watermark = agent_v3::protection::LicenseValidator::get_watermark();
+    
     // Initialize tracing
     agent_v3::logging::init_tracing("info");
 

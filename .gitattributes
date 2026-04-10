@@ -1,0 +1,72 @@
+# Waseem Brain - Git Attributes Configuration
+# Author: MUHAMMAD WASEEM AKRAM
+# Contact: waseemjutt814@gmail.com | +923164290739
+
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Source code
+*.py text eol=lf
+*.rs text eol=lf
+*.ml text eol=lf
+*.mli text eol=lf
+*.ts text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Documentation
+*.md diff=markdown
+*.txt text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.rar binary
+*.7z binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+
+# Audio/Video
+*.mp3 binary
+*.mp4 binary
+*.wav binary
+*.avi binary
+*.mov binary
+*.webm binary
+
+# Database
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+
+# Prevent diff on generated files
+*.lock binary
+*.min.js binary
+*.min.css binary
+
+# Custom diff
+*.py diff=python
+*.rs diff=rust
+*.ml diff=ocaml

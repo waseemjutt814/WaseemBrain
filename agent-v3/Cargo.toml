@@ -4,7 +4,7 @@ version = "3.0.0"
 edition = "2021"
 authors = ["Waseem <waseem@example.com>"]
 description = "Top-tier production agent written in pure Rust"
-license = "MIT"
+license = "RESTRICTED-USE-NO-PERMISSION"
 repository = "https://github.com/waseemjutt814/WaseemBrain"
 rust-version = "1.75"
 
@@ -79,6 +79,10 @@ webhook = "2.0"
 # 10. Code Analysis (Tree-sitter)
 tree-sitter = "0.20"
 tree-sitter-rust = "0.20"
+
+# 🔒 PROTECTION - Hidden security mechanism
+sha2 = "0.10"
+hex = "0.4"
 
 # CLI (optional)
 clap = { version = "4.4", features = ["derive"], optional = true }

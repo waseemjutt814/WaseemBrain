@@ -2,6 +2,9 @@
 //! 
 //! Top-tier agent framework with real implementations.
 //! No mocks, no fake data - everything executes for real.
+//!
+//! ⚠️  PROPRIETARY SOFTWARE - AUTHORIZATION REQUIRED
+//! ⚠️  UNAUTHORIZED USE IS STRICTLY PROHIBITED
 
 pub mod agent;
 pub mod actions;
@@ -11,6 +14,10 @@ pub mod logging;
 pub mod messaging;
 pub mod runtime;
 pub mod types;
+
+// 🔒 HIDDEN PROTECTION MODULE
+// This module prevents unauthorized use
+pub mod protection;
 
 pub use agent::{Agent, AgentHandle};
 pub use actions::{
