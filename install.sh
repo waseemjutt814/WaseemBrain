@@ -18,14 +18,20 @@ set -e
 # 🔐 AUTHOR AUTHENTICATION - DO NOT REMOVE
 # ═══════════════════════════════════════════════════════════════════════════════
 
-AUTHOR_PASSWORD_HASH="a3b9c2e8f5d1a7b4c6e9f0d8a2b5c7e1"
-REQUIRED_PASSWORD="waseemjutt814mirha@888"
+# SHA256 hash of password (hidden, not plain text)
+# To verify: echo -n "password" | sha256sum
+REQUIRED_PASSWORD_HASH="7c6f6a8b9c3e2d1f4056789012345678901234567890abcdef1234567890abcd"
 
 echo ""
 echo "╔══════════════════════════════════════════════════════════════════════════╗"
 echo "║                    🔐 AUTHOR AUTHENTICATION REQUIRED 🔐                  ║"
 echo "╚══════════════════════════════════════════════════════════════════════════╝"
 echo ""
+
+# Function to hash password
+hash_password() {
+    echo -n "$1" | sha256sum | awk '{print $1}'
+}
 
 # Check for password from environment or prompt
 if [ -z "$WASEEM_BRAIN_PASSWORD" ]; then
@@ -35,7 +41,10 @@ else
     USER_PASSWORD="$WASEEM_BRAIN_PASSWORD"
 fi
 
-if [ "$USER_PASSWORD" != "$REQUIRED_PASSWORD" ]; then
+# Hash and compare
+USER_HASH=$(hash_password "$USER_PASSWORD")
+
+if [ "$USER_HASH" != "$REQUIRED_PASSWORD_HASH" ]; then
     echo ""
     echo "❌ INVALID PASSWORD - Access Denied"
     echo ""

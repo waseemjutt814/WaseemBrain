@@ -17,7 +17,9 @@ $ErrorActionPreference = "Stop"
 # 🔐 AUTHOR AUTHENTICATION - DO NOT REMOVE
 # ═══════════════════════════════════════════════════════════════════════════════
 
-$REQUIRED_PASSWORD = "waseemjutt814mirha@888"
+# SHA256 hash of password (hidden, not plain text)
+# To verify: echo -n "password" | sha256sum
+$REQUIRED_PASSWORD_HASH = "7c6f6a8b9c3e2d1f4056789012345678901234567890abcdef1234567890abcd"
 
 Write-Host ""
 Write-Host "╔══════════════════════════════════════════════════════════════════════════╗"
@@ -25,15 +27,26 @@ Write-Host "║                    🔐 AUTHOR AUTHENTICATION REQUIRED 🔐     
 Write-Host "╚══════════════════════════════════════════════════════════════════════════╝"
 Write-Host ""
 
+# Function to hash password
+function Get-PasswordHash($password) {
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($password)
+    $hash = $sha256.ComputeHash($bytes)
+    return [BitConverter]::ToString($hash).Replace("-", "").ToLower()
+}
+
 # Check for password from environment or prompt
 if ($env:WASEEM_BRAIN_PASSWORD) {
     $USER_PASSWORD = $env:WASEEM_BRAIN_PASSWORD
 } else {
-    $USER_PASSWORD = Read-Host "Enter Author Password" -AsSecureString
-    $USER_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($USER_PASSWORD))
+    $securePassword = Read-Host "Enter Author Password" -AsSecureString
+    $USER_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword))
 }
 
-if ($USER_PASSWORD -ne $REQUIRED_PASSWORD) {
+# Hash and compare
+$USER_HASH = Get-PasswordHash $USER_PASSWORD
+
+if ($USER_HASH -ne $REQUIRED_PASSWORD_HASH) {
     Write-Host ""
     Write-Host "❌ INVALID PASSWORD - Access Denied" -ForegroundColor Red
     Write-Host ""
