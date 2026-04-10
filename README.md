@@ -208,6 +208,38 @@ It includes:
 
 ---
 
+## 🚀 **NEW - PRODUCTION-READY DEPLOYMENT TOOLS**
+
+```
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║         ⚡ ONE-COMMAND INSTALLER • REST API • WEB DASHBOARD ⚡            ║
+║                                                                          ║
+║                  ZERO CONFIGURATION • 30 SECOND SETUP                    ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+**📦 1-Command Installer** (Linux/Mac/Windows)
+```bash
+# Linux/Mac
+curl -fsSL https://raw.githubusercontent.com/waseemjutt814/WaseemBrain/main/install.sh | bash
+
+# Windows
+irm https://raw.githubusercontent.com/waseemjutt814/WaseemBrain/main/install.ps1 | iex
+```
+
+**🔌 REST API Server** (`api_server.py`)
+- **Port:** 8000
+- **Docs:** http://localhost:8000/docs
+- **Features:** 10+ endpoints, WebSocket logs, agent control
+
+**🎨 Web Dashboard** (`/dashboard`)
+- **URL:** http://localhost:8000/dashboard
+- **Features:** Real-time metrics, agent control, memory graph, live logs
+
+---
+
 ## �� AGENT FRAMEWORKS - HIGH-PERFORMANCE IMPLEMENTATIONS
 
 ### � AGENT V1 - PYTHON EDITION (FOUNDATION)
