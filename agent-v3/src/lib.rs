@@ -13,7 +13,12 @@ pub mod runtime;
 pub mod types;
 
 pub use agent::{Agent, AgentHandle};
-pub use actions::{Action, ActionExecutor, ActionResult};
+pub use actions::{
+    Action, ActionExecutor, ActionResult,
+    // 🚀 TOP 10 HIGH-VALUE SKILL TYPES
+    DbOperation, DockerOperation, S3Operation,
+    SmtpConfig, WebhookPlatform, BuildSystem,
+};
 pub use config::AgentConfig;
 pub use errors::{AgentError, Result};
 pub use messaging::{Message, MessageRole, MessageBus};
